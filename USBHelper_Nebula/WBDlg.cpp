@@ -343,9 +343,9 @@ void CWBDlg::endTrack( bool bSave /*= true*/ )
 		m_listItems.push_back(m_currentItem);
 
 		m_currentItem.lstPoint.clear();
-
-
+#ifdef BEZIER
 		Invalidate();
+#endif
 	}
 }
 
