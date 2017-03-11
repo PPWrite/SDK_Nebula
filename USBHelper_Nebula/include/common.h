@@ -7,7 +7,7 @@ enum
 	GATEWAY_PID	=	0x6001,
 	NODE_PID	=	0x6002,
 };
-
+////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
 //状态
 typedef struct robot_status
@@ -134,6 +134,7 @@ enum eDeviceType
 {
 	GATEWAY = 0,
 	NODE,
+	DONGLE,
 };
 
 enum
@@ -143,4 +144,78 @@ enum
 	PAGEUP,
 	PAGEDOWN,
 	CREATEPAGE,
+};
+
+////////////////////////////DONGLE////////////////////////////////
+#pragma pack(1)
+typedef struct st_ble_device
+{
+	uint8_t num;
+	uint8_t rssi;
+	uint8_t match;
+	uint8_t addr[6];
+	uint8_t device_name[18];
+	uint8_t device_type;
+}ST_BLE_DEVICE;
+#pragma pack()
+
+//蓝牙状态
+enum BLE_STATUS
+{
+	BLE_STANDBY				= 0,
+	BLE_SCANNING			= 1,	//正在扫描
+	BLE_CONNECTING			= 2,	//连接中
+	BLE_CONNECTED			= 3,	//连接成功
+	BLE_ACTIVE_DISCONNECT	= 4,	//正在断开链接
+	BLE_RECONNECTING		= 5,	//重新连接
+	BLE_LINK_BREAKOUT		= 6,	//蓝牙正在升级中
+	BLE_DFU_START			= 7,	//蓝牙dfu模式
+};
+
+enum DONGLE_DEVICE
+{
+	P7			= 1,
+	ELITE		= 2,
+	ELITE_PLUS	= 3,
+	J0			= 8,
+};
+
+enum ROBOT_DONGLE_TYPE
+{
+	ROBOT_DONGLE_STATUS			= 0x00,		//dongele状态
+	ROBOT_DONGLE_VERSION,					//dongle版本
+	ROBOT_DONGLE_SCAN_RES,					//扫描结果
+	ROBOT_SET_NAME,							//设置名称
+	ROBOT_SLAVE_ERROR,						//错误信息
+	ROBOT_DONGLE_FIRMWARE_DATA,				//进度
+	ROBOT_DONGLE_RAW_RESULT,				//升级结果
+	ROBOT_SLAVE_STATUS,						//slave状态
+	ROBOT_SLAVE_VERSION,					//slave版本
+};
+
+enum UPDATE_TYPE
+{
+	DONGLE_BLE = 0,
+	DONGLE_MCU,
+	SLAVE_MCU,
+};
+
+enum SALVE_ERROR
+{
+	ERROR_SLAVE_NONE = 0,
+	ERROR_OTA_FLOW_NUM,
+	ERROR_OTA_LEN,
+	ERROR_OTA_CHECKSUM,
+	ERROR_OTA_STATUS,
+	ERROR_OTA_VERSION,
+};
+
+enum SALVE_ERROR
+{
+	ERROR_SLAVE_NONE = 0,
+	ERROR_OTA_FLOW_NUM,
+	ERROR_OTA_LEN,
+	ERROR_OTA_CHECKSUM,
+	ERROR_OTA_STATUS,
+	ERROR_OTA_VERSION,
 };

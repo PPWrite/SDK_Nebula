@@ -13,7 +13,7 @@ IMPLEMENT_DYNAMIC(CUpdateDlg, CDialog)
 
 CUpdateDlg::CUpdateDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUpdateDlg::IDD, pParent)
-	, m_bNode(FALSE)
+	, m_nDeviceType(FALSE)
 {
 
 }
@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
 	ON_WM_NCDESTROY()
 	ON_MESSAGE(WM_PROCESS, OnProcess)
 	ON_BN_CLICKED(IDC_BUTTON4_STOP, &CUpdateDlg::OnBnClickedButton4Stop)
+	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CUpdateDlg::OnCbnSelchangeComboType)
 END_MESSAGE_MAP()
 
 
@@ -60,10 +61,15 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_bNode)
+		if(m_nDeviceType == NODE)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
-		else
+		else if(m_nDeviceType == GATEWAY)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
+		else
+		{
+			int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
+			this->GetParent()->SendMessage(WM_UPDATE,nIndex,START_UPADTE_DONGLE);
+		}
 	}
 }
 
@@ -135,9 +141,18 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 
 void CUpdateDlg::SetVersion(const CString &strVersion)
 {
-	GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
-	m_version = CString2Version(strVersion);
+	if (m_nDeviceType == DONGLE)
+	{
+		m_strDongleVersion = strVersion;
+		OnCbnSelchangeComboType();
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
+		m_version = CString2Version(strVersion);
+	}
 }
+
 
 void CUpdateDlg::OnNcDestroy()
 {
@@ -153,6 +168,8 @@ LRESULT CUpdateDlg::OnProcess(WPARAM wParam, LPARAM lParam)
 
 	switch(lParam)
 	{
+		break;
+	case ROBOT_DONGLE_FIRMWARE_DATA:
 	case ROBOT_FIRMWARE_DATA:
 		{
 			((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetPos(wParam);
@@ -174,6 +191,14 @@ BOOL CUpdateDlg::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetRange(0,100);
 
+	CComboBox *pCombobox = (CComboBox*)GetDlgItem(IDC_COMBO_TYPE);
+	if (NULL == pCombobox)
+		return FALSE;
+	pCombobox->InsertString(0,_T("BLE"));
+	pCombobox->InsertString(1,_T("MCU"));
+	pCombobox->InsertString(2,_T("SLAVE"));
+	pCombobox->SetCurSel(0);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }
@@ -181,7 +206,7 @@ BOOL CUpdateDlg::OnInitDialog()
 void CUpdateDlg::OnBnClickedButton4Stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_bNode)
+	if(m_nDeviceType == NODE)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
 	else
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
@@ -268,12 +293,19 @@ bool CUpdateDlg::IsNeedUpdate(const ST_VERSION &versionWeb,const ST_VERSION &ver
 	return false;
 }
 
-void CUpdateDlg::SetUpgradeType(BOOL bNode /*=FALSE*/)
+void CUpdateDlg::SetUpgradeType(int nDeviceType)
 {
-	m_bNode = bNode;
+	m_nDeviceType = nDeviceType;
+	bool bNode = (m_nDeviceType == NODE) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
+
+	if (m_nDeviceType == DONGLE)
+	{
+		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(TRUE);
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(FALSE);
+	}
 }
 
 void CUpdateDlg::ResetUI()
@@ -286,4 +318,22 @@ void CUpdateDlg::ResetUI()
 	((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetPos(0);
 
 	memset(&m_version,0,sizeof(m_version));
+}
+
+void CUpdateDlg::OnCbnSelchangeComboType()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
+
+	CStringArray sArray;
+	SplitFields(m_strDongleVersion,sArray,_T("_"));
+	if (sArray.GetCount() <= nIndex)
+	{
+		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));;
+		return;
+	}
+	CString strVersion = sArray[nIndex];
+	GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
+	m_version = CString2Version(strVersion);
+
 }

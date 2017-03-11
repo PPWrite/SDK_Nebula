@@ -387,7 +387,7 @@ void CWBDlg::onRecvData(PEN_INFO& penInfo)
 		point.SetPoint(penInfo.nX, penInfo.nY);
 	//TRACE("X:%d,Y:%d,Press:%d\n",penInfo.nX,penInfo.nY,penInfo.nPens);
 	
-	if (penInfo.nPress == 0)// 笔离开板子
+	if (penInfo.nPress  == 0)// 笔离开板子
 	{
 		endTrack(true);
 		m_nFlags = 0;

@@ -10,6 +10,7 @@ enum
 {
 	START_UPADTE_GATEWAY = 0,
 	START_UPADTE_NODE,
+	START_UPADTE_DONGLE,
 	STOP_UPDATE_GATEWAY,
 	STOP_UPDATE_NODE,
 	SET_VERSION,
@@ -46,9 +47,12 @@ public:
 	PCHAR WideStrToMultiStr (PWCHAR WideStr);
 	ST_VERSION CString2Version(CString strVersion);
 	bool IsNeedUpdate(const ST_VERSION &versionWeb,const ST_VERSION &versionDev);
-	void SetUpgradeType(BOOL bNode = FALSE);
+	void SetUpgradeType(int nDeviceType);
 	void ResetUI();
 	ST_VERSION m_version;
 private:
-	BOOL m_bNode;
+	int m_nDeviceType;
+	CString m_strDongleVersion;
+public:
+	afx_msg void OnCbnSelchangeComboType();
 };

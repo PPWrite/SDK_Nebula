@@ -118,7 +118,7 @@ END_MESSAGE_MAP()
 CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CUSBHelperDlg::IDD, pParent)
 	, m_pDlg(NULL)
-	, m_bNode(FALSE)
+	, m_nDeviceType(GATEWAY)
 	, m_bRun(TRUE)
 	, m_nLastStatus(-1)
 	, m_nLastMode(-1)
@@ -166,6 +166,10 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3_SET, &CUSBHelperDlg::OnBnClickedButton3Set)
 	ON_BN_CLICKED(IDC_BUTTON3_UPDATE, &CUSBHelperDlg::OnBnClickedButton3Update)
 	ON_BN_CLICKED(IDC_BUTTON3_SHOW, &CUSBHelperDlg::OnBnClickedButton3Show)
+	ON_BN_CLICKED(IDC_BUTTON_SCAN, &CUSBHelperDlg::OnBnClickedButtonScan)
+	ON_BN_CLICKED(IDC_BUTTON_CONNECT, &CUSBHelperDlg::OnBnClickedButtonConnect)
+	ON_BN_CLICKED(IDC_BUTTON_SCAN_STOP, &CUSBHelperDlg::OnBnClickedButtonScanStop)
+	ON_BN_CLICKED(IDC_BUTTON_DISCONNECT, &CUSBHelperDlg::OnBnClickedButtonDisconnect)
 END_MESSAGE_MAP()
 
 
@@ -211,7 +215,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	m_pDlg = new CUpdateDlg;
 	m_pDlg->Create(IDD_UPDATEDLG);
 
-	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：0302"));
+	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：0310"));
 
 	AddList();
 
@@ -286,6 +290,15 @@ void CUSBHelperDlg::InitListCtrl()
 	pListView->InsertColumn(1, _T("VID"), LVCFMT_LEFT, 80);
 	pListView->InsertColumn(2, _T("PID"), LVCFMT_LEFT, 80);
 	pListView->SetExtendedStyle (LVS_EX_FULLROWSELECT |LVS_EX_GRIDLINES );//设置扩展
+
+	pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+	if (NULL == pListView)
+		return;
+
+	pListView->InsertColumn(0, _T("Num"), LVCFMT_LEFT, 80);
+	pListView->InsertColumn(1, _T("名称"), LVCFMT_LEFT, 80);
+	pListView->InsertColumn(2, _T("Mac地址"), LVCFMT_LEFT, 180);
+	pListView->SetExtendedStyle (LVS_EX_FULLROWSELECT |LVS_EX_GRIDLINES );//设置扩展
 }
 
 void CUSBHelperDlg::OnBnClickedCancel()
@@ -337,12 +350,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE))->GetFirstSelectedItemPosition();
 	if (pos == nullptr)
 	{
-		//int nRes = GetInstance()->Open(0x0ED1,0x7806);
-		int nRes = GetInstance()->Open(0x0ED1,0x781E);
+		/*int nRes = GetInstance()->Open(0x0ED1,0x781E);
 		ASSERT(nRes == 0);
 		if(nRes == 0)
 			GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
-		return;
+		return;//*/
 		MessageBox(_T("请先选中设备!"), _T("提示"), IDOK);
 		return;
 	}
@@ -355,42 +367,67 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	int nPid = atoi(WideStrToMultiStr(strPid.GetBuffer()));
 
 	if (nPid == GATEWAY_PID)
+	{
 		GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
-	else
+		m_nDeviceType = GATEWAY;
+	}
+	else if (nPid == NODE_PID)
+	{
 		GetInstance()->ConnectInitialize(NODE,getUsbData,this);
+		m_nDeviceType = NODE;
+	}
+	else 
+	{
+		GetInstance()->ConnectInitialize(DONGLE,getUsbData,this);
+		m_nDeviceType = DONGLE;
+	}
 
 	int nRes = GetInstance()->ConnectOpen();
 	ASSERT(nRes == 0);
 	if(nRes == 0)
 		GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
 
-	m_bNode = ((nPid == NODE_PID) ? TRUE :FALSE);
-
-
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
-	if(!m_bNode)
+	bool bShow = (m_nDeviceType == GATEWAY) ? TRUE : FALSE;
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->EnableWindow(bShow);
+	GetDlgItem(IDC_BUTTON3_MS)->EnableWindow(bShow);
+	GetDlgItem(IDC_BUTTON3_MS_OFF)->EnableWindow(bShow);
+	GetDlgItem(IDC_BUTTON_MS_CLEAR)->EnableWindow(bShow);
+
+	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(!bShow);
+	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(!bShow);
+
+	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(!bShow);
+	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(!bShow);
+
+	if(m_nDeviceType == GATEWAY)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else
+	else if(m_nDeviceType == NODE)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->EnableWindow(!m_bNode);
-	GetDlgItem(IDC_BUTTON3_MS)->EnableWindow(!m_bNode);
-	GetDlgItem(IDC_BUTTON3_MS_OFF)->EnableWindow(!m_bNode);
-	GetDlgItem(IDC_BUTTON_MS_CLEAR)->EnableWindow(!m_bNode);
+	else
+	{
+		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(FALSE);
+		GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
 
-	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(m_bNode);
-	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(m_bNode);
+		GetDlgItem(IDC_STATIC_CUS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_CLASS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 
-	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(m_bNode);
-	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(m_bNode);
+		GetDlgItem(IDC_EDIT_CUSTOM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
+	}
 
-	if (m_bNode)
+	if (m_nDeviceType != GATEWAY)
 		OnBnClickedButtonStatus();
 }
 
@@ -438,6 +475,16 @@ void CUSBHelperDlg::resetDevice()
 	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_MODE)->SetWindowTextW(_T(""));
 
+	GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowTextW(_T(""));
+	GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowTextW(_T(""));
+
+	GetDlgItem(IDC_STATIC_NOTE)->SetWindowTextW(_T(""));
+
+	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+	if (NULL == pListView)
+		return;
+	pListView->DeleteAllItems();
+
 	m_nLastStatus = -1;
 	m_nLastMode = -1;
 	memset(&m_lastInfo,0,sizeof(m_lastInfo));
@@ -479,7 +526,10 @@ void CUSBHelperDlg::ProcessMassData()
 					ROBOT_REPORT report = tmpQueue.front();
 					tmpQueue.pop();
 
-					this->parseRobotReport(report);
+					if (m_nDeviceType == DONGLE)
+						this->parseDongleReport(report);
+					else
+						this->parseRobotReport(report);
 				}
 			}
 			break;
@@ -505,19 +555,19 @@ LRESULT CUSBHelperDlg::OnClick(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButtonVote()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_bNode)
-		GetInstance()->Send(SyncStart);
-	else
+	if (m_nDeviceType == GATEWAY)
 		GetInstance()->Send(VoteStart);
+	else
+		GetInstance()->Send(SyncStart);
 }
 
 void CUSBHelperDlg::OnBnClickedButtonVoteOff()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_bNode)
-		GetInstance()->Send(SyncEnd);
-	else
+	if (m_nDeviceType == GATEWAY)
 		GetInstance()->Send(VoteEnd);
+	else
+		GetInstance()->Send(SyncEnd);
 }
 
 void CUSBHelperDlg::OnBnClickedButtonVoteClear()
@@ -646,7 +696,8 @@ void CUSBHelperDlg::OnBnClickedButton3Set()
 	GetDlgItem(IDC_EDIT_CLASS)->GetWindowText(strClass);
 	CString strDevice;
 	GetDlgItem(IDC_EDIT_DEV)->GetWindowText(strDevice);
-	CSettingDlg dlg(strCustom,strClass,strDevice,m_bNode);
+	BOOL bNode = (m_nDeviceType == NODE) ? TRUE : FALSE;
+	CSettingDlg dlg(strCustom,strClass,strDevice,bNode);
 	if (IDOK == dlg.DoModal())
 	{
 		dlg.GetSettingInfo(strCustom,strClass,strDevice);
@@ -668,8 +719,15 @@ void CUSBHelperDlg::OnBnClickedButton3Update()
 		CString str;
 		GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 		m_pDlg->ResetUI();
+		m_pDlg->SetUpgradeType(m_nDeviceType);
+		if (m_nDeviceType == DONGLE)
+		{
+			CString strSlave;
+			GetDlgItem(IDC_STATIC_VERSION_SLAVE)->GetWindowText(strSlave);
+			str += _T("_");
+			str += strSlave;
+		}
 		m_pDlg->SetVersion(str);
-		m_pDlg->SetUpgradeType(m_bNode);
 		m_pDlg->CenterWindow(this);
 		m_pDlg->ShowWindow(SW_SHOWDEFAULT);
 	}
@@ -680,10 +738,16 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 	switch(lParam)
 	{
 	case START_UPADTE_GATEWAY:
-			GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"");
+		GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"");
 		break;
 	case START_UPADTE_NODE:
-			GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),WideStrToMultiStr(m_strFileBle.GetBuffer()));
+		GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),WideStrToMultiStr(m_strFileBle.GetBuffer()));
+		break;
+	case START_UPADTE_DONGLE:
+		{
+			m_nDongleUpdateType = wParam;
+			GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),(const char*)wParam);
+		}
 		break;
 	case STOP_UPDATE_GATEWAY:
 	case STOP_UPDATE_NODE:
@@ -721,6 +785,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 {
 	switch(lParam)
 	{
+	case ROBOT_DONGLE_RAW_RESULT://校验结果
 	case ROBOT_GATEWAY_REBOOT:
 		{
 			if (m_pDlg->IsWindowVisible())
@@ -730,7 +795,15 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 					AfxMessageBox(_T("升级成功！"));
 				else
 					AfxMessageBox(_T("升级失败！"));
-				resetDevice();
+				if (m_nDongleUpdateType == SLAVE_MCU)
+				{
+					GetInstance()->Send(UpdateStop);
+				}
+				else if (m_nDongleUpdateType == DONGLE_BLE)
+				{
+				}
+				else
+					resetDevice();
 			}
 		}
 		break;
@@ -1144,4 +1217,251 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	default:						
 		break;
 	}
+}
+
+void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
+{
+	switch(report.cmd_id)
+	{
+		case ROBOT_GATEWAY_STATUS://获取状态
+			{
+				int nStatus = report.payload[0];
+				int nMode = report.payload[1];
+				if (nMode == 1)
+				{
+					switch(nStatus)
+					{
+					case BLE_STANDBY:
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+						break;
+					case BLE_SCANNING:			//正在扫描	
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
+						break;	
+					case BLE_CONNECTING:		//连接中
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTING"));
+						break;	
+					case BLE_CONNECTED:			//连接成功
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTED"));
+						break;
+					case BLE_ACTIVE_DISCONNECT://正在断开链接
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_ACTIVE_DISCONNECT"));
+						break;
+					case BLE_RECONNECTING:		//重新连接
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_RECONNECTING"));
+						break;
+					case BLE_LINK_BREAKOUT:		//蓝牙正在升级中
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_LINK_BREAKOUT"));
+						break;
+					case BLE_DFU_START:			//蓝牙dfu模式
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_DFU_START"));
+						break;
+					default:
+						{
+							CString str;
+							str.Format(_T("UNKNOW:%d"),nStatus);
+							GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+						}
+						break;
+					}
+				}
+				else if (nMode == 2)
+				{
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DONGLE_DFU"));
+				}
+			}
+			break;
+		case ROBOT_DONGLE_VERSION:
+			{
+				ST_VERSION version[2] = {0};
+				memcpy(&version,report.payload,sizeof(version));
+
+				CString str;
+				str.Format(_T("%d.%d.%d.%d_%d.%d.%d.%d"),
+					version[0].version4,version[0].version3,version[0].version2,version[0].version
+					,version[1].version4,version[1].version3,version[1].version2,version[1].version);
+				GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+			}
+			break;
+		case ROBOT_DONGLE_SCAN_RES:
+			{
+				ST_BLE_DEVICE device = {0};
+				memcpy(&device,report.payload,sizeof(device));
+				
+				const unsigned char* pDevName  = device.device_name;
+
+				unsigned char szMac[25] = {0};
+				sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",device.addr[0],device.addr[1],device.addr[2],device.addr[3],device.addr[4],device.addr[5]);
+
+				std::string strName = (char*)pDevName;
+				std::string strMac = (char*)szMac;
+				AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());
+			}
+			break;
+		case ROBOT_USB_PACKET:
+			{
+				PEN_INFO penInfo = {0};
+				memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
+
+				penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
+
+				TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+
+				m_list[0]->AddData(penInfo);
+			}
+			break;
+		case ROBOT_SLAVE_STATUS:
+			{
+				ROBOT_STATUS status = {0};
+				memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
+				switch(status.device_status)
+				{
+				case DEVICE_POWER_OFF:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_POWER_OFF"));
+					break;
+				case DEVICE_STANDBY:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_STANDBY"));
+					break;
+				case DEVICE_INIT_BTN:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_INIT_BTN"));
+					break;
+				case DEVICE_OFFLINE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OFFLINE"));
+					break;
+				case DEVICE_ACTIVE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_ACTIVE"));
+					break;
+				case DEVICE_LOW_POWER_ACTIVE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_LOW_POWER_ACTIVE"));
+					break;
+				case DEVICE_OTA_MODE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_MODE"));
+					break;
+				case DEVICE_OTA_WAIT_SWITCH:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_WAIT_SWITCH"));
+					break;
+				case DEVICE_TRYING_POWER_OFF:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_TRYING_POWER_OFF"));
+					break;
+				case DEVICE_FINISHED_PRODUCT_TEST:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_FINISHED_PRODUCT_TEST"));
+					break;
+				case DEVICE_SYNC_MODE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_SYNC_MODE"));
+					break;
+				default:							break;
+				}
+			}
+			break;
+		case ROBOT_SLAVE_VERSION:
+			{
+				ST_VERSION version = {0};
+				memcpy(&version,report.payload+2,sizeof(version));
+				CString str;
+				str.Format(_T("%d.%d.%d.%d"),version.version4,version.version3,version.version2,version.version);
+				GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(str);
+			}
+			break;
+		case ROBOT_SLAVE_ERROR:
+			{
+				int nError = report.payload[0];
+				switch(nError)
+				{
+				case ERROR_SLAVE_NONE:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_SLAVE_NONE"));
+					break;
+				case ERROR_OTA_FLOW_NUM:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_FLOW_NUM"));
+					break;
+				case ERROR_OTA_LEN:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_LEN"));
+					break;
+				case ERROR_OTA_CHECKSUM:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_CHECKSUM"));
+					break;
+				case ERROR_OTA_STATUS:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_STATUS"));
+					break;
+				case ERROR_OTA_VERSION:
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_VERSION"));
+					break;
+				}
+			}
+			break;
+		case ROBOT_DONGLE_FIRMWARE_DATA:
+			m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
+			break;			
+		case ROBOT_DONGLE_RAW_RESULT://校验结果
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+			break;
+		case ROBOT_DEVICE_CHANGE://设备改变
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+			break;	
+		default:
+			break;
+	}
+}
+
+void CUSBHelperDlg::OnBnClickedButtonScan()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+	if (NULL == pListView)
+		return;
+	pListView->DeleteAllItems();
+
+	GetInstance()->Send(DongleScanStart);
+}
+
+void CUSBHelperDlg::OnBnClickedButtonScanStop()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(DongleScanStop);
+}
+
+void CUSBHelperDlg::OnBnClickedButtonConnect()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetFirstSelectedItemPosition();
+	if (pos == nullptr)
+	{
+		MessageBox(_T("请先选中设备!"), _T("提示"), IDOK);
+		return;
+	}
+
+	int nItem = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetNextSelectedItem(pos);
+	CString strNum = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 0);
+
+	int nNum = atoi(WideStrToMultiStr(strNum.GetBuffer()));
+
+	GetInstance()->ConnectSlave(nNum);
+}
+
+void CUSBHelperDlg::OnBnClickedButtonDisconnect()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(DongleDisconnect);
+}
+
+void CUSBHelperDlg::AddSlaveList(int nNum,const CString &strName,const CString &strMac)
+{
+	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+	if (NULL == pListView)
+		return;
+	int nIndex = pListView->GetItemCount();
+
+	for (int i=0;i<nIndex;i++)
+	{
+		CString strNum = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nIndex, 0);
+		int num = atoi(WideStrToMultiStr(strNum.GetBuffer()));
+		if (num == nNum)
+		{
+			return;
+		}
+	}
+
+	CString strID;
+	strID.Format(_T("%d"),nNum);
+	pListView->InsertItem(nIndex,strID);
+	pListView->SetItemText(nIndex,1,strName);
+	pListView->SetItemText(nIndex,2,strMac);
 }

@@ -60,7 +60,7 @@ public:
 private:
 	std::vector<CDrawDlg*> m_list;
 	CUpdateDlg *m_pDlg;
-	bool m_bNode;
+	int m_nDeviceType;
 private:
 	CRITICAL_SECTION m_sectionLock;
 	std::queue<ROBOT_REPORT> m_queueData;
@@ -75,6 +75,8 @@ private:
 	int m_nLastStatus;
 	int m_nLastMode;
 	int m_nNoteNum;
+	//dongle…˝º∂¿‡–Õ
+	int m_nDongleUpdateType;
 public:
 	afx_msg void OnBnClickedButton3Update();
 	afx_msg LRESULT OnUpdate(WPARAM wParam, LPARAM lParam);
@@ -85,10 +87,17 @@ public:
 	void InitListCtrl();
 	void AddList();
 	void GetTime();
+	void AddSlaveList(int nNum,const CString &strName,const CString &strMac);
 protected:
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
 	static void CALLBACK getUsbData(const unsigned char *pData,int len,void *pContext);
 	void setUsbData(const unsigned char *pData);
 	void parseRobotReport(const ROBOT_REPORT &report);
+	void parseDongleReport(const ROBOT_REPORT &report);
+public:
+	afx_msg void OnBnClickedButtonScan();
+	afx_msg void OnBnClickedButtonConnect();
+	afx_msg void OnBnClickedButtonScanStop();
+	afx_msg void OnBnClickedButtonDisconnect();
 };
