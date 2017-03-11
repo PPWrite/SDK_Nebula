@@ -315,9 +315,13 @@ void CUSBHelperDlg::AddList()
 
 	pListView->DeleteAllItems();
 
-	std::vector<USB_INFO> vecUsbInfo;
-	int nCount = GetInstance()->GetAvailableDevice(vecUsbInfo);
-
+	DWORD dwAddress = GetInstance()->GetAvailableDevice();
+	std::vector<USB_INFO>* pVecUsbInfo = (std::vector<USB_INFO>*)dwAddress;
+	if (pVecUsbInfo == NULL)
+	{
+		return;
+	}
+	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;
 	for (int i=0;i<vecUsbInfo.size();i++)
 	{
 		int nIndex = pListView->GetItemCount();
