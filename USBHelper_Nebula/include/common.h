@@ -83,36 +83,36 @@ enum NODE_STATUS
 enum ROBOT_NEBULA_TYPE
 {
 	ROBOT_GATEWAY_STATUS			= 0x00,		//获取状态
-	ROBOT_ENTER_VOTE				= 0x01,		//进入投票模式
-	ROBOT_EXIT_VOTE					= 0x02,		//退出投票模式
-	ROBOT_ENTER_BIG_DATA			= 0x03,		//进入大数据模式
-	ROBOT_BIG_DATA_REPORT			= 0x04,		//大数据上报
-	ROBOT_EXIT_BIG_DATA				= 0x05,		//退出大数据模式
-	ROBOT_GATEWAY_ERROR				= 0x06,		//错误
-	ROBOT_NODE_MODE					= 0x07,		//设备服务模式
-	ROBOT_SET_DEVICE_NUM			= 0x10,		//设置设备网络号
-	ROBOT_ENTER_DFU					= 0x11,		//进入dfu模式
-	ROBOT_FIRMWARE_LEN				= 0x12,		//获取固件长度
-	ROBOT_FIRMWARE_DATA				= 0x13,		//获取固件信息
-	ROBOT_FIRMWARE_CHECK_SUM		= 0x14,		//获取校验和
-	ROBOT_RAW_RESULT				= 0x15,		//校验结果
-	ROBOT_GATEWAY_REBOOT			= 0x16,		//设备重启
-	ROBOT_EXIT_DFU					= 0x17,		//退出dfu模式
-	ROBOT_GATEWAY_VERSION			= 0x18,		//设备版本号
-	ROBOT_ONLINE_STATUS				= 0x19,		//在线状态
-	ROBOT_DEVICE_CHANGE				= 0x20,		//设备改变
-	ROBOT_NODE_INFO					= 0x30,		//设备信息
-	ROBOT_NODE_ERROR				= 0x31,		//node错误
-	ROBOT_USB_PACKET				= 0x32,		//上传坐标
-	ROBOT_SET_RTC					= 0x33,		//设置RTC
-	ROBOT_KEY_PRESS					= 0x34,		//按键按下
-	ROBOT_SHOW_PAGE					= 0x36,		//显示页码		
-	ROBOT_ENTER_SYNC				= 0x40,		//进入sync模式
-	ROBOT_EXIT_SYNC					= 0x41,		//退出sync模式
-	ROBOT_GET_SYNC_HEAD				= 0x42,		//获取存储笔记包头
-	ROBOT_SYNC_TRANS_BEGIN			= 0x43,		//笔记传输命令开始
-	ROBOT_ORIGINAL_PACKET			= 0x44,		//原始笔记数据包
-	ROBOT_SYNC_TRANS_END			= 0x45,		//笔记传输命令结束
+	ROBOT_ENTER_VOTE,							//进入投票模式
+	ROBOT_EXIT_VOTE,							//退出投票模式
+	ROBOT_ENTER_BIG_DATA,						//进入大数据模式
+	ROBOT_BIG_DATA_REPORT,						//大数据上报
+	ROBOT_EXIT_BIG_DATA,						//退出大数据模式
+	ROBOT_GATEWAY_ERROR,						//错误
+	ROBOT_NODE_MODE,							//设备服务模式
+	ROBOT_SET_DEVICE_NUM,						//设置设备网络号
+	ROBOT_ENTER_DFU,							//进入dfu模式
+	ROBOT_FIRMWARE_LEN,							//获取固件长度
+	ROBOT_FIRMWARE_DATA,						//获取固件信息
+	ROBOT_FIRMWARE_CHECK_SUM,					//获取校验和
+	ROBOT_RAW_RESULT,							//校验结果
+	ROBOT_GATEWAY_REBOOT,						//设备重启
+	ROBOT_EXIT_DFU,								//退出dfu模式
+	ROBOT_GATEWAY_VERSION,						//设备版本号
+	ROBOT_ONLINE_STATUS,						//在线状态
+	ROBOT_DEVICE_CHANGE,						//设备改变
+	ROBOT_NODE_INFO,							//设备信息
+	ROBOT_NODE_ERROR,							//node错误
+	ROBOT_USB_PACKET,							//上传坐标
+	ROBOT_SET_RTC,								//设置RTC
+	ROBOT_KEY_PRESS,							//按键按下
+	ROBOT_SHOW_PAGE,							//显示页码		
+	ROBOT_ENTER_SYNC,							//进入sync模式
+	ROBOT_EXIT_SYNC,							//退出sync模式
+	ROBOT_GET_SYNC_HEAD,						//获取存储笔记包头
+	ROBOT_SYNC_TRANS_BEGIN,						//笔记传输命令开始
+	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
+	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
 };
 // 笔数据信息
 typedef struct sPenInfo
@@ -198,16 +198,6 @@ enum UPDATE_TYPE
 	DONGLE_BLE = 0,
 	DONGLE_MCU,
 	SLAVE_MCU,
-};
-
-enum SALVE_ERROR
-{
-	ERROR_SLAVE_NONE = 0,
-	ERROR_OTA_FLOW_NUM,
-	ERROR_OTA_LEN,
-	ERROR_OTA_CHECKSUM,
-	ERROR_OTA_STATUS,
-	ERROR_OTA_VERSION,
 };
 
 enum SALVE_ERROR

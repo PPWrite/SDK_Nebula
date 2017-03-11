@@ -1,7 +1,7 @@
 #pragma once
 #include "WBDlg.h"
 
-#define COUNT 35
+#define COUNT 40
 #define SPACE 5
 
  #define WM_CLICK WM_USER + 100

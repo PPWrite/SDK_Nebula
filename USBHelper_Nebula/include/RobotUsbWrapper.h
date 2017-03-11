@@ -23,7 +23,6 @@ enum cmdId
 	DongleScanStop,
 	DongleConncet,
 	DongleDisconnect,
-	DongleSlaveConfig,
 };
 
 //回调函数
@@ -46,8 +45,8 @@ public:
 	virtual bool Update(const char *fileNameMcu,const char *fileNameBle) = 0;
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
-	// 返回所有可用设备集合的地址句柄
-	virtual DWORD GetAvailableDevice() = 0;
+	//获取可用设备
+	virtual int GetAvailableDevice(std::vector<USB_INFO>& vecUsbInfo) = 0;
 	//根据PID和VID打开设备
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
 	//连接蓝牙设备

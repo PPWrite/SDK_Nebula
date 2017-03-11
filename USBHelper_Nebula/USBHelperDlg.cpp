@@ -13,7 +13,9 @@
 #define new DEBUG_NEW
 #endif
 
-
+//#define _GATEWAY
+//#define _NODE
+#define _DONGLE
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -206,8 +208,6 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	// TODO: 在此添加额外的初始化代码
 	//MoveWindow(0,0,1600,900);
-	this->ShowWindow(SW_MAXIMIZE);
-
 	InitListCtrl();
 
 	resetUI();
@@ -220,6 +220,58 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	AddList();
 
 	AfxBeginThread(ThreadProc,this);
+
+#ifdef _GATEWAY
+	this->ShowWindow(SW_MAXIMIZE);
+	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_LIST_SLAVE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SCAN)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SCAN_STOP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_CONNECT)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_DISCONNECT)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_SLAVE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_SLAVE_VERSION)->ShowWindow(SW_HIDE);
+#endif
+#ifdef _NODE
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_MS)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_MS_OFF)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_MS_CLEAR)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_LIST_SLAVE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SCAN)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SCAN_STOP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_CONNECT)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_DISCONNECT)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_SLAVE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_SLAVE_VERSION)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
+	GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
+#endif
+#ifdef _DONGLE
+	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_MS)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_MS_OFF)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_MS_CLEAR)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
+	GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
+
+	GetDlgItem(IDC_BUTTON_VOTE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON3_SET)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_CUS)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_CUSTOM)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_CLASS)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
+#endif
 
 	GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
 
@@ -315,13 +367,15 @@ void CUSBHelperDlg::AddList()
 
 	pListView->DeleteAllItems();
 
-	DWORD dwAddress = GetInstance()->GetAvailableDevice();
+	/*DWORD dwAddress = GetInstance()->GetAvailableDevice();
 	std::vector<USB_INFO>* pVecUsbInfo = (std::vector<USB_INFO>*)dwAddress;
 	if (pVecUsbInfo == NULL)
 	{
 		return;
 	}
-	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;
+	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;//*/
+	std::vector<USB_INFO> vecUsbInfo;
+	GetInstance()->GetAvailableDevice(vecUsbInfo);
 	for (int i=0;i<vecUsbInfo.size();i++)
 	{
 		int nIndex = pListView->GetItemCount();
@@ -631,7 +685,11 @@ void CUSBHelperDlg::CreateChart(int nHStart)
 	int nColumn = 0;
 	CRect rect;
 	this->GetClientRect(&rect);
+#ifdef _GATEWAY
 	int nMaxNum = GetPrivateProfileInt(_T("General"),_T("MaxNum"),60,GetAppPath() + _T("\\USBHelper.ini"));
+#else
+	int nMaxNum = 1; 
+#endif
 	while(true)
 	{
 		nItemSize -= 5;
