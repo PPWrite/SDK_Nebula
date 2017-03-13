@@ -21,7 +21,6 @@ enum cmdId
 	GetConfig,
 	DongleScanStart,
 	DongleScanStop,
-	DongleConncet,
 	DongleDisconnect,
 };
 
@@ -42,7 +41,7 @@ public:
 	//发送命令
 	virtual void Send(cmdId nCmd) = 0;
 	//升级
-	virtual bool Update(const char *fileNameMcu,const char *fileNameBle) = 0;
+	virtual bool Update(const char *fileName,const char *fileOther) = 0;
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
 	//获取可用设备
@@ -52,7 +51,7 @@ public:
 	//连接蓝牙设备
 	virtual void ConnectSlave(int nID) = 0;
 	//设置蓝牙名称
-	virtual void SetSlaveName(const std::string &strName) = 0;
+	virtual void SetSlaveName(const char *name) = 0;
 };
 
 
@@ -68,11 +67,15 @@ public:
 	//发送命令
 	extern "C" DECLDIR void  Send(cmdId nCmd);
 	//升级
-	extern "C" DECLDIR void  Update( const char *fileNameMcu,const char *fileNameBle );
+	extern "C" DECLDIR void  Update( const char *fileName,const char *fileOther );
 	//设置
 	extern "C" DECLDIR void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
 	//根据PID和VID打开设备
 	extern "C" DECLDIR int  Open(int nVid,int nPid,bool bAll = true);
+	//连接蓝牙设备
+	extern "C" DECLDIR void ConnectSlave(int nID);
+	//设置蓝牙名称
+	extern "C" DECLDIR void SetSlaveName(const char *name);
 
 extern "C" 
 {

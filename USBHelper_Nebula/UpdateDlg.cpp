@@ -306,6 +306,8 @@ void CUpdateDlg::SetUpgradeType(int nDeviceType)
 		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(TRUE);
 		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(FALSE);
 	}
+	else
+		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(FALSE);
 }
 
 void CUpdateDlg::ResetUI()
