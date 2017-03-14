@@ -13,8 +13,8 @@
 #define new DEBUG_NEW
 #endif
 
-//#define _GATEWAY
-#define _NODE
+#define _GATEWAY
+//#define _NODE
 //#define _DONGLE
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -208,20 +208,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-	//MoveWindow(0,0,1600,900);
-	InitListCtrl();
-
-	resetUI();
-	//AfxBeginThread(ThreadProc,this);
-	m_pDlg = new CUpdateDlg;
-	m_pDlg->Create(IDD_UPDATEDLG);
-
-	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：0310"));
-
-	AddList();
-
-	AfxBeginThread(ThreadProc,this);
-
+	//MoveWindow(0,0,1600,900)
 #ifdef _GATEWAY
 	this->ShowWindow(SW_MAXIMIZE);
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -280,6 +267,18 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 #endif
+	InitListCtrl();
+
+	resetUI();
+	//AfxBeginThread(ThreadProc,this);
+	m_pDlg = new CUpdateDlg;
+	m_pDlg->Create(IDD_UPDATEDLG);
+
+	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：0310"));
+
+	AddList();
+
+	AfxBeginThread(ThreadProc,this);
 
 	GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
 
@@ -375,15 +374,15 @@ void CUSBHelperDlg::AddList()
 
 	pListView->DeleteAllItems();
 
-	/*DWORD dwAddress = GetInstance()->GetAvailableDevice();
+	DWORD dwAddress = GetInstance()->GetAvailableDevice();
 	std::vector<USB_INFO>* pVecUsbInfo = (std::vector<USB_INFO>*)dwAddress;
 	if (pVecUsbInfo == NULL)
 	{
 		return;
 	}
 	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;//*/
-	std::vector<USB_INFO> vecUsbInfo;
-	GetInstance()->GetAvailableDevice(vecUsbInfo);
+	/*std::vector<USB_INFO> vecUsbInfo;
+	GetInstance()->GetAvailableDevice(vecUsbInfo);//*/
 	for (int i=0;i<vecUsbInfo.size();i++)
 	{
 		int nIndex = pListView->GetItemCount();

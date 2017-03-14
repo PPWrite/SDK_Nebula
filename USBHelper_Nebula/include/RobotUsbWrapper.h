@@ -45,7 +45,7 @@ public:
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
 	//获取可用设备
-	virtual int GetAvailableDevice(std::vector<USB_INFO>& vecUsbInfo) = 0;
+	virtual DWORD GetAvailableDevice() = 0;
 	//根据PID和VID打开设备
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
 	//连接蓝牙设备
