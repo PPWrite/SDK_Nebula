@@ -31,7 +31,7 @@ class RobotPenController
 {
 public:
 	//初始化设备连接
-	virtual void ConnectInitialize(int nDeviceType, UsbDataCallback_t pCallback = NULL, void *pContext = NULL) = 0;
+	virtual void ConnectInitialize(int nDeviceType,bool bTransform = false,UsbDataCallback_t pCallback = NULL, void *pContext = NULL) = 0;
 	//开启设备连接，成功后将自动开启数据接收
 	virtual int  ConnectOpen() = 0;
 	//关闭设备连接，成功后将自动关闭数据接收
@@ -52,12 +52,14 @@ public:
 	virtual void ConnectSlave(int nID) = 0;
 	//设置蓝牙名称
 	virtual void SetSlaveName(const char *name) = 0;
+	//获取硬件大小
+	virtual bool GetDeviceSize(int nDeviceType, int &nDeviceWidth, int &nDeviceHeight) = 0;
 };
 
 
 
 	//初始化设备连接
-	extern "C" DECLDIR void  ConnectInitialize(int nDeviceType, IN UsbDataCallback_t pCallback, void *pContext);
+	extern "C" DECLDIR void  ConnectInitialize(int nDeviceType, bool bTransform, IN UsbDataCallback_t pCallback, void *pContext);
 	//开启设备连接，成功后将自动开启数据接收
 	extern "C" DECLDIR int   ConnectOpen();
 	//关闭设备连接，成功后将自动关闭数据接收
@@ -76,6 +78,8 @@ public:
 	extern "C" DECLDIR void ConnectSlave(int nID);
 	//设置蓝牙名称
 	extern "C" DECLDIR void SetSlaveName(const char *name);
+	//获取硬件大小
+	extern "C" DECLDIR bool GetDeviceSize(int nDeviceType, int &nDeviceWidth, int &nDeviceHeight);
 
 extern "C" 
 {

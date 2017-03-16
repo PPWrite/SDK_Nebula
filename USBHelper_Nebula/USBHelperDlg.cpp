@@ -280,7 +280,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	AfxBeginThread(ThreadProc,this);
 
-	GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
+	GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -433,17 +433,17 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if (nPid == GATEWAY_PID)
 	{
-		GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
+		GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 		m_nDeviceType = GATEWAY;
 	}
 	else if (nPid == NODE_PID)
 	{
-		GetInstance()->ConnectInitialize(NODE,getUsbData,this);
+		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
 		m_nDeviceType = NODE;
 	}
 	else 
 	{
-		GetInstance()->ConnectInitialize(DONGLE,getUsbData,this);
+		GetInstance()->ConnectInitialize(DONGLE,false,getUsbData,this);
 		m_nDeviceType = DONGLE;
 	}
 
