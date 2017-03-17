@@ -1,11 +1,22 @@
 #include <stdint.h>
 
 #define VID		0x0483
+#define VID_P1	0x0ED1
 
 enum
 {
 	GATEWAY_PID	=	0x6001,
 	NODE_PID	=	0x6002,
+	DONGLE_PID  =	0x5750,
+	P1_PID		=   0x7806,
+};
+
+enum eDeviceType
+{
+	GATEWAY = 0,
+	NODE,
+	DONGLE,
+	P1,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -128,13 +139,6 @@ typedef struct usb_info
 	unsigned short nVendorNum;    
 	unsigned short nProductNum;         
 }USB_INFO;
-
-enum eDeviceType
-{
-	GATEWAY = 0,
-	NODE,
-	DONGLE,
-};
 
 enum
 {

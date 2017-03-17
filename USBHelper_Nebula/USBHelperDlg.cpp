@@ -441,10 +441,15 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
 		m_nDeviceType = NODE;
 	}
-	else 
+	else if (nPid == DONGLE_PID)
 	{
 		GetInstance()->ConnectInitialize(DONGLE,false,getUsbData,this);
 		m_nDeviceType = DONGLE;
+	}
+	else if (nPid == P1_PID)
+	{
+		GetInstance()->ConnectInitialize(P1,false,getUsbData,this);
+		m_nDeviceType = P1;
 	}
 
 	int nRes = GetInstance()->ConnectOpen();
