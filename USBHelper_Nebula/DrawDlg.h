@@ -42,6 +42,7 @@ public:
 	void SetOnLine(bool bOn = false);
 	void SetText(CString str = _T(""));
 	void SetVote(CString strVote = _T(""));
+	void SetPage(CString strPage = _T(""));
 	CString GetText(){return m_strText;}
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();

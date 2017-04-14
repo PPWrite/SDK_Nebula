@@ -58,8 +58,11 @@ public:
 	void readIni();
 	void ResetWindow();
 	PCHAR w2m(PWCHAR WideStr);
+	void SetPage(CString strPage);
 private:
 	int m_nWidth;
 	int m_nHeight;
 	int m_nState;
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

@@ -83,6 +83,7 @@ void CDrawDlg::OnPaint()
 	dcMem.SelectObject(font);
 	rc = CRect(0,rect.Height()-bottom,rect.Width()-bottom,rect.Height());
 	dcMem.DrawText(m_strText,rc,1);
+
 	//Ellipse
 	CBrush brush;
 	if(m_bOn)
@@ -223,6 +224,12 @@ void CDrawDlg::SetVote(CString strVote)
 	m_strVote = strVote;
 	this->Invalidate(FALSE);
 }
+
+void CDrawDlg::SetPage(CString strPage)
+{
+	m_pWBDlg->SetPage(strPage);
+}
+
 
 void CDrawDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
