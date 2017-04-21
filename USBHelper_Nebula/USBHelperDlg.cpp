@@ -381,7 +381,7 @@ void CUSBHelperDlg::AddList()
 
 	pListView->DeleteAllItems();
 
-	DWORD dwAddress = GetInstance()->GetAvailableDevice();
+	/*DWORD dwAddress = GetInstance()->GetAvailableDevice();
 	std::vector<USB_INFO>* pVecUsbInfo = (std::vector<USB_INFO>*)dwAddress;
 	if (pVecUsbInfo == NULL)
 	{
@@ -390,7 +390,7 @@ void CUSBHelperDlg::AddList()
 	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;//*/
 	/*std::vector<USB_INFO> vecUsbInfo;
 	GetInstance()->GetAvailableDevice(vecUsbInfo);//*/
-	for (int i=0;i<vecUsbInfo.size();i++)
+	/*for (int i=0;i<vecUsbInfo.size();i++)
 	{
 		int nIndex = pListView->GetItemCount();
 		pListView->InsertItem(i,MultiCharToWideChar(vecUsbInfo[i].szDevName).c_str());
@@ -399,7 +399,24 @@ void CUSBHelperDlg::AddList()
 		pListView->SetItemText(nIndex,1,str);
 		str.Format(_T("%d"),vecUsbInfo[i].nProductNum);
 		pListView->SetItemText(nIndex,2,str);
+	}//*/
+
+	int nCount = GetInstance()->GetAvailableDeviceCount();
+	for (int i=0;i<nCount;i++)
+	{
+		USB_INFO usbInfo;
+		if (GetInstance()->GetAvailableDevice(i,usbInfo))
+		{
+			int nIndex = pListView->GetItemCount();
+			pListView->InsertItem(i,MultiCharToWideChar(usbInfo.szDevName).c_str());
+			CString str;
+			str.Format(_T("%d"),usbInfo.nVendorNum);
+			pListView->SetItemText(nIndex,1,str);
+			str.Format(_T("%d"),usbInfo.nProductNum);
+			pListView->SetItemText(nIndex,2,str);
+		}
 	}
+
 	if (pListView->GetItemCount() > 0)
 	{
 		pListView->SetItemState(0,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);

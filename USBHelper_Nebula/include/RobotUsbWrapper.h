@@ -136,8 +136,11 @@ public:
 	virtual bool Update(const char *fileName,const char *fileOther) = 0;
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
+	//获取可用设备总数
+	virtual int GetAvailableDeviceCount() = 0;
 	//获取可用设备
 	virtual DWORD GetAvailableDevice() = 0;
+	virtual bool GetAvailableDevice(int i,USB_INFO &usbInfo) = 0;
 	//根据PID和VID打开设备
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
 	//连接蓝牙设备
