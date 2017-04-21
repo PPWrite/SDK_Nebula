@@ -177,6 +177,10 @@ extern "C" DECLDIR void  Send(cmdId nCmd);
 extern "C" DECLDIR void  Update( const char *fileName,const char *fileOther );
 //设置
 extern "C" DECLDIR void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
+//获取可用设备总数
+extern "C" DECLDIR int GetAvailableDeviceCount();
+//获取可用设备
+extern "C" DECLDIR bool GetAvailableDevice(int i,USB_INFO &usbInfo);
 //根据PID和VID打开设备
 extern "C" DECLDIR int  Open(int nVid,int nPid,bool bAll = true);
 //连接蓝牙设备

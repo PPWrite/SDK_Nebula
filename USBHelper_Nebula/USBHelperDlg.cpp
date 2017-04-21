@@ -460,7 +460,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 		m_nDeviceType = GATEWAY;
 	}
-	else if (nPid == NODE_PID)
+	else if (nPid == NODE_PID || nPid == T9A_PID)
 	{
 		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
 		m_nDeviceType = NODE;

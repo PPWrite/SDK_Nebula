@@ -7,17 +7,18 @@ enum
 {
 	GATEWAY_PID	=	0x6001,
 	NODE_PID	=	0x6002,
+	T9A_PID		=	0x6003,
 	DONGLE_PID  =	0x5750,
 	P1_PID		=   0x7806,
 };
 
 enum eDeviceType
 {
-	UNKNOWN = 0,
-	GATEWAY,
+	GATEWAY = 0,
 	NODE,
 	DONGLE,
 	P1,
+	UNKNOWN,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
