@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CWBDlg, CDialog)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_SIZE()
 	ON_WM_NCDESTROY()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -601,4 +602,27 @@ PCHAR CWBDlg::w2m (PWCHAR WideStr)
 	}
 
 	return MultiStr;
+}
+
+HBRUSH CWBDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_PAGE)
+	{
+		pDC->SetBkColor(RGB(0,255,0));
+		//HBRUSH hbr = ::CreateSolidBrush(RGB(255,0,0));    
+		//return hbr;
+	}
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
+}
+
+void CWBDlg::SetPage(CString strPage)
+{
+	CString str;
+	GetDlgItem(IDC_STATIC_PAGE)->GetWindowText(str);
+	if (str != strPage)
+		GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(strPage);
 }

@@ -81,26 +81,42 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 
 	if(dlg.DoModal() == IDOK)  
 	{
-		GetDlgItem(IDC_EDIT_MCU)->SetWindowText(dlg.GetPathName());
-
-		CStringArray sArray;
 		CString strFileName = dlg.GetFileName();
+		if (m_nDeviceType == NODE)
+		{
+			if(strFileName.MakeLower().Find(_T("mcu")) < 0)
+			{
+				AfxMessageBox(_T("固件类型不匹配！"));
+				return;
+			}
+		}
+
+		GetDlgItem(IDC_EDIT_MCU)->SetWindowText(dlg.GetPathName());
+		CStringArray sArray;
 		SplitFields(strFileName.Left(strFileName.GetLength()-4),sArray,_T("_"));
 
-		if(sArray.GetCount() == 4)
+		if(sArray.GetCount() == 3)
 		{
-			m_version.version = atoi(WideCharToMultichar(sArray[2].GetBuffer()).c_str());
-			m_version.version2 = atoi(WideCharToMultichar(sArray[3].GetBuffer()).c_str());
+			CStringArray sArrayVersion;
+			SplitFields(sArray[2],sArrayVersion,_T("."));
 
-			CString str;
-			str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
-			GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
-		}
-		else if(sArray.GetCount() == 6)
-		{
-			CString str;
-			str.Format(_T("%s.%s.%s.%s"),sArray[2],sArray[3],sArray[4],sArray[5]);
-			GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			if(sArrayVersion.GetCount() == 2)
+			{
+				m_version.version = atoi(WideCharToMultichar(sArrayVersion[0].GetBuffer()).c_str());
+				m_version.version2 = atoi(WideCharToMultichar(sArrayVersion[1].GetBuffer()).c_str());
+
+				CString str;
+				str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
+				GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			}
+			else if(sArrayVersion.GetCount() == 4)
+			{
+				CString str;
+				str.Format(_T("%s.%s.%s.%s"),sArrayVersion[0],sArrayVersion[1],sArrayVersion[2],sArrayVersion[3]);
+				GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			}
+			else
+				AfxMessageBox(_T("文件格式不匹配！"));
 		}
 		else
 		{
@@ -117,20 +133,36 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 
 	if(dlg.DoModal() == IDOK)  
 	{  
-		GetDlgItem(IDC_EDIT_BT)->SetWindowText(dlg.GetPathName());
-
-		CStringArray sArray;
 		CString strFileName = dlg.GetFileName();
+		if (m_nDeviceType == NODE)
+		{
+			if(strFileName.MakeLower().Find(_T("ble")) < 0)
+			{
+				AfxMessageBox(_T("固件类型不匹配！"));
+				return;
+			}
+		}
+
+		GetDlgItem(IDC_EDIT_BT)->SetWindowText(dlg.GetPathName());
+		CStringArray sArray;
 		SplitFields(strFileName.Left(strFileName.GetLength()-4),sArray,_T("_"));
 
-		if(sArray.GetCount() == 4)
+		if(sArray.GetCount() == 3)
 		{
-			m_version.version3 = atoi(WideCharToMultichar(sArray[2].GetBuffer()).c_str());
-			m_version.version4 = atoi(WideCharToMultichar(sArray[3].GetBuffer()).c_str());
+			CStringArray sArrayVersion;
+			SplitFields(sArray[2],sArrayVersion,_T("."));
 
-			CString str;
-			str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
-			GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			if(sArrayVersion.GetCount() == 2)
+			{
+				m_version.version3 = atoi(WideCharToMultichar(sArrayVersion[0].GetBuffer()).c_str());
+				m_version.version4 = atoi(WideCharToMultichar(sArrayVersion[1].GetBuffer()).c_str());
+
+				CString str;
+				str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
+				GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			}
+			else
+				AfxMessageBox(_T("文件格式不匹配！"));
 		}
 		else
 		{

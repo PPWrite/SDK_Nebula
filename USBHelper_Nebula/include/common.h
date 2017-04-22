@@ -1,11 +1,24 @@
 #include <stdint.h>
 
-#define VID		0x0483
+#define NEBULA_VID		0x0483
+#define P1_VID			0x0ED1
 
 enum
 {
 	GATEWAY_PID	=	0x6001,
 	NODE_PID	=	0x6002,
+	T9A_PID		=	0x6003,
+	DONGLE_PID  =	0x5750,
+	P1_PID		=   0x7806,
+};
+
+enum eDeviceType
+{
+	GATEWAY = 0,
+	NODE,
+	DONGLE,
+	P1,
+	UNKNOWN,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -38,7 +51,16 @@ typedef struct st_device_info
 	uint8_t  custom_num;
 	uint8_t  class_num;
 	uint8_t  device_num;
+	uint8_t  mac[6];
+
 }ST_DEVICE_INFO;
+
+typedef struct st_option_packet
+{
+	uint8_t id;
+	uint8_t option[6];
+
+}ST_OPTION_PACKET;
 
 #pragma pack()
 
@@ -57,10 +79,13 @@ enum NEBULA_ERROR
 enum GATEWAY_STATUS
 {
 	NEBULA_STATUS_OFFLINE = 0,
-	NEBULA_STATUS_STANDBY,         
-	NEBULA_STATUS_VOTE,             
-	NEBULA_STATUS_MASSDATA,         
-	NEBULA_STATUS_END,           
+	NEBULA_STATUS_STANDBY,
+	NEBULA_STATUS_VOTE,
+	NEBULA_STATUS_MASSDATA,
+	NEBULA_STATUS_CONFIG,
+	NEBULA_STATUS_DFU,
+	NEBULA_STATUS_MULTI_VOTE,
+	NEBULA_STATUS_END,              
 };
 
 enum NODE_STATUS
@@ -84,8 +109,10 @@ enum ROBOT_NEBULA_TYPE
 	ROBOT_GATEWAY_STATUS			= 0x00,		//获取状态
 	ROBOT_ENTER_VOTE,							//进入投票模式
 	ROBOT_EXIT_VOTE,							//退出投票模式
+	ROBOT_EXIT_VOTE_MULIT,						//多选投票模式
 	ROBOT_ENTER_BIG_DATA,						//进入大数据模式
 	ROBOT_BIG_DATA_REPORT,						//大数据上报
+	ROBOT_PAGE_NO,								//页码显示
 	ROBOT_EXIT_BIG_DATA,						//退出大数据模式
 	ROBOT_GATEWAY_ERROR,						//错误
 	ROBOT_NODE_MODE,							//设备服务模式
@@ -128,13 +155,6 @@ typedef struct usb_info
 	unsigned short nVendorNum;    
 	unsigned short nProductNum;         
 }USB_INFO;
-
-enum eDeviceType
-{
-	GATEWAY = 0,
-	NODE,
-	DONGLE,
-};
 
 enum
 {
