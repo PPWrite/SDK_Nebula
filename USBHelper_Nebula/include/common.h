@@ -8,7 +8,7 @@ enum
 	GATEWAY_PID	=	0x6001,
 	NODE_PID	=	0x6002,
 	T9A_PID		=	0x6003,
-	DONGLE_PID  =	0x5750,
+	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
 
@@ -211,7 +211,8 @@ enum ROBOT_DONGLE_TYPE
 	ROBOT_SLAVE_STATUS,						//slave状态
 	ROBOT_SLAVE_VERSION,					//slave版本
 	ROBOT_DONGLE_PACKET,					//坐标数据
-	//ROBOT_DEVICE_CHANGE,					//设备改变
+	ROBOT_SLAVE_SYNC_BEGIN,					//获取存储笔记包头
+	ROBOT_SLAVE_SYNC_END,					//结束同步
 };
 
 enum UPDATE_TYPE

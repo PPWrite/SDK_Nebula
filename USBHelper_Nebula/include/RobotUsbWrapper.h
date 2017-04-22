@@ -9,13 +9,13 @@
 #include "common.h"
 #endif
 
-enum cmdId
+enum eRbtType
 {
-	VoteStart = 0,
+	VoteBegin = 0,
 	VoteEnd,
-	WriteStart,
+	WriteBegin,
 	WriteEnd,
-	SyncStart,
+	SyncBegin,
 	SyncEnd,
 	UpdateStop,
 	GetConfig,
@@ -172,7 +172,7 @@ extern "C" DECLDIR void  ConnectDispose();
 //判断设备是否处于连接状态
 extern "C" DECLDIR bool  IsConnected();
 //发送命令
-extern "C" DECLDIR void  Send(cmdId nCmd);
+extern "C" DECLDIR void  Send(int nCmd);
 //升级
 extern "C" DECLDIR void  Update( const char *fileName,const char *fileOther );
 //设置

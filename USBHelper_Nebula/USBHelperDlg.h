@@ -101,4 +101,6 @@ public:
 	afx_msg void OnBnClickedButtonScanStop();
 	afx_msg void OnBnClickedButtonDisconnect();
 	afx_msg void OnBnClickedButtonSetName();
+	afx_msg void OnBnClickedButtonSyncStop();
+	afx_msg void OnBnClickedButtonSyncStart();
 };

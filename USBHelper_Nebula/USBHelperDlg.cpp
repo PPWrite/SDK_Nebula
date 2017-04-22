@@ -13,9 +13,9 @@
 #define new DEBUG_NEW
 #endif
 
-#define _GATEWAY
+//#define _GATEWAY
 //#define _NODE
-//#define _DONGLE
+#define _DONGLE
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -173,6 +173,8 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SCAN_STOP, &CUSBHelperDlg::OnBnClickedButtonScanStop)
 	ON_BN_CLICKED(IDC_BUTTON_DISCONNECT, &CUSBHelperDlg::OnBnClickedButtonDisconnect)
 	ON_BN_CLICKED(IDC_BUTTON_SET_NAME, &CUSBHelperDlg::OnBnClickedButtonSetName)
+	ON_BN_CLICKED(IDC_BUTTON_SYNC_STOP, &CUSBHelperDlg::OnBnClickedButtonSyncStop)
+	ON_BN_CLICKED(IDC_BUTTON_SYNC_START, &CUSBHelperDlg::OnBnClickedButtonSyncStart)
 END_MESSAGE_MAP()
 
 
@@ -258,7 +260,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_BUTTON_VOTE)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);//*/
-	//GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_SHOW);
 
 	GetDlgItem(IDC_BUTTON3_SET)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_CUS)->ShowWindow(SW_HIDE);
@@ -276,7 +278,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	m_pDlg = new CUpdateDlg;
 	m_pDlg->Create(IDD_UPDATEDLG);
 
-	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：0310"));
+	GetDlgItem(IDC_STATIC_SV)->SetWindowText(_T("版本号：20170422"));
 
 	AddList();
 
@@ -665,12 +667,10 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 	if (m_nDeviceType == GATEWAY)
 	{
 		if (nIndex == 0)
-			GetInstance()->Send(VoteStart);
+			GetInstance()->Send(VoteBegin);
 		else
 			GetInstance()->VoteMulit();
 	}
-	else
-		GetInstance()->Send(SyncStart);
 }
 
 void CUSBHelperDlg::OnBnClickedButtonVoteOff()
@@ -696,7 +696,7 @@ void CUSBHelperDlg::OnBnClickedButtonVoteClear()
 void CUSBHelperDlg::OnBnClickedButton3Ms()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	GetInstance()->Send(WriteStart);
+	GetInstance()->Send(WriteBegin);
 }
 
 void CUSBHelperDlg::OnBnClickedButton3MsOff()
@@ -866,11 +866,15 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 	case START_UPADTE_DONGLE:
 		{
 			m_nDongleUpdateType = wParam;
-			GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),(const char*)wParam);
+			if (m_nDongleUpdateType == 1)
+				GetInstance()->Update(WideStrToMultiStr(m_strFileBle.GetBuffer()),(const char*)wParam);
+			else
+				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),(const char*)wParam);
 		}
 		break;
 	case STOP_UPDATE_GATEWAY:
 	case STOP_UPDATE_NODE:
+	case STOP_UPDATE_DONGLE:
 		GetInstance()->Send(UpdateStop);
 		break;
 	case SET_VERSION:
@@ -1439,13 +1443,12 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_DONGLE_VERSION:
 		{
-			ST_VERSION version[2] = {0};
+			ST_VERSION version = {0};
 			memcpy(&version,report.payload,sizeof(version));
 
 			CString str;
-			str.Format(_T("%d.%d.%d.%d_%d.%d.%d.%d"),
-				version[0].version4,version[0].version3,version[0].version2,version[0].version
-				,version[1].version4,version[1].version3,version[1].version2,version[1].version);
+			str.Format(_T("%d.%d.%d.%d"),version.version2,version.version,
+				version.version4,version.version3);
 			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
 		}
 		break;
@@ -1521,6 +1524,18 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			CString str;
 			str.Format(_T("离线笔记:%d条"),status.note_num);
 			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_SLAVE_SYNC_BEGIN:
+		{
+			CString str;
+			str.Format(_T("离线笔记:%d条"),report.reserved);
+			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_SLAVE_SYNC_END:
+		{
+			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("同步结束"));
 		}
 		break;
 	case ROBOT_SLAVE_VERSION:
@@ -1666,4 +1681,16 @@ void CUSBHelperDlg::OnBnClickedButtonSetName()
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->GetWindowText(str);
 
 	GetInstance()->SetSlaveName(WideCharToMultichar(str.GetBuffer()).c_str());
+}
+
+void CUSBHelperDlg::OnBnClickedButtonSyncStart()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(SyncBegin);
+}
+
+void CUSBHelperDlg::OnBnClickedButtonSyncStop()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(SyncEnd);
 }
