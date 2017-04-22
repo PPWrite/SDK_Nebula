@@ -73,14 +73,14 @@ PCHAR WideStrToMultiStr (PWCHAR WideStr)
 
 /*static std::wstring MultiCharToWideChar( std::string str )
 {
-	int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
-	TCHAR* buffer = new TCHAR[len + 1];
-	MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
-	buffer[len] = '\0';
-	std::wstring return_value;
-	return_value.append(buffer);
-	delete [] buffer;
-	return return_value;
+int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
+TCHAR* buffer = new TCHAR[len + 1];
+MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
+buffer[len] = '\0';
+std::wstring return_value;
+return_value.append(buffer);
+delete [] buffer;
+return return_value;
 }//*/
 
 class CAboutDlg : public CDialogEx
@@ -243,6 +243,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SET_NAME)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_COMBO1)->ShowWindow(SW_HIDE);
 #endif
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -266,6 +267,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_COMBO1)->ShowWindow(SW_HIDE);
 #endif
 	InitListCtrl();
 
@@ -281,6 +283,11 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	AfxBeginThread(ThreadProc,this);
 
 	GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
+
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
+
+	/*GetInstance()->SetFilterWidth(2);
+	GetInstance()->SetCanvasSize(960,669);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -374,7 +381,7 @@ void CUSBHelperDlg::AddList()
 
 	pListView->DeleteAllItems();
 
-	DWORD dwAddress = GetInstance()->GetAvailableDevice();
+	/*DWORD dwAddress = GetInstance()->GetAvailableDevice();
 	std::vector<USB_INFO>* pVecUsbInfo = (std::vector<USB_INFO>*)dwAddress;
 	if (pVecUsbInfo == NULL)
 	{
@@ -383,7 +390,7 @@ void CUSBHelperDlg::AddList()
 	std::vector<USB_INFO>& vecUsbInfo  = *pVecUsbInfo;//*/
 	/*std::vector<USB_INFO> vecUsbInfo;
 	GetInstance()->GetAvailableDevice(vecUsbInfo);//*/
-	for (int i=0;i<vecUsbInfo.size();i++)
+	/*for (int i=0;i<vecUsbInfo.size();i++)
 	{
 		int nIndex = pListView->GetItemCount();
 		pListView->InsertItem(i,MultiCharToWideChar(vecUsbInfo[i].szDevName).c_str());
@@ -392,7 +399,24 @@ void CUSBHelperDlg::AddList()
 		pListView->SetItemText(nIndex,1,str);
 		str.Format(_T("%d"),vecUsbInfo[i].nProductNum);
 		pListView->SetItemText(nIndex,2,str);
+	}//*/
+
+	int nCount = GetInstance()->GetAvailableDeviceCount();
+	for (int i=0;i<nCount;i++)
+	{
+		USB_INFO usbInfo;
+		if (GetInstance()->GetAvailableDevice(i,usbInfo))
+		{
+			int nIndex = pListView->GetItemCount();
+			pListView->InsertItem(i,MultiCharToWideChar(usbInfo.szDevName).c_str());
+			CString str;
+			str.Format(_T("%d"),usbInfo.nVendorNum);
+			pListView->SetItemText(nIndex,1,str);
+			str.Format(_T("%d"),usbInfo.nProductNum);
+			pListView->SetItemText(nIndex,2,str);
+		}
 	}
+
 	if (pListView->GetItemCount() > 0)
 	{
 		pListView->SetItemState(0,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
@@ -418,7 +442,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		/*int nRes = GetInstance()->Open(0x0ED1,0x781E);
 		ASSERT(nRes == 0);
 		if(nRes == 0)
-			GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
+		GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
 		return;//*/
 		MessageBox(_T("请先选中设备!"), _T("提示"), IDOK);
 		return;
@@ -436,15 +460,20 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 		m_nDeviceType = GATEWAY;
 	}
-	else if (nPid == NODE_PID)
+	else if (nPid == NODE_PID || nPid == T9A_PID )
 	{
 		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
 		m_nDeviceType = NODE;
 	}
-	else 
+	else if (nPid == DONGLE_PID)
 	{
 		GetInstance()->ConnectInitialize(DONGLE,false,getUsbData,this);
 		m_nDeviceType = DONGLE;
+	}
+	else if (nPid == P1_PID)
+	{
+		GetInstance()->ConnectInitialize(P1,false,getUsbData,this);
+		m_nDeviceType = P1;
 	}
 
 	int nRes = GetInstance()->ConnectOpen();
@@ -465,6 +494,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(!bShow);
 	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(!bShow);
+	GetDlgItem(IDC_COMBO1)->ShowWindow(bShow);
 
 	if(m_nDeviceType == GATEWAY)
 	{
@@ -622,8 +652,23 @@ LRESULT CUSBHelperDlg::OnClick(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButtonVote()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	/*ROBOT_REPORT report = {0};
+	report.cmd_id = ROBOT_PAGE_NO;
+	report.reserved = 0;
+	uint16_t r = rand()%999;
+	memcpy(&report.payload,&r,sizeof(uint16_t));
+	parseRobotReport(report);
+	return;//*/
+
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCurSel();
+
 	if (m_nDeviceType == GATEWAY)
-		GetInstance()->Send(VoteStart);
+	{
+		if (nIndex == 0)
+			GetInstance()->Send(VoteStart);
+		else
+			GetInstance()->VoteMulit();
+	}
 	else
 		GetInstance()->Send(SyncStart);
 }
@@ -987,13 +1032,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			else
 				m_nLastStatus = status.device_status;
 
-			if (report.reserved == GATEWAY)
+			if (report.reserved == 0)
 			{
 				switch(status.device_status)
 				{
-				case NEBULA_STATUS_OFFLINE:
-					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("OFFLINE"));
-					break;
 				case NEBULA_STATUS_STANDBY:
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("STANDBY"));
 					break;
@@ -1005,6 +1047,15 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 					break;
 				case NEBULA_STATUS_END:
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("END"));
+					break;
+				case NEBULA_STATUS_CONFIG:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CONFIG"));
+					break;
+				case NEBULA_STATUS_DFU:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DFU"));
+					break;
+				case NEBULA_STATUS_MULTI_VOTE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("MULTI_VOTE"));
 					break;
 				default:
 					{
@@ -1062,7 +1113,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				str.Format(_T("离线笔记:%d条"),status.note_num);
 				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
 			}
-		
+
 		}
 		break;			
 	case ROBOT_EXIT_VOTE://退出投票模式
@@ -1070,426 +1121,239 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			for (int i=0;i<m_list.size();i++)
 			{
 				CString str;
-				str.Format(_T("%d"),report.payload[i]);
+				str.Format(_T("%c"),report.payload[i]);
 				CDrawDlg *pDlg = m_list[i];
 				if (NULL != pDlg)
 					pDlg->SetVote(str);
 			}
 		}
-		break;			
-	case ROBOT_BIG_DATA_REPORT://大数据上报
+		break;	
+	case ROBOT_EXIT_VOTE_MULIT:
 		{
-			PEN_INFO penInfo = {0};
-			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
-			CDrawDlg *pDlg = m_list[report.reserved];
-			if (pDlg)
-				pDlg->AddData(penInfo);
-		}
-		break;			
-	case ROBOT_GATEWAY_ERROR://错误
-		{
-			switch(report.payload[0])
+			ST_OPTION_PACKET packet = {0};
+			memcpy(&packet,report.payload,sizeof(packet));
+			CString strOption(_T(""));
+			CString str;
+			for (int i=0;i<sizeof(packet.option);i++)
 			{
-			case ERROR_NONE:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NONE"));
-				break;
-			case ERROR_FLOW_NUM:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FLOW_NUM"));
-				break;
-			case ERROR_FW_LEN:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FW_LEN"));
-				break;
-			case ERROR_FW_CHECKSUM:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FW_CHECKSUM"));
-				break;
-			case ERROR_STATUS:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_STATUS"));
-				break;
-			case ERROR_VERSION:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_VERSION"));
-				break;
-			case ERROR_NAME_CONTENT:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NAME_CONTENT"));
-				break;
-			case ERROR_NO_NOTE:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NO_NOTE"));
-				break;
-			default:
-				break;
+				if (packet.option[i] != 0)
+				{
+					str.Format(_T("%c"),packet.option[i]);
+					strOption += str;
+				}
 			}
+
+			CDrawDlg *pDlg = m_list[packet.id];
+			if (NULL != pDlg)
+				pDlg->SetVote(strOption);
 		}
-		break;			
-	case ROBOT_SET_DEVICE_NUM://设置设备网络号
-		{
-			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
-			if (report.payload[0] == 0)
+		break;
+		case ROBOT_BIG_DATA_REPORT://大数据上报
 			{
+				PEN_INFO penInfo = {0};
+				memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
+				CDrawDlg *pDlg = m_list[report.reserved];
+				if (pDlg)
+					pDlg->AddData(penInfo);
+			}
+			break;
+		case  ROBOT_PAGE_NO:
+			{
+				uint16_t nPage;
+				memcpy(&nPage,report.payload,sizeof(nPage));
+
 				CString str;
-				str.Format(_T("%d"),report.payload[1]);
+				str.Format(_T("第%d页"),nPage);
+				CDrawDlg *pDlg = m_list[report.reserved];
+				if (NULL != pDlg)
+					pDlg->SetPage(str);
+			}
+			break;
+		case ROBOT_GATEWAY_ERROR://错误
+			{
+				switch(report.payload[0])
+				{
+				case ERROR_NONE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NONE"));
+					break;
+				case ERROR_FLOW_NUM:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FLOW_NUM"));
+					break;
+				case ERROR_FW_LEN:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FW_LEN"));
+					break;
+				case ERROR_FW_CHECKSUM:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_FW_CHECKSUM"));
+					break;
+				case ERROR_STATUS:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_STATUS"));
+					break;
+				case ERROR_VERSION:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_VERSION"));
+					break;
+				case ERROR_NAME_CONTENT:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NAME_CONTENT"));
+					break;
+				case ERROR_NO_NOTE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("ERROR_NO_NOTE"));
+					break;
+				default:
+					break;
+				}
+			}
+			break;			
+		case ROBOT_SET_DEVICE_NUM://设置设备网络号
+			{
+				this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+				if (report.payload[0] == 0)
+				{
+					CString str;
+					str.Format(_T("%d"),report.payload[1]);
+					GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(str);
+					str.Format(_T("%d"),report.payload[2]);
+					GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
+					str.Format(_T("%d"),report.payload[3]);
+					GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
+				}
+			}
+			break;			
+		case ROBOT_FIRMWARE_DATA://进度
+			m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
+			break;			
+		case ROBOT_RAW_RESULT://校验结果
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+			break;			
+		case ROBOT_GATEWAY_REBOOT:	//设备重启	
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+			break;			
+		case ROBOT_GATEWAY_VERSION://设备版本号
+			{
+				ST_DEVICE_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_DEVICE_INFO));
+
+				if (m_lastInfo.custom_num == info.custom_num
+					&& m_lastInfo.class_num == info.class_num
+					&& m_lastInfo.device_num == info.device_num
+					&& m_lastInfo.version.version == info.version.version
+					&& m_lastInfo.version.version2 == info.version.version2
+					&& m_lastInfo.version.version3 == info.version.version3
+					&& m_lastInfo.version.version4 == info.version.version4)
+				{
+					break;
+				}
+				else
+					memcpy(&m_lastInfo,&info,sizeof(m_lastInfo));
+
+				CString str;
+				str.Format(_T("%d.%d.%d.%d"),info.version.version4,info.version.version3,info.version.version2,info.version.version);
+				GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+
+				str.Format(_T("%d"),info.custom_num);
 				GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(str);
-				str.Format(_T("%d"),report.payload[2]);
+				str.Format(_T("%d"),info.class_num);
 				GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
-				str.Format(_T("%d"),report.payload[3]);
+				str.Format(_T("%d"),info.device_num);
 				GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
 			}
-		}
-		break;			
-	case ROBOT_FIRMWARE_DATA://进度
-			m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
-		break;			
-	case ROBOT_RAW_RESULT://校验结果
+			break;			
+		case ROBOT_ONLINE_STATUS://在线状态
+			{
+				for (int i=0;i<m_list.size();i++)
+				{
+					CDrawDlg *pDlg = m_list[i];
+					if (NULL != pDlg)
+						pDlg->SetOnLine(report.payload[i]);
+				}
+			}
+			break;				
+		case ROBOT_DEVICE_CHANGE://设备改变
 			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
-		break;			
-	case ROBOT_GATEWAY_REBOOT:	//设备重启	
-		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
-		break;			
-	case ROBOT_GATEWAY_VERSION://设备版本号
-		{
-			ST_DEVICE_INFO info = {0};
-			memcpy(&info,report.payload,sizeof(ST_DEVICE_INFO));
-
-			if (m_lastInfo.custom_num == info.custom_num
-				&& m_lastInfo.class_num == info.class_num
-				&& m_lastInfo.device_num == info.device_num
-				&& m_lastInfo.version.version == info.version.version
-				&& m_lastInfo.version.version2 == info.version.version2
-				&& m_lastInfo.version.version3 == info.version.version3
-				&& m_lastInfo.version.version4 == info.version.version4)
-			{
-				break;
-			}
-			else
-				memcpy(&m_lastInfo,&info,sizeof(m_lastInfo));
-
-			CString str;
-			str.Format(_T("%d.%d.%d.%d"),info.version.version4,info.version.version3,info.version.version2,info.version.version);
-			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
-
-			str.Format(_T("%d"),info.custom_num);
-			GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(str);
-			str.Format(_T("%d"),info.class_num);
-			GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
-			str.Format(_T("%d"),info.device_num);
-			GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
-		}
-		break;			
-	case ROBOT_ONLINE_STATUS://在线状态
-		{
-			for (int i=0;i<m_list.size();i++)
-			{
-				CDrawDlg *pDlg = m_list[i];
-				if (NULL != pDlg)
-					pDlg->SetOnLine(report.payload[i]);
-			}
-		}
-		break;				
-	case ROBOT_DEVICE_CHANGE://设备改变
-		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
-		break;	
-	case ROBOT_NODE_MODE:
-		{
-			int nStatus = report.payload[0];
-			if (m_nLastMode == nStatus)
-				break;
-			else
-				m_nLastMode = nStatus;
-			CString str;
-			switch(nStatus)
-			{
-			case 0:
-				{
-					str = _T("BLE");
-					GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
-				}
-				break;
-			case 1:
-				{
-					str = _T("2.4G");
-					GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
-				}
-				break;
-			case 2:
-				{
-					str = _T("USB");
-					GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_SHOW);
-				}
-				break;
-			default:
-				str = _T("Unknow");
-				break;
-			}
-			GetDlgItem(IDC_STATIC_MODE)->SetWindowText(str);
-		}
-		break;
-	case ROBOT_USB_PACKET://USB坐标
-		{
-			PEN_INFO penInfo = {0};
-			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
-
-			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
-			
-			//TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-
-			m_list[0]->AddData(penInfo);
-		}
-		break;
-	case ROBOT_KEY_PRESS://按键按下
-		{
-			int nStatus = report.payload[0];
-			switch(nStatus)
-			{
-			case CLICK:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CLICK"));
-				break;
-			case DBCLICK:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DBCLICK"));
-				break;
-			case PAGEUP:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUP"));
-				break;
-			case PAGEDOWN:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWN"));
-				break;
-			case CREATEPAGE:
-				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CREATEPAGE"));
-				break;
-			default:
-				break;
-			}
-		}
-		break;
-	case ROBOT_SHOW_PAGE://显示页码	
-		{
-			int nCurrentPage = report.payload[0];
-			int nPageCount = report.payload[1];
-			CString str;
-			str.Format(_T("第%d页,共%d页"),nCurrentPage,nPageCount);
-			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
-		}
-		break;
-	case ROBOT_SYNC_TRANS_BEGIN:
-		{
-			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_BEGIN"));
-		}
-		break;
-	case ROBOT_ORIGINAL_PACKET:
-		{
-			PEN_INFO penInfo = {0};
-			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
-
-			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
-
-			//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
-
-			m_list[0]->AddData(penInfo);
-		}
-		break;
-	case ROBOT_SYNC_TRANS_END:
-		{
-			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_END"));
-		}
-		break;
-	default:						
-		break;
-	}
-}
-//解析dongle命令
-void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
-{
-	switch(report.cmd_id)
-	{
-		case ROBOT_DONGLE_STATUS://获取状态
+			break;	
+		case ROBOT_NODE_MODE:
 			{
 				int nStatus = report.payload[0];
-				int nMode = report.payload[1];
-				if (nMode == 1)
-				{
-					switch(nStatus)
-					{
-					case BLE_STANDBY:
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
-						break;
-					case BLE_SCANNING:			//正在扫描	
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
-						break;	
-					case BLE_CONNECTING:		//连接中
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTING"));
-						break;	
-					case BLE_CONNECTED:			//连接成功
-						{
-							GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTED"));
-							POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetFirstSelectedItemPosition();
-							if (pos == nullptr)
-								return;
-							int nItem = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetNextSelectedItem(pos);
-							CString strName = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 1);
-							
-							GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(strName);
-						}
-						break;
-					case BLE_ACTIVE_DISCONNECT://正在断开链接
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_ACTIVE_DISCONNECT"));
-						break;
-					case BLE_RECONNECTING:		//重新连接
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_RECONNECTING"));
-						break;
-					case BLE_LINK_BREAKOUT:		//蓝牙正在升级中
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_LINK_BREAKOUT"));
-						break;
-					case BLE_DFU_START:			//蓝牙dfu模式
-						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_DFU_START"));
-						break;
-					default:
-						{
-							CString str;
-							str.Format(_T("UNKNOW:%d"),nStatus);
-							GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
-						}
-						break;
-					}
-				}
-				else if (nMode == 2)
-				{
-					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DONGLE_DFU"));
-				}
-			}
-			break;
-		case ROBOT_DONGLE_VERSION:
-			{
-				ST_VERSION version[2] = {0};
-				memcpy(&version,report.payload,sizeof(version));
-
+				if (m_nLastMode == nStatus)
+					break;
+				else
+					m_nLastMode = nStatus;
 				CString str;
-				str.Format(_T("%d.%d.%d.%d_%d.%d.%d.%d"),
-					version[0].version4,version[0].version3,version[0].version2,version[0].version
-					,version[1].version4,version[1].version3,version[1].version2,version[1].version);
-				GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+				switch(nStatus)
+				{
+				case 0:
+					{
+						str = _T("BLE");
+						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
+					}
+					break;
+				case 1:
+					{
+						str = _T("2.4G");
+						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
+					}
+					break;
+				case 2:
+					{
+						str = _T("USB");
+						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_SHOW);
+					}
+					break;
+				default:
+					str = _T("Unknow");
+					break;
+				}
+				GetDlgItem(IDC_STATIC_MODE)->SetWindowText(str);
 			}
 			break;
-		case ROBOT_DONGLE_SCAN_RES:
-			{
-				ST_BLE_DEVICE device = {0};
-				memcpy(&device,report.payload,sizeof(device));
-				
-				const unsigned char* pDevName  = device.device_name;
-
-				unsigned char szMac[25] = {0};
-				sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",device.addr[0],device.addr[1],device.addr[2],device.addr[3],device.addr[4],device.addr[5]);
-
-				std::string strName = (char*)pDevName;
-				std::string strMac = (char*)szMac;
-				AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());
-			}
-			break;
-		case ROBOT_DONGLE_PACKET:
+		case ROBOT_USB_PACKET://USB坐标
 			{
 				PEN_INFO penInfo = {0};
 				memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
 				penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
-				TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+				//TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
 
 				m_list[0]->AddData(penInfo);
 			}
 			break;
-		case ROBOT_SLAVE_STATUS:
+		case ROBOT_KEY_PRESS://按键按下
 			{
-				ROBOT_STATUS status = {0};
-				memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
-				switch(status.device_status)
+				int nStatus = report.payload[0];
+				switch(nStatus)
 				{
-				case DEVICE_POWER_OFF:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_POWER_OFF"));
+				case CLICK:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CLICK"));
 					break;
-				case DEVICE_STANDBY:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_STANDBY"));
+				case DBCLICK:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DBCLICK"));
 					break;
-				case DEVICE_INIT_BTN:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_INIT_BTN"));
+				case PAGEUP:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUP"));
 					break;
-				case DEVICE_OFFLINE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OFFLINE"));
+				case PAGEDOWN:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWN"));
 					break;
-				case DEVICE_ACTIVE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_ACTIVE"));
-					break;
-				case DEVICE_LOW_POWER_ACTIVE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_LOW_POWER_ACTIVE"));
-					break;
-				case DEVICE_OTA_MODE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_MODE"));
-					break;
-				case DEVICE_OTA_WAIT_SWITCH:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_WAIT_SWITCH"));
-					break;
-				case DEVICE_TRYING_POWER_OFF:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_TRYING_POWER_OFF"));
-					break;
-				case DEVICE_FINISHED_PRODUCT_TEST:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_FINISHED_PRODUCT_TEST"));
-					break;
-				case DEVICE_SYNC_MODE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_SYNC_MODE"));
-					break;
-				default:							break;
-				}
-
-				CString str;
-				str.Format(_T("离线笔记:%d条"),status.note_num);
-				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
-			}
-			break;
-		case ROBOT_SLAVE_VERSION:
-			{
-				ST_VERSION version = {0};
-				memcpy(&version,report.payload+2,sizeof(version));
-				CString str;
-				str.Format(_T("%d.%d.%d.%d"),version.version4,version.version3,version.version2,version.version);
-				GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(str);
-			}
-			break;
-		case ROBOT_SLAVE_ERROR:
-			{
-				int nError = report.payload[0];
-				switch(nError)
-				{
-				case ERROR_SLAVE_NONE:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_SLAVE_NONE"));
-					break;
-				case ERROR_OTA_FLOW_NUM:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_FLOW_NUM"));
-					break;
-				case ERROR_OTA_LEN:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_LEN"));
-					break;
-				case ERROR_OTA_CHECKSUM:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_CHECKSUM"));
-					break;
-				case ERROR_OTA_STATUS:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_STATUS"));
-					break;
-				case ERROR_OTA_VERSION:
-					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_VERSION"));
+				case CREATEPAGE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CREATEPAGE"));
 					break;
 				default:
-					{
-						CString str;
-						str.Format(_T("UNKNOW:%d"),nError);
-						GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
-					}
 					break;
 				}
 			}
 			break;
-		case ROBOT_DONGLE_FIRMWARE_DATA:
-			m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
-			break;			
-		case ROBOT_DONGLE_RAW_RESULT://校验结果
-			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		case ROBOT_SHOW_PAGE://显示页码	
+			{
+				int nCurrentPage = report.payload[0];
+				int nPageCount = report.payload[1];
+				CString str;
+				str.Format(_T("第%d页,共%d页"),nCurrentPage,nPageCount);
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+			}
 			break;
-		case ROBOT_DEVICE_CHANGE://设备改变
-			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		case ROBOT_SYNC_TRANS_BEGIN:
+			{
+				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_BEGIN"));
+			}
 			break;
 		case ROBOT_ORIGINAL_PACKET:
 			{
@@ -1503,11 +1367,230 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				m_list[0]->AddData(penInfo);
 			}
 			break;
-		case ROBOT_SET_NAME:
-			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		case ROBOT_SYNC_TRANS_END:
+			{
+				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_END"));
+			}
 			break;
-		default:
+		default:						
 			break;
+	}
+}
+//解析dongle命令
+void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
+{
+	switch(report.cmd_id)
+	{
+	case ROBOT_DONGLE_STATUS://获取状态
+		{
+			int nStatus = report.payload[0];
+			int nMode = report.payload[1];
+			if (nMode == 1)
+			{
+				switch(nStatus)
+				{
+				case BLE_STANDBY:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+					break;
+				case BLE_SCANNING:			//正在扫描	
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
+					break;	
+				case BLE_CONNECTING:		//连接中
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTING"));
+					break;	
+				case BLE_CONNECTED:			//连接成功
+					{
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_CONNECTED"));
+						POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetFirstSelectedItemPosition();
+						if (pos == nullptr)
+							return;
+						int nItem = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetNextSelectedItem(pos);
+						CString strName = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 1);
+
+						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(strName);
+					}
+					break;
+				case BLE_ACTIVE_DISCONNECT://正在断开链接
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_ACTIVE_DISCONNECT"));
+					break;
+				case BLE_RECONNECTING:		//重新连接
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_RECONNECTING"));
+					break;
+				case BLE_LINK_BREAKOUT:		//蓝牙正在升级中
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_LINK_BREAKOUT"));
+					break;
+				case BLE_DFU_START:			//蓝牙dfu模式
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_DFU_START"));
+					break;
+				default:
+					{
+						CString str;
+						str.Format(_T("UNKNOW:%d"),nStatus);
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+					}
+					break;
+				}
+			}
+			else if (nMode == 2)
+			{
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DONGLE_DFU"));
+			}
+		}
+		break;
+	case ROBOT_DONGLE_VERSION:
+		{
+			ST_VERSION version[2] = {0};
+			memcpy(&version,report.payload,sizeof(version));
+
+			CString str;
+			str.Format(_T("%d.%d.%d.%d_%d.%d.%d.%d"),
+				version[0].version4,version[0].version3,version[0].version2,version[0].version
+				,version[1].version4,version[1].version3,version[1].version2,version[1].version);
+			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_DONGLE_SCAN_RES:
+		{
+			ST_BLE_DEVICE device = {0};
+			memcpy(&device,report.payload,sizeof(device));
+
+			const unsigned char* pDevName  = device.device_name;
+
+			unsigned char szMac[25] = {0};
+			sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",device.addr[0],device.addr[1],device.addr[2],device.addr[3],device.addr[4],device.addr[5]);
+
+			std::string strName = (char*)pDevName;
+			std::string strMac = (char*)szMac;
+			AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());
+		}
+		break;
+	case ROBOT_DONGLE_PACKET:
+		{
+			PEN_INFO penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
+
+			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
+
+			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+
+			m_list[0]->AddData(penInfo);
+		}
+		break;
+	case ROBOT_SLAVE_STATUS:
+		{
+			ROBOT_STATUS status = {0};
+			memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
+			switch(status.device_status)
+			{
+			case DEVICE_POWER_OFF:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_POWER_OFF"));
+				break;
+			case DEVICE_STANDBY:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_STANDBY"));
+				break;
+			case DEVICE_INIT_BTN:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_INIT_BTN"));
+				break;
+			case DEVICE_OFFLINE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OFFLINE"));
+				break;
+			case DEVICE_ACTIVE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_ACTIVE"));
+				break;
+			case DEVICE_LOW_POWER_ACTIVE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_LOW_POWER_ACTIVE"));
+				break;
+			case DEVICE_OTA_MODE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_MODE"));
+				break;
+			case DEVICE_OTA_WAIT_SWITCH:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_OTA_WAIT_SWITCH"));
+				break;
+			case DEVICE_TRYING_POWER_OFF:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_TRYING_POWER_OFF"));
+				break;
+			case DEVICE_FINISHED_PRODUCT_TEST:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_FINISHED_PRODUCT_TEST"));
+				break;
+			case DEVICE_SYNC_MODE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("DEVICE_SYNC_MODE"));
+				break;
+			default:							break;
+			}
+
+			CString str;
+			str.Format(_T("离线笔记:%d条"),status.note_num);
+			GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_SLAVE_VERSION:
+		{
+			ST_VERSION version = {0};
+			memcpy(&version,report.payload+2,sizeof(version));
+			CString str;
+			str.Format(_T("%d.%d.%d.%d"),version.version4,version.version3,version.version2,version.version);
+			GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_SLAVE_ERROR:
+		{
+			int nError = report.payload[0];
+			switch(nError)
+			{
+			case ERROR_SLAVE_NONE:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_SLAVE_NONE"));
+				break;
+			case ERROR_OTA_FLOW_NUM:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_FLOW_NUM"));
+				break;
+			case ERROR_OTA_LEN:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_LEN"));
+				break;
+			case ERROR_OTA_CHECKSUM:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_CHECKSUM"));
+				break;
+			case ERROR_OTA_STATUS:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_STATUS"));
+				break;
+			case ERROR_OTA_VERSION:
+				GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T("ERROR_OTA_VERSION"));
+				break;
+			default:
+				{
+					CString str;
+					str.Format(_T("UNKNOW:%d"),nError);
+					GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
+				}
+				break;
+			}
+		}
+		break;
+	case ROBOT_DONGLE_FIRMWARE_DATA:
+		m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
+		break;			
+	case ROBOT_DONGLE_RAW_RESULT://校验结果
+		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		break;
+	case ROBOT_DEVICE_CHANGE://设备改变
+		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		break;
+	case ROBOT_ORIGINAL_PACKET:
+		{
+			PEN_INFO penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
+
+			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
+
+			//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
+
+			m_list[0]->AddData(penInfo);
+		}
+		break;
+	case ROBOT_SET_NAME:
+		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		break;
+	default:
+		break;
 	}
 }
 
