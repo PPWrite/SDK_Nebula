@@ -53,4 +53,6 @@ public:
 	void ResetUI(bool bClear = false);
 
 	void ResetWindow();
+
+	void Clear();
 };

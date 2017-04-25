@@ -280,3 +280,9 @@ void CDrawDlg::ResetWindow()
 		m_pWBDlg->ShowWindow(SW_SHOW);
 	}
 }
+
+void CDrawDlg::Clear()
+{
+	if(NULL != m_pWBDlg)
+		m_pWBDlg->Clear();
+}

@@ -6,7 +6,7 @@
 enum
 {
 	GATEWAY_PID	=	0x6001,
-	NODE_PID	=	0x6002,
+	T8A_PID		=	0x6002,
 	T9A_PID		=	0x6003,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
@@ -61,6 +61,37 @@ typedef struct st_option_packet
 	uint8_t option[6];
 
 }ST_OPTION_PACKET;
+
+typedef struct st_note_header_info
+{
+	uint16_t note_identifier;
+	uint8_t note_number;
+	uint8_t flash_erase_flag;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	uint8_t note_time_year;
+	uint8_t note_time_month;
+	uint8_t note_time_day;
+	uint8_t note_time_hour;
+	uint8_t note_time_min;
+
+} ST_NOTE_HEADER_INFO;
+
+typedef struct st_note_plus_header_info
+{
+	uint16_t note_identifier;
+	uint16_t note_number;
+	uint8_t flash_erase_flag;
+	uint8_t note_head_start;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	uint8_t note_time_year;
+	uint8_t note_time_month;
+	uint8_t note_time_day;
+	uint8_t note_time_hour;
+	uint8_t note_time_min;
+
+} ST_NOTE_PLUS_HEADER_INFO;
 
 #pragma pack()
 

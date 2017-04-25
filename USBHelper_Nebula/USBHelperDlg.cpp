@@ -14,8 +14,8 @@
 #endif
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -125,6 +125,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nLastStatus(-1)
 	, m_nLastMode(-1)
 	, m_nNoteNum(0)
+	, m_pWBDlg(NULL)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -175,6 +176,8 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET_NAME, &CUSBHelperDlg::OnBnClickedButtonSetName)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_STOP, &CUSBHelperDlg::OnBnClickedButtonSyncStop)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_START, &CUSBHelperDlg::OnBnClickedButtonSyncStart)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CUSBHelperDlg::OnCbnSelchangeCombo1)
+	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
 END_MESSAGE_MAP()
 
 
@@ -225,6 +228,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SET_NAME)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
+	
 #endif
 #ifdef _NODE
 	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
@@ -245,7 +252,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SET_NAME)->ShowWindow(SW_HIDE);
-	GetDlgItem(IDC_COMBO1)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_COMBO1)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
+
 #endif
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -270,6 +282,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_COMBO1)->ShowWindow(SW_HIDE);
+
+	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_SHOW);
 #endif
 	InitListCtrl();
 
@@ -286,7 +301,18 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 
+#ifdef _NODE
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
+
+	m_pWBDlg = new CWBDlg;
+	m_pWBDlg->Create(IDD_WBDLG);
+	m_pWBDlg->ShowWindow(SW_HIDE);
+	m_pWBDlg->SetWindowText(_T("离线笔记"));
+	m_pWBDlg->SetPage(_T(""));
+#else
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
+#endif
+
 
 	/*GetInstance()->SetFilterWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
@@ -462,7 +488,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
 		m_nDeviceType = GATEWAY;
 	}
-	else if (nPid == NODE_PID || nPid == T9A_PID )
+	else if (nPid == T8A_PID || nPid == T9A_PID )
 	{
 		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
 		m_nDeviceType = NODE;
@@ -496,7 +522,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(!bShow);
 	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(!bShow);
-	GetDlgItem(IDC_COMBO1)->ShowWindow(bShow);
+	//GetDlgItem(IDC_COMBO1)->ShowWindow(bShow);
 
 	if(m_nDeviceType == GATEWAY)
 	{
@@ -670,6 +696,19 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 			GetInstance()->Send(VoteBegin);
 		else
 			GetInstance()->VoteMulit();
+	}
+	else
+	{
+		((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->SetPos(0);
+		((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->SetStep(1);
+
+		m_pWBDlg->Clear();
+		((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
+		for(int i=0;i<MAX_NOTE;i++)
+		{
+			vecPenInfo[i].clear();
+		}
+		GetInstance()->Send(SyncBegin);
 	}
 }
 
@@ -1115,7 +1154,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				}
 				CString str;
 				str.Format(_T("离线笔记:%d条"),status.note_num);
-				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(str);
+				GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(str);
+
+				((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->SetRange(0,status.note_num);
 			}
 
 		}
@@ -1286,19 +1327,19 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				case 0:
 					{
 						str = _T("BLE");
-						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
+						GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
 					}
 					break;
 				case 1:
 					{
 						str = _T("2.4G");
-						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_HIDE);
+						GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
 					}
 					break;
 				case 2:
 					{
 						str = _T("USB");
-						GetDlgItem(IDC_STATIC_NOTE)->ShowWindow(SW_SHOW);
+						GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
 					}
 					break;
 				default:
@@ -1356,7 +1397,37 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			break;
 		case ROBOT_SYNC_TRANS_BEGIN:
 			{
-				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_BEGIN"));
+				ST_NOTE_PLUS_HEADER_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_NOTE_PLUS_HEADER_INFO));
+
+				int nCount = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount();
+				CString str,strID;
+				strID.Format(_T("%d"),info.note_number);
+
+				bool bExist = false;
+				for (int i=0;i<nCount;i++)
+				{
+					((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(i,str);
+					if (str == strID)
+					{
+						bExist = true;
+						break;
+					}
+				}
+				if (!bExist)
+					((CComboBox*)GetDlgItem(IDC_COMBO1))->InsertString(nCount,strID);
+
+				((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->StepIt();
+
+				str.Format(_T("离线笔记:%d条"),report.reserved);
+				GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(str);
+			}
+			break;
+		case ROBOT_SYNC_TRANS_END:
+			{
+				GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(_T("同步结束"));
+				if (((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount() > 0)
+					((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
 			}
 			break;
 		case ROBOT_ORIGINAL_PACKET:
@@ -1367,13 +1438,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 				//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
+				//T9A
+				if (report.reserved < MAX_NOTE)
+				{
+					vecPenInfo[report.reserved].push_back(penInfo);
+				}
 
 				m_list[0]->AddData(penInfo);
-			}
-			break;
-		case ROBOT_SYNC_TRANS_END:
-			{
-				GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T("ROBOT_SYNC_TRANS_END"));
 			}
 			break;
 		default:						
@@ -1693,4 +1764,29 @@ void CUSBHelperDlg::OnBnClickedButtonSyncStop()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(SyncEnd);
+}
+
+void CUSBHelperDlg::OnCbnSelchangeCombo1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+#ifdef _NODE
+	CString str;
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCurSel();
+	if (nIndex < 0)
+		return;
+	m_pWBDlg->Clear();
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(nIndex,str);
+	int nNoteNum = atoi(WideCharToMultichar(str.GetBuffer()).c_str());
+	for(int j=0;j<vecPenInfo[nNoteNum].size();j++)
+	{
+		m_pWBDlg->onRecvData(vecPenInfo[nNoteNum][j]);
+	}
+#endif
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSyncOpen()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_pWBDlg->ShowWindow(SW_SHOW);
 }
