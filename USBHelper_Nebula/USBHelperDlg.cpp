@@ -17,8 +17,8 @@
 
 //#define _GATEWAY
 //#define _NODE
-//#define _DONGLE
-#define _P1
+#define _DONGLE
+//#define _P1
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -288,6 +288,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 #endif
 
 #ifdef _P1
