@@ -15,10 +15,10 @@
 
 #define _VERSION  _T("版本号:20170426")
 
-//#define _GATEWAY
+#define _GATEWAY
 //#define _NODE
 //#define _DONGLE
-#define _P1
+//#define _P1
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -234,6 +234,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	
 #endif
 #ifdef _NODE
