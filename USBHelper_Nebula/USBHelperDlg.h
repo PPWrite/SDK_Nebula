@@ -12,6 +12,12 @@
 
 using namespace std;
 
+#define MAX_NOTE 256
+typedef struct sync_info
+{
+	int note_num;
+	std::vector<PEN_INFO> vecPenInfo;
+}SYNC_INFO;
 
 // CUSBHelperDlg ¶Ô»°¿ò
 class CUSBHelperDlg : public CDialogEx
@@ -101,4 +107,12 @@ public:
 	afx_msg void OnBnClickedButtonScanStop();
 	afx_msg void OnBnClickedButtonDisconnect();
 	afx_msg void OnBnClickedButtonSetName();
+	afx_msg void OnBnClickedButtonSyncStop();
+	afx_msg void OnBnClickedButtonSyncStart();
+private: 
+	std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
+public:
+	afx_msg void OnCbnSelchangeCombo1();
+	afx_msg void OnBnClickedButtonSyncOpen();
+	CWBDlg *m_pWBDlg;
 };

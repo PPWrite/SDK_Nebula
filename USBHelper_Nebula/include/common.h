@@ -6,9 +6,9 @@
 enum
 {
 	GATEWAY_PID	=	0x6001,
-	NODE_PID	=	0x6002,
+	T8A_PID		=	0x6002,
 	T9A_PID		=	0x6003,
-	DONGLE_PID  =	0x5750,
+	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
 
@@ -61,6 +61,37 @@ typedef struct st_option_packet
 	uint8_t option[6];
 
 }ST_OPTION_PACKET;
+
+typedef struct st_note_header_info
+{
+	uint16_t note_identifier;
+	uint8_t note_number;
+	uint8_t flash_erase_flag;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	uint8_t note_time_year;
+	uint8_t note_time_month;
+	uint8_t note_time_day;
+	uint8_t note_time_hour;
+	uint8_t note_time_min;
+
+} ST_NOTE_HEADER_INFO;
+
+typedef struct st_note_plus_header_info
+{
+	uint16_t note_identifier;
+	uint16_t note_number;
+	uint8_t flash_erase_flag;
+	uint8_t note_head_start;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	uint8_t note_time_year;
+	uint8_t note_time_month;
+	uint8_t note_time_day;
+	uint8_t note_time_hour;
+	uint8_t note_time_min;
+
+} ST_NOTE_PLUS_HEADER_INFO;
 
 #pragma pack()
 
@@ -211,7 +242,8 @@ enum ROBOT_DONGLE_TYPE
 	ROBOT_SLAVE_STATUS,						//slave状态
 	ROBOT_SLAVE_VERSION,					//slave版本
 	ROBOT_DONGLE_PACKET,					//坐标数据
-	//ROBOT_DEVICE_CHANGE,					//设备改变
+	ROBOT_SLAVE_SYNC_BEGIN,					//获取存储笔记包头
+	ROBOT_SLAVE_SYNC_END,					//结束同步
 };
 
 enum UPDATE_TYPE

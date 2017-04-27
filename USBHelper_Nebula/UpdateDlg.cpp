@@ -240,8 +240,11 @@ void CUpdateDlg::OnBnClickedButton4Stop()
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_nDeviceType == NODE)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
-	else
+	else if(m_nDeviceType == GATEWAY)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
+	else
+		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_DONGLE);
+
 }
 
 PCHAR CUpdateDlg::WideStrToMultiStr (PWCHAR WideStr)
@@ -361,13 +364,38 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 
 	CStringArray sArray;
 	SplitFields(m_strDongleVersion,sArray,_T("_"));
-	if (sArray.GetCount() <= nIndex)
+	if (sArray.GetCount() != 2)
 	{
 		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));;
 		return;
 	}
-	CString strVersion = sArray[nIndex];
+
+	CString strVersion = _T("");
+	if (nIndex == 0 || nIndex == 1)
+		strVersion = sArray[0];
+	else
+		strVersion = sArray[1];
+
 	GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
 	m_version = CString2Version(strVersion);
+	if (nIndex == 1 )
+	{
+		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
 
+		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
+
+		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_HIDE);
+	}
 }
