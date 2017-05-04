@@ -13,7 +13,9 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170426")
+#define _VERSION  _T("版本号:20170504")
+
+#define RESET_NODE 0x2a
 
 //#define _GATEWAY
 #define _NODE
@@ -181,6 +183,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_START, &CUSBHelperDlg::OnBnClickedButtonSyncStart)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CUSBHelperDlg::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
+	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
 END_MESSAGE_MAP()
 
 
@@ -261,6 +264,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -1840,4 +1844,11 @@ void CUSBHelperDlg::OnBnClickedButtonSyncOpen()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_pWBDlg->ShowWindow(SW_SHOW);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButton3Reset()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(RESET_NODE);
 }

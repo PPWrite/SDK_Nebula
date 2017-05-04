@@ -115,4 +115,5 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnBnClickedButtonSyncOpen();
 	CWBDlg *m_pWBDlg;
+	afx_msg void OnBnClickedButton3Reset();
 };

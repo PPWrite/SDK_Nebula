@@ -40,7 +40,7 @@ public:
 		(void)status;
 	}
 	//版本事件
-	virtual void onGatewayVersion(const ST_DEVICE_INFO &info) {
+	virtual void onDeviceInfo(const ST_DEVICE_INFO &info) {
 		(void)info;
 	}
 	//在线状态事件
@@ -82,8 +82,8 @@ public:
 	//重启事件
 	virtual void onGatewayReboot() {
 	}
-	//usb模式坐标数据事件
-	virtual void onUsbPacket(const PEN_INFO &penInfo) {
+	//坐标数据事件
+	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
 	//node模式事件
@@ -104,7 +104,7 @@ public:
 		(void)current;
 	}
 	//离线笔记坐标数据事件
-	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
+	virtual void onSyncPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
 	//////////////////////////////dongle//////////////////////
@@ -113,10 +113,12 @@ public:
 		(void)status;
 	}
 	//Dongle版本事件
-	virtual void onDongleVersion() {
+	virtual void onDongleVersion(const ST_VERSION &version) {
+		(void)version;
 	}
 	//Dongle扫描事件
-	virtual void onDongleScanRes() {
+	virtual void onDongleScanRes(const ST_BLE_DEVICE &device) {
+		(void)device;
 	}
 	//slave版本事件
 	virtual void onSlaveVersion() {
@@ -126,22 +128,15 @@ public:
 		(void)status;
 	}
 	//设置名称事件
-	virtual void onSetName() {
+	virtual void onSetName(uint8_t result) {
+		(void)result;
 	}
 	//slave错误事件
 	virtual void onSlaveError(int error) {
 		(void)error;
 	}
-	//Dongle升级进度事件
-	virtual void onDongleFirmwareData(int progress) {
-		(void)progress;
-	}
-	//Dongle升级结果事件
-	virtual void onDongleRawResult(int result) {
-		(void)result;
-	}
-	//Dongle坐标数据事件
-	virtual void onDonglePacket(const PEN_INFO &penInfo) {
+	//笔记优化输出
+	virtual void onOut(const PEN_INFO &penInfo){
 		(void)penInfo;
 	}
 };
@@ -184,6 +179,8 @@ public:
 	virtual void SetOffset(int nOffsetX,int nOffsetY) = 0;
 	//设置竖屏
 	virtual void SetIsHorizontal(bool bHorizontal) = 0;
+	//是否优化
+	/*virtual void SetOptimization(bool bOptimization) = 0;*/
 	//获取设备宽
 	virtual int Width() = 0;
 	//获取设备高
@@ -194,6 +191,8 @@ public:
 	virtual void SetFilterWidth(int nPenWidth = 0) = 0;
 	//开始投票
 	virtual void VoteMulit(bool bMulit = true) = 0;
+	//笔记优化
+	virtual void In(const PEN_INFO &penInfo) = 0;
 };
 
 //初始化 回调
@@ -230,6 +229,8 @@ extern "C" DECLDIR void SetDeviceType(eDeviceType nDeviceType);
 extern "C" DECLDIR void SetOffset(int nOffsetX,int nOffsetY);
 //设置竖屏
 extern "C" DECLDIR void SetIsHorizontal(bool bHorizontal);
+//是否优化
+/*extern "C" DECLDIR void SetOptimization(bool bOptimization);*/
 //获取设备宽
 extern "C" DECLDIR int Width();
 //获取设备高
