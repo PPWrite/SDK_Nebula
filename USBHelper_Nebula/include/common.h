@@ -3,7 +3,7 @@
 #define NEBULA_VID		0x0483
 #define P1_VID			0x0ED1
 
-enum
+enum eDevicePid
 {
 	GATEWAY_PID	=	0x6001,
 	T8A_PID		=	0x6002,
@@ -95,7 +95,7 @@ typedef struct st_note_plus_header_info
 
 #pragma pack()
 
-enum NEBULA_ERROR
+enum eNebulaError
 {
 	ERROR_NONE,
 	ERROR_FLOW_NUM,
@@ -107,7 +107,7 @@ enum NEBULA_ERROR
 	ERROR_NO_NOTE,
 };
 
-enum GATEWAY_STATUS
+enum eGatewayStatus
 {
 	NEBULA_STATUS_OFFLINE = 0,
 	NEBULA_STATUS_STANDBY,
@@ -119,7 +119,7 @@ enum GATEWAY_STATUS
 	NEBULA_STATUS_END,              
 };
 
-enum NODE_STATUS
+enum eNodeStatus
 {
 	DEVICE_POWER_OFF = 0,
 	DEVICE_STANDBY,
@@ -135,7 +135,7 @@ enum NODE_STATUS
 	DEVICE_DFU_MODE,
 };
 
-enum ROBOT_NEBULA_TYPE
+enum eRobotNebulaCmd
 {
 	ROBOT_GATEWAY_STATUS			= 0x00,		//获取状态
 	ROBOT_ENTER_VOTE,							//进入投票模式
@@ -187,7 +187,7 @@ typedef struct usb_info
 	unsigned short nProductNum;         
 }USB_INFO;
 
-enum
+enum eKeyPress
 {
 	CLICK = 1,
 	DBCLICK,
@@ -198,6 +198,7 @@ enum
 
 ////////////////////////////DONGLE////////////////////////////////
 #pragma pack(1)
+
 typedef struct st_ble_device
 {
 	uint8_t num;
@@ -207,10 +208,11 @@ typedef struct st_ble_device
 	uint8_t device_name[18];
 	uint8_t device_type;
 }ST_BLE_DEVICE;
+
 #pragma pack()
 
 //蓝牙状态
-enum BLE_STATUS
+enum eBleType
 {
 	BLE_STANDBY				= 0,
 	BLE_SCANNING			= 1,	//正在扫描
@@ -222,7 +224,7 @@ enum BLE_STATUS
 	BLE_DFU_START			= 7,	//蓝牙dfu模式
 };
 
-enum DONGLE_DEVICE
+enum eSlaveType
 {
 	P7			= 1,
 	ELITE		= 2,
@@ -230,7 +232,7 @@ enum DONGLE_DEVICE
 	J0			= 8,
 };
 
-enum ROBOT_DONGLE_TYPE
+enum eRobotDongleCmd
 {
 	ROBOT_DONGLE_STATUS			= 0x00,		//dongele状态
 	ROBOT_DONGLE_VERSION,					//dongle版本
@@ -246,14 +248,14 @@ enum ROBOT_DONGLE_TYPE
 	ROBOT_SLAVE_SYNC_END,					//结束同步
 };
 
-enum UPDATE_TYPE
+enum eUpdateType
 {
 	DONGLE_BLE = 0,
 	DONGLE_MCU,
 	SLAVE_MCU,
 };
 
-enum SALVE_ERROR
+enum eSlaveError
 {
 	ERROR_SLAVE_NONE = 0,
 	ERROR_OTA_FLOW_NUM,
@@ -261,4 +263,10 @@ enum SALVE_ERROR
 	ERROR_OTA_CHECKSUM,
 	ERROR_OTA_STATUS,
 	ERROR_OTA_VERSION,
+};
+
+enum eDeviceStatus
+{
+	DEVICE_IN	= 0,
+	DEVICE_OUT,
 };

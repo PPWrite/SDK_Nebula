@@ -15,8 +15,8 @@
 
 #define _VERSION  _T("°æ±¾ºÅ:20170426")
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -235,7 +235,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
-	
+	SetWindowText(_T("GATEWAY"));
 #endif
 #ifdef _NODE
 	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
@@ -261,7 +261,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
-
+	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -291,6 +291,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
+	SetWindowText(_T("DONGLE"));
+
 #endif
 
 #ifdef _P1
@@ -329,6 +331,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
+
+	SetWindowText(_T("P1"));
 #endif
 	InitListCtrl();
 
@@ -343,7 +347,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	AfxBeginThread(ThreadProc,this);
 
-	GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
+	GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
 
 #ifdef _NODE
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
@@ -476,11 +480,11 @@ void CUSBHelperDlg::AddList()
 		pListView->SetItemText(nIndex,2,str);
 	}//*/
 
-	int nCount = GetInstance()->GetAvailableDeviceCount();
+	int nCount = GetInstance()->GetDeviceCount();
 	for (int i=0;i<nCount;i++)
 	{
 		USB_INFO usbInfo;
-		if (GetInstance()->GetAvailableDevice(i,usbInfo))
+		if (GetInstance()->GetDeviceInfo(i,usbInfo))
 		{
 			int nIndex = pListView->GetItemCount();
 			pListView->InsertItem(i,MultiCharToWideChar(usbInfo.szDevName).c_str());
@@ -532,22 +536,22 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if (nPid == GATEWAY_PID)
 	{
-		GetInstance()->ConnectInitialize(GATEWAY,false,getUsbData,this);
+		GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
 		m_nDeviceType = GATEWAY;
 	}
 	else if (nPid == T8A_PID || nPid == T9A_PID )
 	{
-		GetInstance()->ConnectInitialize(NODE,false,getUsbData,this);
+		GetInstance()->ConnectInitialize(NODE,getUsbData,this);
 		m_nDeviceType = NODE;
 	}
 	else if (nPid == DONGLE_PID)
 	{
-		GetInstance()->ConnectInitialize(DONGLE,false,getUsbData,this);
+		GetInstance()->ConnectInitialize(DONGLE,getUsbData,this);
 		m_nDeviceType = DONGLE;
 	}
 	else if (nPid == P1_PID)
 	{
-		GetInstance()->ConnectInitialize(P1,false,getUsbData,this);
+		GetInstance()->ConnectInitialize(P1,getUsbData,this);
 		m_nDeviceType = P1;
 	}
 
