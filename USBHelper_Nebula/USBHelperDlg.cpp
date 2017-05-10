@@ -369,7 +369,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	m_list[0]->SetPage(_T(""));
 #endif
 
-	/*GetInstance()->SetFilterWidth(2);
+	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -748,9 +748,17 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 	if (m_nDeviceType == GATEWAY)
 	{
 		if (nIndex == 0)
+		{
 			GetInstance()->Send(VoteBegin);
-		else
+		}
+		else if (nIndex == 0)
+		{
 			GetInstance()->VoteMulit();
+		}
+		else
+		{
+			GetInstance()->Send(VoteAnswer);
+		}
 	}
 	else
 	{
@@ -1143,8 +1151,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				case NEBULA_STATUS_MASSDATA:
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("MASSDATA"));
 					break;
-				case NEBULA_STATUS_END:
-					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("END"));
+				case NEBULA_STATUS_VOTE_ANSWER:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("VOTE_ANSWER"));
 					break;
 				case NEBULA_STATUS_CONFIG:
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CONFIG"));
@@ -1500,6 +1508,17 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				}
 
 				m_list[0]->AddData(penInfo);
+			}
+			break;
+		case ROBOT_VOTE_ANSWER:
+			{
+				int index = report.payload[0];
+				int answer = report.payload[1];
+				CString str;
+				str.Format(_T("%c"),answer);
+				CDrawDlg *pDlg = m_list[index];
+				if (NULL != pDlg)
+					pDlg->SetVote(str);
 			}
 			break;
 		default:						

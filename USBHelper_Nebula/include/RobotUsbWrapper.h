@@ -22,6 +22,7 @@ enum eRbtType
 	DongleScanStart,
 	DongleScanStop,
 	DongleDisconnect,
+	VoteAnswer,
 };
 
 //回调函数
@@ -36,7 +37,7 @@ public:
 		(void)status;
 	}
 	//网关状态事件
-	virtual void onGatewayStatus(int status) {
+	virtual void onGatewayStatus(const ROBOT_STATUS &status){
 		(void)status;
 	}
 	//版本事件
@@ -83,8 +84,11 @@ public:
 	virtual void onGatewayReboot() {
 	}
 	//坐标数据事件
-	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
-		(void)penInfo;
+	virtual void onOriginalPacket(float x,float y,int press,int status) {
+		(void)x;
+		(void)y;
+		(void)press;
+		(void)status;
 	}
 	//node模式事件
 	virtual void onNodeMode(int mode) {
@@ -107,6 +111,23 @@ public:
 	virtual void onSyncPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
+	//离线笔记开始
+	virtual void onSyncBegin(){
+
+	}
+	//离线笔记结束
+	virtual void onSyncEnd(){
+
+	}
+	//上报页码
+	virtual void onPageNo(int pageNo){
+		(void)pageNo;
+	}
+	//抢答事件
+	virtual void onVoteAnswer(int index,int answer){
+		(void)index;
+		(void)answer;
+	}
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
 	virtual void onDongleStatus(int status) {
@@ -121,7 +142,9 @@ public:
 		(void)device;
 	}
 	//slave版本事件
-	virtual void onSlaveVersion() {
+	virtual void onSlaveVersion(int type,const ST_VERSION &version) {
+		(void)type;
+		(void)version;
 	}
 	//slave状态事件
 	virtual void onSlaveStatus(int status) {
@@ -135,9 +158,14 @@ public:
 	virtual void onSlaveError(int error) {
 		(void)error;
 	}
+
 	//笔记优化输出
-	virtual void onOut(const PEN_INFO &penInfo){
-		(void)penInfo;
+	virtual void onOut(float x,float y,float width,int press,int status){
+		(void)x;
+		(void)y;
+		(void)width;
+		(void)press;
+		(void)status;
 	}
 };
 
@@ -179,8 +207,6 @@ public:
 	virtual void SetOffset(int nOffsetX,int nOffsetY) = 0;
 	//设置竖屏
 	virtual void SetIsHorizontal(bool bHorizontal) = 0;
-	//是否优化
-	/*virtual void SetOptimization(bool bOptimization) = 0;*/
 	//获取设备宽
 	virtual int Width() = 0;
 	//获取设备高
@@ -188,11 +214,13 @@ public:
 	//旋转角度
 	virtual void Rotate(int nAngle = 0) = 0;
 	//过滤坐标
-	virtual void SetFilterWidth(int nPenWidth = 0) = 0;
+	virtual void SetPenWidth(float nPenWidth = 0) = 0;
 	//开始投票
 	virtual void VoteMulit(bool bMulit = true) = 0;
 	//笔记优化
-	virtual void In(const PEN_INFO &penInfo) = 0;
+	virtual void In(float x,float y,int press,int status) = 0;
+	//是否开启压感
+	virtual void SetPressStatus(bool bPress) = 0;
 };
 
 //初始化 回调
@@ -229,8 +257,6 @@ extern "C" DECLDIR void SetDeviceType(eDeviceType nDeviceType);
 extern "C" DECLDIR void SetOffset(int nOffsetX,int nOffsetY);
 //设置竖屏
 extern "C" DECLDIR void SetIsHorizontal(bool bHorizontal);
-//是否优化
-/*extern "C" DECLDIR void SetOptimization(bool bOptimization);*/
 //获取设备宽
 extern "C" DECLDIR int Width();
 //获取设备高
@@ -238,9 +264,13 @@ extern "C" DECLDIR int Height();
 //旋转角度
 extern "C" DECLDIR void Rotate(int nAngle);
 //过滤坐标
-extern "C" DECLDIR void SetFilterWidth(int nPenWidth);
+extern "C" DECLDIR void SetFilterWidth(float nPenWidth);
 //开始投票
 extern "C" DECLDIR void VoteMulit(bool bMulit);
+//笔记优化
+extern "C" DECLDIR void In(float x,float y,int press,int status);
+//是否开启压感
+extern "C" DECLDIR void SetPressStatus(bool bPress);
 
 extern "C" 
 {

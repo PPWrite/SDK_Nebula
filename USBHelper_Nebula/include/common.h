@@ -116,7 +116,7 @@ enum eGatewayStatus
 	NEBULA_STATUS_CONFIG,
 	NEBULA_STATUS_DFU,
 	NEBULA_STATUS_MULTI_VOTE,
-	NEBULA_STATUS_END,              
+	NEBULA_STATUS_VOTE_ANSWER,              
 };
 
 enum eNodeStatus
@@ -170,6 +170,7 @@ enum eRobotNebulaCmd
 	ROBOT_SYNC_TRANS_BEGIN,						//笔记传输命令开始
 	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
 	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
+	ROBOT_VOTE_ANSWER,							//抢答模式
 };
 // 笔数据信息
 typedef struct sPenInfo
