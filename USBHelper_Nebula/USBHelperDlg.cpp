@@ -1732,9 +1732,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
-
-			//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
+			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
 
 			m_list[0]->AddData(penInfo);
 		}
