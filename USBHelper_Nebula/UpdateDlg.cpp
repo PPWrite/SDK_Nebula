@@ -201,7 +201,6 @@ LRESULT CUpdateDlg::OnProcess(WPARAM wParam, LPARAM lParam)
 	switch(lParam)
 	{
 		break;
-	case ROBOT_DONGLE_FIRMWARE_DATA:
 	case ROBOT_FIRMWARE_DATA:
 		{
 			((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetPos(wParam);
@@ -229,7 +228,7 @@ BOOL CUpdateDlg::OnInitDialog()
 	pCombobox->InsertString(0,_T("BLE"));
 	pCombobox->InsertString(1,_T("MCU"));
 	pCombobox->InsertString(2,_T("SLAVE"));
-	pCombobox->SetCurSel(0);
+	pCombobox->SetCurSel(2);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE

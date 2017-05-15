@@ -40,6 +40,10 @@ public:
 	virtual void onGatewayStatus(const ROBOT_STATUS &status){
 		(void)status;
 	}
+	//node状态事件
+	virtual void onNodeStatus(const ROBOT_STATUS &status){
+		(void)status;
+	}
 	//版本事件
 	virtual void onDeviceInfo(const ST_DEVICE_INFO &info) {
 		(void)info;

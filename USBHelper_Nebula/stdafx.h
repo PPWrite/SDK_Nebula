@@ -41,8 +41,6 @@
 #include <Dbt.h>
 #include <stdint.h>
 
-//#define  BEZIER
-
 struct sCanvasPointItem
 {
 	CPoint beginPonit;
@@ -52,15 +50,9 @@ struct sCanvasPointItem
 #include "gdiplus.h"
 using namespace Gdiplus;
 
-#ifdef BEZIER
-#include "include/beisaer.h"
-#pragma comment(lib, "lib/beisaer.lib")
-#endif
-
 #include "include/RobotUsbWrapper.h"
 #pragma comment(lib,"lib/RobotUsbWrapper.lib")
 
-#include "Functions.h"
 
 #ifdef _UNICODE
 #if defined _M_IX86

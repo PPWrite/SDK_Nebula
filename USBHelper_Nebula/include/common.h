@@ -135,14 +135,15 @@ enum eNodeStatus
 	DEVICE_DFU_MODE,
 };
 
-enum eRobotNebulaCmd
+enum eRobotCmd
 {
 	ROBOT_GATEWAY_STATUS			= 0x00,		//获取状态
+	ROBOT_NODE_STATUS,							//node状态
 	ROBOT_ENTER_VOTE,							//进入投票模式
 	ROBOT_EXIT_VOTE,							//退出投票模式
 	ROBOT_EXIT_VOTE_MULIT,						//多选投票模式
 	ROBOT_ENTER_BIG_DATA,						//进入大数据模式
-	ROBOT_BIG_DATA_REPORT,						//大数据上报
+	ROBOT_MASS_DATA,							//大数据上报
 	ROBOT_PAGE_NO,								//页码显示
 	ROBOT_EXIT_BIG_DATA,						//退出大数据模式
 	ROBOT_GATEWAY_ERROR,						//错误
@@ -160,7 +161,7 @@ enum eRobotNebulaCmd
 	ROBOT_DEVICE_CHANGE,						//设备改变
 	ROBOT_NODE_INFO,							//设备信息
 	ROBOT_NODE_ERROR,							//node错误
-	ROBOT_USB_PACKET,							//上传坐标
+	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
 	ROBOT_SET_RTC,								//设置RTC
 	ROBOT_KEY_PRESS,							//按键按下
 	ROBOT_SHOW_PAGE,							//显示页码		
@@ -168,9 +169,18 @@ enum eRobotNebulaCmd
 	ROBOT_EXIT_SYNC,							//退出sync模式
 	ROBOT_GET_SYNC_HEAD,						//获取存储笔记包头
 	ROBOT_SYNC_TRANS_BEGIN,						//笔记传输命令开始
-	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
+	ROBOT_SYNC_PACKET,							//上传坐标
 	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
 	ROBOT_VOTE_ANSWER,							//抢答模式
+	ROBOT_OPTIMIZE_PACKET,						//抢答模式
+	//////////////////////////Dongle/////////////////////////////
+	ROBOT_DONGLE_STATUS,						//dongele状态
+	ROBOT_DONGLE_VERSION,						//dongle版本
+	ROBOT_DONGLE_SCAN_RES,						//扫描结果
+	ROBOT_SET_NAME,								//设置名称
+	ROBOT_SLAVE_ERROR,							//错误信息
+	ROBOT_SLAVE_STATUS,							//slave状态
+	ROBOT_SLAVE_VERSION,						//slave版本
 };
 // 笔数据信息
 typedef struct sPenInfo
@@ -180,6 +190,15 @@ typedef struct sPenInfo
 	uint16_t nY;			// 笔y轴坐标
 	uint16_t nPress;		// 笔压力
 }PEN_INFO;  
+
+typedef struct sPenInfoF
+{
+	uint8_t nStatus;		// 笔状态
+	float nX;				// 笔x轴坐标
+	float nY;				// 笔y轴坐标
+	uint16_t nPress;		// 笔压力
+	float nWidth;			// 笔宽度
+}PEN_INFOF;  
 //设备信息
 typedef struct usb_info
 {
@@ -231,22 +250,6 @@ enum eSlaveType
 	ELITE		= 2,
 	ELITE_PLUS	= 3,
 	J0			= 8,
-};
-
-enum eRobotDongleCmd
-{
-	ROBOT_DONGLE_STATUS			= 0x00,		//dongele状态
-	ROBOT_DONGLE_VERSION,					//dongle版本
-	ROBOT_DONGLE_SCAN_RES,					//扫描结果
-	ROBOT_SET_NAME,							//设置名称
-	ROBOT_SLAVE_ERROR,						//错误信息
-	ROBOT_DONGLE_FIRMWARE_DATA,				//进度
-	ROBOT_DONGLE_RAW_RESULT,				//升级结果
-	ROBOT_SLAVE_STATUS,						//slave状态
-	ROBOT_SLAVE_VERSION,					//slave版本
-	ROBOT_DONGLE_PACKET,					//坐标数据
-	ROBOT_SLAVE_SYNC_BEGIN,					//获取存储笔记包头
-	ROBOT_SLAVE_SYNC_END,					//结束同步
 };
 
 enum eUpdateType

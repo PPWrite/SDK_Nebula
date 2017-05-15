@@ -54,6 +54,9 @@
     <ClInclude Include="UpdateDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="RbtEventHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="USBHelper.cpp">
@@ -78,6 +81,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="UpdateDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RbtEventHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

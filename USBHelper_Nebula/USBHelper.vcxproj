@@ -110,6 +110,7 @@
   <ItemGroup>
     <ClInclude Include="DrawDlg.h" />
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="RbtEventHandler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingDlg.h" />
     <ClInclude Include="stdafx.h" />
@@ -122,6 +123,7 @@
   <ItemGroup>
     <ClCompile Include="DrawDlg.cpp" />
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="RbtEventHandler.cpp" />
     <ClCompile Include="SettingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
