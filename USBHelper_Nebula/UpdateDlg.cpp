@@ -61,9 +61,9 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_nDeviceType == NODE)
+		if(m_nDeviceType == T8A || m_nDeviceType == T9A)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
-		else if(m_nDeviceType == GATEWAY)
+		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
 		else
 		{
@@ -82,7 +82,7 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 	if(dlg.DoModal() == IDOK)  
 	{
 		CString strFileName = dlg.GetFileName();
-		if (m_nDeviceType == NODE)
+		if (m_nDeviceType == T8A ||m_nDeviceType == T9A)
 		{
 			if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 			{
@@ -134,7 +134,7 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 	if(dlg.DoModal() == IDOK)  
 	{  
 		CString strFileName = dlg.GetFileName();
-		if (m_nDeviceType == NODE)
+		if (m_nDeviceType == T8A ||m_nDeviceType == T9A)
 		{
 			if(strFileName.MakeLower().Find(_T("ble")) < 0)
 			{
@@ -173,7 +173,7 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 
 void CUpdateDlg::SetVersion(const CString &strVersion)
 {
-	if (m_nDeviceType == DONGLE)
+	if (m_nDeviceType == Dongle)
 	{
 		m_strDongleVersion = strVersion;
 		OnCbnSelchangeComboType();
@@ -237,9 +237,9 @@ BOOL CUpdateDlg::OnInitDialog()
 void CUpdateDlg::OnBnClickedButton4Stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == NODE)
+	if (m_nDeviceType == T8A ||m_nDeviceType == T9A)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
-	else if(m_nDeviceType == GATEWAY)
+	else if(m_nDeviceType == Gateway)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
 	else
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_DONGLE);
@@ -330,12 +330,12 @@ bool CUpdateDlg::IsNeedUpdate(const ST_VERSION &versionWeb,const ST_VERSION &ver
 void CUpdateDlg::SetUpgradeType(int nDeviceType)
 {
 	m_nDeviceType = nDeviceType;
-	bool bNode = (m_nDeviceType == NODE) ? TRUE : FALSE;
+	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
 
-	if (m_nDeviceType == DONGLE)
+	if (m_nDeviceType == Dongle)
 	{
 		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(TRUE);
 		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(FALSE);

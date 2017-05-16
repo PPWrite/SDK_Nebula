@@ -14,11 +14,20 @@ enum eDevicePid
 
 enum eDeviceType
 {
-	GATEWAY = 0,
-	NODE,
-	DONGLE,
-	P1,
-	UNKNOWN,
+	Unknow = 0,
+	RobotPen_P7,
+	Elite,
+	Elite_Plus,
+	RobotPen_P1,
+	Elite_Plus_New,
+	T8A,
+	Elite_XY,
+	J0_A5,
+	Gateway,
+	Dongle,
+	J0_A4,
+	T9A,
+	X8,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -242,14 +251,6 @@ enum eBleType
 	BLE_RECONNECTING		= 5,	//重新连接
 	BLE_LINK_BREAKOUT		= 6,	//蓝牙正在升级中
 	BLE_DFU_START			= 7,	//蓝牙dfu模式
-};
-
-enum eSlaveType
-{
-	P7			= 1,
-	ELITE		= 2,
-	ELITE_PLUS	= 3,
-	J0			= 8,
 };
 
 enum eUpdateType

@@ -66,7 +66,7 @@ public:
 private:
 	std::vector<CDrawDlg*> m_list;
 	CUpdateDlg *m_pDlg;
-	int m_nDeviceType;
+	eDeviceType m_nDeviceType;
 private:
 	CRITICAL_SECTION m_sectionLock;
 	std::queue<ROBOT_REPORT> m_queueData;

@@ -125,7 +125,7 @@ END_MESSAGE_MAP()
 CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CUSBHelperDlg::IDD, pParent)
 	, m_pDlg(NULL)
-	, m_nDeviceType(GATEWAY)
+	, m_nDeviceType(Gateway)
 	, m_bRun(TRUE)
 	, m_nLastStatus(-1)
 	, m_nLastMode(-1)
@@ -351,9 +351,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	AfxBeginThread(ThreadProc,this);
 
-	GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
+	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);
 
-#ifdef _NODE
+//#ifdef _NODE
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 
 	m_pWBDlg = new CWBDlg;
@@ -361,9 +361,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	m_pWBDlg->ShowWindow(SW_HIDE);
 	m_pWBDlg->SetWindowText(_T("离线笔记"));
 	m_pWBDlg->SetPage(_T(""));
-#else
+//#else
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
-#endif
+//#endif
 
 #ifdef _P1
 	m_list[0]->SetPage(_T(""));
@@ -540,24 +540,27 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if (nPid == GATEWAY_PID)
 	{
-		GetInstance()->ConnectInitialize(GATEWAY,getUsbData,this);
-		m_nDeviceType = GATEWAY;
+		m_nDeviceType = Gateway;
 	}
-	else if (nPid == T8A_PID || nPid == T9A_PID )
+	else if (nPid == T8A_PID )
 	{
-		GetInstance()->ConnectInitialize(NODE,getUsbData,this);
-		m_nDeviceType = NODE;
+		m_nDeviceType = T8A;
+	}
+	else if (nPid == T9A_PID )
+	{
+		m_nDeviceType = T9A;
 	}
 	else if (nPid == DONGLE_PID)
 	{
-		GetInstance()->ConnectInitialize(DONGLE,getUsbData,this);
-		m_nDeviceType = DONGLE;
+		m_nDeviceType = Dongle;
 	}
 	else if (nPid == P1_PID)
 	{
-		GetInstance()->ConnectInitialize(P1,getUsbData,this);
-		m_nDeviceType = P1;
+		m_nDeviceType = RobotPen_P1;
 	}
+
+	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
+
 
 	int nRes = GetInstance()->ConnectOpen();
 	ASSERT(nRes == 0);
@@ -566,7 +569,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
-	bool bShow = (m_nDeviceType == GATEWAY) ? TRUE : FALSE;
+	bool bShow = (m_nDeviceType == Gateway) ? TRUE : FALSE;
 	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->EnableWindow(bShow);
 	GetDlgItem(IDC_BUTTON3_MS)->EnableWindow(bShow);
 	GetDlgItem(IDC_BUTTON3_MS_OFF)->EnableWindow(bShow);
@@ -579,12 +582,12 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	GetDlgItem(IDC_STATIC_MODE)->ShowWindow(!bShow);
 	//GetDlgItem(IDC_COMBO1)->ShowWindow(bShow);
 
-	if(m_nDeviceType == GATEWAY)
+	if(m_nDeviceType == Gateway)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == NODE)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -605,7 +608,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if (m_nDeviceType != GATEWAY)
+	if (m_nDeviceType != Gateway)
 		OnBnClickedButtonStatus();
 }
 
@@ -706,7 +709,7 @@ void CUSBHelperDlg::ProcessMassData()
 					ROBOT_REPORT report = tmpQueue.front();
 					tmpQueue.pop();
 
-					if (m_nDeviceType == DONGLE)
+					if (m_nDeviceType == Dongle)
 						this->parseDongleReport(report);
 					else
 						this->parseRobotReport(report);
@@ -745,7 +748,7 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 
 	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCurSel();
 
-	if (m_nDeviceType == GATEWAY)
+	if (m_nDeviceType == Gateway)
 	{
 		if (nIndex == 0)
 		{
@@ -778,7 +781,7 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 void CUSBHelperDlg::OnBnClickedButtonVoteOff()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_nDeviceType == GATEWAY)
+	if (m_nDeviceType == Gateway)
 		GetInstance()->Send(VoteEnd);
 	else
 		GetInstance()->Send(SyncEnd);
@@ -918,7 +921,7 @@ void CUSBHelperDlg::OnBnClickedButton3Set()
 	GetDlgItem(IDC_EDIT_CLASS)->GetWindowText(strClass);
 	CString strDevice;
 	GetDlgItem(IDC_EDIT_DEV)->GetWindowText(strDevice);
-	BOOL bNode = (m_nDeviceType == NODE) ? TRUE : FALSE;
+	BOOL bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A) ? TRUE : FALSE;
 	CSettingDlg dlg(strCustom,strClass,strDevice,bNode);
 	if (IDOK == dlg.DoModal())
 	{
@@ -942,7 +945,7 @@ void CUSBHelperDlg::OnBnClickedButton3Update()
 		GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 		m_pDlg->ResetUI();
 		m_pDlg->SetUpgradeType(m_nDeviceType);
-		if (m_nDeviceType == DONGLE)
+		if (m_nDeviceType == Dongle)
 		{
 			CString strSlave;
 			GetDlgItem(IDC_STATIC_VERSION_SLAVE)->GetWindowText(strSlave);
