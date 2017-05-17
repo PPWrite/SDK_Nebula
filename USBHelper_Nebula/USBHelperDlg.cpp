@@ -17,9 +17,9 @@
 
 #define RESET_NODE 0x2a
 
-//#define _GATEWAY
+#define _GATEWAY
 //#define _NODE
-#define _DONGLE
+//#define _DONGLE
 //#define _P1
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框

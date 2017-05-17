@@ -49,11 +49,11 @@ public:
 		(void)info;
 	}
 	//在线状态事件
-	virtual void onOnlineStatus(int *status) {
+	virtual void onOnlineStatus(uint8_t *status) {
 		(void)status;
 	}
 	//单选结束事件
-	virtual void onExitVote(int *status) {
+	virtual void onExitVote(uint8_t *status) {
 		(void)status;
 	}
 	//多选结束事件
@@ -155,7 +155,7 @@ public:
 		(void)status;
 	}
 	//设置名称事件
-	virtual void onSetName(uint8_t result) {
+	virtual void onSetName(int result) {
 		(void)result;
 	}
 	//slave错误事件
