@@ -22,6 +22,9 @@
 //#define _DONGLE
 //#define _P1
 
+#define TEST_COUNT
+
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 PCHAR WideStrToMultiStr (PWCHAR WideStr)
@@ -131,6 +134,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nLastMode(-1)
 	, m_nNoteNum(0)
 	, m_pWBDlg(NULL)
+	, m_nIndexCount(0)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -896,6 +900,13 @@ void CUSBHelperDlg::OnBnClickedButtonMsClear()
 			pDlg->ResetUI(true);
 		}
 	}
+
+#ifdef TEST_COUNT
+	m_nIndexCount = 0;
+	CString str;
+	str.Format(_T("%d"),m_nIndexCount);
+	GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+#endif
 }
 
 void CUSBHelperDlg::OnClose()
@@ -1257,6 +1268,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 			CDrawDlg *pDlg = m_list[report.reserved];
+#ifdef TEST_COUNT
+			m_nIndexCount++;
+			CString str;
+			str.Format(_T("%d"),m_nIndexCount);
+			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
+#endif
 			if (pDlg)
 				pDlg->AddData(penInfo);
 		}

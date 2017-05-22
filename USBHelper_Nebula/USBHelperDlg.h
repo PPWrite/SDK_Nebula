@@ -118,4 +118,6 @@ public:
 	afx_msg void OnBnClickedButton3Reset();
 
 	//afx_msg LRESULT OnRobotEvent(WPARAM wParam, LPARAM lParam);
+
+	int m_nIndexCount;
 };

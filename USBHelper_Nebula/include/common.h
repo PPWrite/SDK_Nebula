@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 #define NEBULA_VID		0x0483
@@ -211,6 +212,7 @@ typedef struct sPenInfoF
 //设备信息
 typedef struct usb_info
 {
+	char szDevPath[260];
 	char szDevName[260];
 	unsigned short nVendorNum;    
 	unsigned short nProductNum;         

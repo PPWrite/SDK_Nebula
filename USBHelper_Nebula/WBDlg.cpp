@@ -370,7 +370,7 @@ void CWBDlg::onRecvData(PEN_INFO& penInfo)
 	CPoint point(penInfo.nX, penInfo.nY);
 	//Clear(point);
 	/*CString str;
-	str.Format(_T("X:%d-Y:%d-Press:%d"),penInfo.nX,penInfo.nY,penInfo.nPens);
+	str.Format(_T("X:%d-Y:%d-Press:%d"),penInfo.nX,penInfo.nY,penInfo.nPress);
 	WriteLog(str);//*/
 	if(m_nState == 90)
 	{

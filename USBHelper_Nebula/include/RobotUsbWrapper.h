@@ -33,8 +33,10 @@ class IRobotEventHandler
 public:
 	virtual ~IRobotEventHandler() {}
 	//设备插拔事件
-	virtual void onDeviceChanged(eDeviceStatus status) {
+	virtual void onDeviceChanged(eDeviceStatus status,const char *szName,int pid) {
 		(void)status;
+		(void)szName;
+		(void)pid;
 	}
 	//网关状态事件
 	virtual void onGatewayStatus(const ROBOT_STATUS &status){
@@ -268,7 +270,7 @@ extern "C" DECLDIR int Height();
 //旋转角度
 extern "C" DECLDIR void Rotate(int nAngle);
 //过滤坐标
-extern "C" DECLDIR void SetFilterWidth(float nPenWidth);
+extern "C" DECLDIR void SetPenWidth(float nPenWidth);
 //开始投票
 extern "C" DECLDIR void VoteMulit(bool bMulit);
 //笔记优化
