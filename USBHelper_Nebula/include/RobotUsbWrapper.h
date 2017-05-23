@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include <vector>
 
 #if defined(DLL_EXPORT)
 #define DECLDIR __declspec(dllexport) 
