@@ -38,11 +38,11 @@ public:
 		(void)pid;
 	}
 	//网关状态事件
-	virtual void onGatewayStatus(const ROBOT_STATUS &status){
+	virtual void onGatewayStatus(eGatewayStatus status){
 		(void)status;
 	}
 	//node状态事件
-	virtual void onNodeStatus(const ROBOT_STATUS &status){
+	virtual void onNodeStatus(const NODE_STATUS &status){
 		(void)status;
 	}
 	//版本事件
@@ -67,7 +67,7 @@ public:
 		(void)penInfo;
 	}
 	//网关错误事件
-	virtual void onGatewayError(int error) {
+	virtual void onGatewayError(eNebulaError error) {
 		(void)error;
 	}
 	//设置设备结果事件
@@ -93,7 +93,7 @@ public:
 		(void)penInfo;
 	}
 	//node模式事件
-	virtual void onNodeMode(int mode) {
+	virtual void onNodeMode(eNodeMode mode) {
 		(void)mode;
 	}
 	//设置rtc事件
@@ -132,7 +132,7 @@ public:
 	}
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
-	virtual void onDongleStatus(int status) {
+	virtual void onDongleStatus(eDongleStatus status) {
 		(void)status;
 	}
 	//Dongle版本事件
@@ -144,12 +144,12 @@ public:
 		(void)device;
 	}
 	//slave版本事件
-	virtual void onSlaveVersion(int type,const ST_VERSION &version) {
+	virtual void onSlaveVersion(eDeviceType type,const ST_VERSION &version) {
 		(void)type;
 		(void)version;
 	}
 	//slave状态事件
-	virtual void onSlaveStatus(int status) {
+	virtual void onSlaveStatus(eSlaveStatus status) {
 		(void)status;
 	}
 	//设置名称事件
@@ -157,7 +157,7 @@ public:
 		(void)result;
 	}
 	//slave错误事件
-	virtual void onSlaveError(int error) {
+	virtual void onSlaveError(eSlaveError error) {
 		(void)error;
 	}
 

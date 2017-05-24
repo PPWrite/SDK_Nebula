@@ -1142,8 +1142,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	{
 	case ROBOT_GATEWAY_STATUS://»ñÈ¡×´Ì¬
 		{
-			ROBOT_STATUS status = {0};
-			memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
+			NODE_STATUS status = {0};
+			memcpy(&status,report.payload,sizeof(NODE_STATUS));
 
 			switch(status.device_status)
 			{
@@ -1180,8 +1180,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_NODE_STATUS:
 		{
-			ROBOT_STATUS status = {0};
-			memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
+			NODE_STATUS status = {0};
+			memcpy(&status,report.payload,sizeof(NODE_STATUS));
 
 			switch(status.device_status)
 			{
@@ -1639,8 +1639,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SLAVE_STATUS:
 		{
-			ROBOT_STATUS status = {0};
-			memcpy(&status,report.payload,sizeof(ROBOT_STATUS));
+			NODE_STATUS status = {0};
+			memcpy(&status,report.payload,sizeof(NODE_STATUS));
 			switch(status.device_status)
 			{
 			case DEVICE_POWER_OFF:

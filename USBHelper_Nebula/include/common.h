@@ -33,12 +33,12 @@ enum eDeviceType
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
 //状态
-typedef struct robot_status
+typedef struct node_status
 {
 	uint8_t	 device_status;
 	uint8_t  battery_level;
 	uint8_t  note_num;
-}ROBOT_STATUS;
+}NODE_STATUS;
 //报告
 typedef struct robot_report
 {
@@ -145,6 +145,13 @@ enum eNodeStatus
 	DEVICE_DFU_MODE,
 };
 
+enum eNodeMode
+{
+	NODE_BLE = 0,
+	NODE_2_4G,
+	NODE_USB,
+};
+
 enum eRobotCmd
 {
 	ROBOT_GATEWAY_STATUS			= 0x00,		//获取状态
@@ -234,7 +241,7 @@ typedef struct st_ble_device
 #pragma pack()
 
 //蓝牙状态
-enum eBleType
+enum eDongleStatus
 {
 	BLE_STANDBY				= 0,
 	BLE_SCANNING			= 1,	//正在扫描
@@ -252,6 +259,8 @@ enum eUpdateType
 	DONGLE_MCU,
 	SLAVE_MCU,
 };
+
+#define eSlaveStatus eNodeStatus
 
 enum eSlaveError
 {

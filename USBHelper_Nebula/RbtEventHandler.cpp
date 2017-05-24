@@ -16,7 +16,7 @@ void CRbtEventHandler::SetMsgReceiver(HWND hWnd)
 }
 
 //设备插拔事件
-void CRbtEventHandler::onDeviceChanged(eDeviceStatus status)
+void CRbtEventHandler::onDeviceChanged(eDeviceStatus status,const char *szName,int pid)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -25,7 +25,7 @@ void CRbtEventHandler::onDeviceChanged(eDeviceStatus status)
 	}
 }
 //网关状态事件
-void CRbtEventHandler::onGatewayStatus(const ROBOT_STATUS &status)	
+void CRbtEventHandler::onGatewayStatus(eGatewayStatus status)	
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -34,7 +34,7 @@ void CRbtEventHandler::onGatewayStatus(const ROBOT_STATUS &status)
 	}
 }
 //node状态事件
-void CRbtEventHandler::onNodeStatus(const ROBOT_STATUS &status)
+void CRbtEventHandler::onNodeStatus(const NODE_STATUS &status)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -52,7 +52,7 @@ void CRbtEventHandler::onDeviceInfo(const ST_DEVICE_INFO &info)
 	}
 }
 //在线状态事件
-void CRbtEventHandler::onOnlineStatus(int *status)
+void CRbtEventHandler::onOnlineStatus(uint8_t *status)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -61,7 +61,7 @@ void CRbtEventHandler::onOnlineStatus(int *status)
 	}
 }
 //单选结束事件
-void CRbtEventHandler::onExitVote(int *status)	
+void CRbtEventHandler::onExitVote(uint8_t *status)	
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -88,7 +88,7 @@ void CRbtEventHandler::onMassData(int index,const PEN_INFO &penInfo)
 	}
 }
 //网关错误事件
-void CRbtEventHandler::onGatewayError(int error)	
+void CRbtEventHandler::onGatewayError(eNebulaError error)	
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -133,7 +133,7 @@ void CRbtEventHandler::onGatewayReboot()
 	}
 }
 //坐标数据事件
-void CRbtEventHandler::onOriginalPacket(float x,float y,int press,int status)
+void CRbtEventHandler::onOriginalPacket(const PEN_INFO &penInfo)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -142,7 +142,7 @@ void CRbtEventHandler::onOriginalPacket(float x,float y,int press,int status)
 	}
 }
 //node模式事件
-void CRbtEventHandler::onNodeMode(int mode)
+void CRbtEventHandler::onNodeMode(eNodeMode mode)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -224,7 +224,7 @@ void CRbtEventHandler::onVoteAnswer(int index,int answer)
 }
 //////////////////////////////dongle//////////////////////
 //Dongle状态事件
-void CRbtEventHandler::onDongleStatus(int status)
+void CRbtEventHandler::onDongleStatus(eDongleStatus status)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -251,7 +251,7 @@ void CRbtEventHandler::onDongleScanRes(const ST_BLE_DEVICE &device)
 	}
 }
 //slave版本事件
-void CRbtEventHandler::onSlaveVersion(int type,const ST_VERSION &version)
+void CRbtEventHandler::onSlaveVersion(eDeviceType type,const ST_VERSION &version)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -260,7 +260,7 @@ void CRbtEventHandler::onSlaveVersion(int type,const ST_VERSION &version)
 	}
 }
 //slave状态事件
-void CRbtEventHandler::onSlaveStatus(int status)
+void CRbtEventHandler::onSlaveStatus(eSlaveStatus status)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -269,7 +269,7 @@ void CRbtEventHandler::onSlaveStatus(int status)
 	}
 }
 //设置名称事件
-void CRbtEventHandler::onSetName(uint8_t result)
+void CRbtEventHandler::onSetName(int result)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -278,7 +278,7 @@ void CRbtEventHandler::onSetName(uint8_t result)
 	}
 }
 //slave错误事件
-void CRbtEventHandler::onSlaveError(int error)
+void CRbtEventHandler::onSlaveError(eSlaveError error)
 {
 	if(m_hMainWnd != NULL)
 	{

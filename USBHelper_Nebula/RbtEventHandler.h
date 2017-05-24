@@ -18,23 +18,23 @@ public:
 	HWND GetMsgReceiver() {return m_hMainWnd;};
 private:
 	//设备插拔事件
-	virtual void onDeviceChanged(eDeviceStatus status);
+	virtual void onDeviceChanged(eDeviceStatus status,const char *szName,int pid);
 	//网关状态事件
-	virtual void onGatewayStatus(const ROBOT_STATUS &status);
+	virtual void onGatewayStatus(eGatewayStatus status);
 	//node状态事件
-	virtual void onNodeStatus(const ROBOT_STATUS &status);
+	virtual void onNodeStatus(const NODE_STATUS &status);
 	//版本事件
 	virtual void onDeviceInfo(const ST_DEVICE_INFO &info);
 	//在线状态事件
-	virtual void onOnlineStatus(int *status);
+	virtual void onOnlineStatus(uint8_t *status);
 	//单选结束事件
-	virtual void onExitVote(int *status);
+	virtual void onExitVote(uint8_t *status);
 	//多选结束事件
 	virtual void onExitVoteMulit(const ST_OPTION_PACKET &packet);
 	//大数据坐标数据事件
 	virtual void onMassData(int index,const PEN_INFO &penInfo);
 	//网关错误事件
-	virtual void onGatewayError(int error);
+	virtual void onGatewayError(eNebulaError error);
 	//设置设备结果事件
 	virtual void onSetDeviceNum(int result,int customid, int classid, int deviceid);
 	//升级进度事件
@@ -44,9 +44,9 @@ private:
 	//重启事件
 	virtual void onGatewayReboot();
 	//坐标数据事件
-	virtual void onOriginalPacket(float x,float y,int press,int status);
+	virtual void onOriginalPacket(const PEN_INFO &penInfo);
 	//node模式事件
-	virtual void onNodeMode(int mode);
+	virtual void onNodeMode(eNodeMode mode);
 	//设置rtc事件
 	virtual void onSetRtc(int result);
 	//按键按下事件
@@ -65,19 +65,19 @@ private:
 	virtual void onVoteAnswer(int index,int answer);
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
-	virtual void onDongleStatus(int status);
+	virtual void onDongleStatus(eDongleStatus status);
 	//Dongle版本事件
 	virtual void onDongleVersion(const ST_VERSION &version);
 	//Dongle扫描事件
 	virtual void onDongleScanRes(const ST_BLE_DEVICE &device);
 	//slave版本事件
-	virtual void onSlaveVersion(int type,const ST_VERSION &version);
+	virtual void onSlaveVersion(eDeviceType type,const ST_VERSION &version);
 	//slave状态事件
-	virtual void onSlaveStatus(int status);
+	virtual void onSlaveStatus(eSlaveStatus status);
 	//设置名称事件
-	virtual void onSetName(uint8_t result);
+	virtual void onSetName(int result);
 	//slave错误事件
-	virtual void onSlaveError(int error);
+	virtual void onSlaveError(eSlaveError error);
 
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,int press,int status);
