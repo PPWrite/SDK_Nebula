@@ -89,11 +89,8 @@ public:
 	virtual void onGatewayReboot() {
 	}
 	//坐标数据事件
-	virtual void onOriginalPacket(float x,float y,int press,int status) {
-		(void)x;
-		(void)y;
-		(void)press;
-		(void)status;
+	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
+		(void)penInfo;
 	}
 	//node模式事件
 	virtual void onNodeMode(int mode) {
@@ -204,8 +201,6 @@ public:
 	virtual void ConnectSlave(int nID) = 0;
 	//设置蓝牙名称
 	virtual void SetSlaveName(const char *name) = 0;
-	//设置画布大小
-	virtual void SetCanvasSize(int nWidth,int nHeight) = 0;
 	//设置设备类型
 	virtual void SetDeviceType(eDeviceType nDeviceType) = 0;
 	//设置中心偏移
@@ -218,12 +213,14 @@ public:
 	virtual int Height() = 0;
 	//旋转角度
 	virtual void Rotate(int nAngle = 0) = 0;
-	//过滤坐标
-	virtual void SetPenWidth(float nPenWidth = 0) = 0;
 	//开始投票
 	virtual void VoteMulit(bool bMulit = true) = 0;
+	//设置笔宽度
+	virtual void SetPenWidth(float nPenWidth = 0) = 0;
+	//设置画布大小
+	virtual void SetCanvasSize(int nWidth,int nHeight) = 0;
 	//笔记优化
-	virtual void In(float x,float y,int press,int status) = 0;
+	virtual void In(const PEN_INFO &penInfo) = 0;
 	//是否开启压感
 	virtual void SetPressStatus(bool bPress) = 0;
 };
@@ -273,7 +270,7 @@ extern "C" DECLDIR void SetPenWidth(float nPenWidth);
 //开始投票
 extern "C" DECLDIR void VoteMulit(bool bMulit);
 //笔记优化
-extern "C" DECLDIR void In(float x,float y,int press,int status);
+extern "C" DECLDIR void In(const PEN_INFO &penInfo);
 //是否开启压感
 extern "C" DECLDIR void SetPressStatus(bool bPress);
 

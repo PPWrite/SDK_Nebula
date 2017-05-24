@@ -200,15 +200,6 @@ typedef struct sPenInfo
 	uint16_t nY;			// 笔y轴坐标
 	uint16_t nPress;		// 笔压力
 }PEN_INFO;  
-
-typedef struct sPenInfoF
-{
-	uint8_t nStatus;		// 笔状态
-	float nX;				// 笔x轴坐标
-	float nY;				// 笔y轴坐标
-	uint16_t nPress;		// 笔压力
-	float nWidth;			// 笔宽度
-}PEN_INFOF;  
 //设备信息
 typedef struct usb_info
 {
