@@ -83,6 +83,7 @@ private:
 	int m_nNoteNum;
 	//dongle…˝º∂¿‡–Õ
 	int m_nDongleUpdateType;
+	int m_nSlaveType;
 public:
 	afx_msg void OnBnClickedButton3Update();
 	afx_msg LRESULT OnUpdate(WPARAM wParam, LPARAM lParam);

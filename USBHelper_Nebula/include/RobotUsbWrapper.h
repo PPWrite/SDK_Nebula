@@ -187,7 +187,7 @@ public:
 	//发送命令
 	virtual void Send(int nCmd) = 0;
 	//升级
-	virtual bool Update(const char *fileName,const char *fileOther) = 0;
+	virtual bool Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow) = 0;
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
 	//获取可用设备总数
@@ -238,7 +238,7 @@ extern "C" DECLDIR bool  IsConnected();
 //发送命令
 extern "C" DECLDIR void  Send(int nCmd);
 //升级
-extern "C" DECLDIR void  Update( const char *fileName,const char *fileOther );
+extern "C" DECLDIR void  Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow);
 //设置
 extern "C" DECLDIR void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
 //获取可用设备总数

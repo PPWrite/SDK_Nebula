@@ -135,6 +135,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nNoteNum(0)
 	, m_pWBDlg(NULL)
 	, m_nIndexCount(0)
+	, m_nSlaveType(0)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -982,10 +983,20 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 	case START_UPADTE_DONGLE:
 		{
 			m_nDongleUpdateType = wParam;
-			if (m_nDongleUpdateType == 1)
-				GetInstance()->Update(WideStrToMultiStr(m_strFileBle.GetBuffer()),(const char*)wParam);
-			else
-				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),(const char*)wParam);
+			switch(m_nDongleUpdateType)
+			{
+			case DONGLE_BLE:
+				GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),Dongle);
+				break;
+			case DONGLE_MCU:
+				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",Dongle);
+				break;
+			case SLAVE_MCU:
+				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",(eDeviceType)m_nSlaveType);
+				break;
+			default:
+				break;
+			}
 		}
 		break;
 	case STOP_UPDATE_GATEWAY:
@@ -1698,6 +1709,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SLAVE_VERSION:
 		{
+			memcpy(&m_nSlaveType,&report.payload,2);
+
 			ST_VERSION version = {0};
 			memcpy(&version,report.payload+2,sizeof(version));
 			CString str;
