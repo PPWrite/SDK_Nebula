@@ -17,8 +17,8 @@
 
 #define RESET_NODE 0x2a
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -243,6 +243,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_START)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("GATEWAY"));
 #endif
 #ifdef _NODE
@@ -270,6 +271,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_SHOW);
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
+
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -359,7 +363,6 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);
 
 //#ifdef _NODE
-	//((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 
 	m_pWBDlg = new CWBDlg;
 	m_pWBDlg->Create(IDD_WBDLG);
