@@ -72,6 +72,16 @@ typedef struct st_option_packet
 
 }ST_OPTION_PACKET;
 
+typedef struct st_note_time
+{
+	uint8_t note_time_year;
+	uint8_t note_time_month;
+	uint8_t note_time_day;
+	uint8_t note_time_hour;
+	uint8_t note_time_min;
+
+}ST_NOTE_TIME;
+
 typedef struct st_note_header_info
 {
 	uint16_t note_identifier;
@@ -79,11 +89,7 @@ typedef struct st_note_header_info
 	uint8_t flash_erase_flag;
 	uint16_t note_start_sector;
 	uint32_t note_len;
-	uint8_t note_time_year;
-	uint8_t note_time_month;
-	uint8_t note_time_day;
-	uint8_t note_time_hour;
-	uint8_t note_time_min;
+	ST_NOTE_TIME note_time;
 
 } ST_NOTE_HEADER_INFO;
 
@@ -95,11 +101,7 @@ typedef struct st_note_plus_header_info
 	uint8_t note_head_start;
 	uint16_t note_start_sector;
 	uint32_t note_len;
-	uint8_t note_time_year;
-	uint8_t note_time_month;
-	uint8_t note_time_day;
-	uint8_t note_time_hour;
-	uint8_t note_time_min;
+	ST_NOTE_TIME note_time;
 
 } ST_NOTE_PLUS_HEADER_INFO;
 
@@ -259,8 +261,6 @@ enum eUpdateType
 	DONGLE_MCU,
 	SLAVE_MCU,
 };
-
-#define eSlaveStatus eNodeStatus
 
 enum eSlaveError
 {

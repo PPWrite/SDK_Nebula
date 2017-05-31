@@ -114,12 +114,13 @@ public:
 		(void)penInfo;
 	}
 	//离线笔记开始
-	virtual void onSyncBegin(){
-
+	virtual void onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime){
+		(void)noteNum;
+		(void)noteTime;
 	}
 	//离线笔记结束
-	virtual void onSyncEnd(){
-
+	virtual void onSyncEnd(int result){
+		(void)result;
 	}
 	//上报页码
 	virtual void onPageNo(int pageNo){
@@ -149,7 +150,7 @@ public:
 		(void)version;
 	}
 	//slave状态事件
-	virtual void onSlaveStatus(eSlaveStatus status) {
+	virtual void onSlaveStatus(const NODE_STATUS &status) {
 		(void)status;
 	}
 	//设置名称事件

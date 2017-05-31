@@ -187,7 +187,7 @@ void CRbtEventHandler::onSyncPacket(const PEN_INFO &penInfo)
 	}
 }
 //离线笔记开始
-void CRbtEventHandler::onSyncBegin()
+void CRbtEventHandler::onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -196,7 +196,7 @@ void CRbtEventHandler::onSyncBegin()
 	}
 }
 //离线笔记结束
-void CRbtEventHandler::onSyncEnd()
+void CRbtEventHandler::onSyncEnd(int result)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -260,7 +260,7 @@ void CRbtEventHandler::onSlaveVersion(eDeviceType type,const ST_VERSION &version
 	}
 }
 //slave状态事件
-void CRbtEventHandler::onSlaveStatus(eSlaveStatus status)
+void CRbtEventHandler::onSlaveStatus(const NODE_STATUS &status)
 {
 	if(m_hMainWnd != NULL)
 	{

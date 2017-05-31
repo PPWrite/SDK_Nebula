@@ -56,9 +56,9 @@ private:
 	//离线笔记坐标数据事件
 	virtual void onSyncPacket(const PEN_INFO &penInfo);
 	//离线笔记开始
-	virtual void onSyncBegin();
+	virtual void onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime);
 	//离线笔记结束
-	virtual void onSyncEnd();
+	virtual void onSyncEnd(int result);
 	//上报页码
 	virtual void onPageNo(int pageNo);
 	//抢答事件
@@ -73,7 +73,7 @@ private:
 	//slave版本事件
 	virtual void onSlaveVersion(eDeviceType type,const ST_VERSION &version);
 	//slave状态事件
-	virtual void onSlaveStatus(eSlaveStatus status);
+	virtual void onSlaveStatus(const NODE_STATUS &status);
 	//设置名称事件
 	virtual void onSetName(int result);
 	//slave错误事件
