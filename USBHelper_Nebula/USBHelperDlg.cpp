@@ -17,9 +17,9 @@
 
 #define RESET_NODE 0x2a
 
-//#define _GATEWAY
+#define _GATEWAY
 //#define _NODE
-#define _DONGLE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -359,7 +359,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);
 
 //#ifdef _NODE
-	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
+	//((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 
 	m_pWBDlg = new CWBDlg;
 	m_pWBDlg->Create(IDD_WBDLG);
