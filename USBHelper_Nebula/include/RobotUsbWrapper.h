@@ -114,9 +114,9 @@ public:
 		(void)penInfo;
 	}
 	//离线笔记开始
-	virtual void onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime){
+	virtual void onSyncBegin(int noteNum,const ST_RTC_INFO &rtcInfo){
 		(void)noteNum;
-		(void)noteTime;
+		(void)rtcInfo;
 	}
 	//离线笔记结束
 	virtual void onSyncEnd(int result){

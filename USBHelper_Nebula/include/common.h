@@ -72,7 +72,7 @@ typedef struct st_option_packet
 
 }ST_OPTION_PACKET;
 
-typedef struct st_note_time
+typedef struct st_rtc_info
 {
 	uint8_t note_time_year;
 	uint8_t note_time_month;
@@ -80,20 +80,20 @@ typedef struct st_note_time
 	uint8_t note_time_hour;
 	uint8_t note_time_min;
 
-}ST_NOTE_TIME;
+} ST_RTC_INFO;
 
-typedef struct st_note_header_info
+typedef struct st_elite_header_info
 {
 	uint16_t note_identifier;
 	uint8_t note_number;
 	uint8_t flash_erase_flag;
 	uint16_t note_start_sector;
 	uint32_t note_len;
-	ST_NOTE_TIME note_time;
+	ST_RTC_INFO note_time;
 
-} ST_NOTE_HEADER_INFO;
+} ST_ELITE_HEADER_INFO;
 
-typedef struct st_note_plus_header_info
+typedef struct st_note_header_info
 {
 	uint16_t note_identifier;
 	uint16_t note_number;
@@ -101,9 +101,9 @@ typedef struct st_note_plus_header_info
 	uint8_t note_head_start;
 	uint16_t note_start_sector;
 	uint32_t note_len;
-	ST_NOTE_TIME note_time;
+	ST_RTC_INFO note_time;
 
-} ST_NOTE_PLUS_HEADER_INFO;
+} ST_NOTE_HEADER_INFO;
 
 #pragma pack()
 

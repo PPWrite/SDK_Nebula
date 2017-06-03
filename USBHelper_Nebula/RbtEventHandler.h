@@ -56,7 +56,7 @@ private:
 	//离线笔记坐标数据事件
 	virtual void onSyncPacket(const PEN_INFO &penInfo);
 	//离线笔记开始
-	virtual void onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime);
+	virtual void onSyncBegin(int noteNum,const ST_RTC_INFO &rtcInfo);
 	//离线笔记结束
 	virtual void onSyncEnd(int result);
 	//上报页码

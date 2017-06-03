@@ -187,7 +187,7 @@ void CRbtEventHandler::onSyncPacket(const PEN_INFO &penInfo)
 	}
 }
 //离线笔记开始
-void CRbtEventHandler::onSyncBegin(int noteNum,const ST_NOTE_TIME &noteTime)
+void CRbtEventHandler::onSyncBegin(int noteNum,const ST_RTC_INFO &rtcInfo)
 {
 	if(m_hMainWnd != NULL)
 	{
