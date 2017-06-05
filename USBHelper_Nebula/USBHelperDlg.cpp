@@ -1492,8 +1492,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SYNC_TRANS_BEGIN:
 		{
-			ST_NOTE_PLUS_HEADER_INFO info = {0};
-			memcpy(&info,report.payload,sizeof(ST_NOTE_PLUS_HEADER_INFO));
+			ST_NOTE_HEADER_INFO info = {0};
+			memcpy(&info,report.payload,sizeof(ST_NOTE_HEADER_INFO));
 
 			int nCount = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount();
 			CString str,strID;
