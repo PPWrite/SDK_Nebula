@@ -270,6 +270,7 @@ enum eSlaveError
 	ERROR_OTA_CHECKSUM,
 	ERROR_OTA_STATUS,
 	ERROR_OTA_VERSION,
+	ERROR_SYNC_STATUS = 7,
 };
 
 enum eDeviceStatus

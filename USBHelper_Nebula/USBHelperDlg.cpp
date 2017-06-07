@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170515")
+#define _VERSION  _T("版本号:20170607")
 
 #define RESET_NODE 0x2a
 
-//#define _GATEWAY
+#define _GATEWAY
 //#define _NODE
-#define _DONGLE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -1157,6 +1157,15 @@ void CUSBHelperDlg::setUsbData(const unsigned char *pData)
 //解析nebula命令
 void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 {
+	/*CString strHex("");
+	for(int i=0;i<60;i++)
+	{
+		CString str;
+		str.Format(_T("%02x "),report.payload[i]);
+		strHex += str;
+	}
+	strHex += "\r\n";
+	WriteLog(strHex);//*/
 	switch(report.cmd_id)
 	{
 	case ROBOT_GATEWAY_STATUS://获取状态

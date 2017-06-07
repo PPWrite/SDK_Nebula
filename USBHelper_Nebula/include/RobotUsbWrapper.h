@@ -133,8 +133,9 @@ public:
 	}
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
-	virtual void onDongleStatus(eDongleStatus status) {
+	virtual void onDongleStatus(eDongleStatus status,int mode) {
 		(void)status;
+		(void)mode;
 	}
 	//Dongle版本事件
 	virtual void onDongleVersion(const ST_VERSION &version) {
