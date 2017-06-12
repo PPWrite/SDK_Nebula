@@ -950,7 +950,7 @@ void CUSBHelperDlg::OnBnClickedButton3Set()
 		int nCustrom = atoi(WideStrToMultiStr(strCustom.GetBuffer()));
 		int nClass = atoi(WideStrToMultiStr(strClass.GetBuffer()));
 		int nDevice = atoi(WideStrToMultiStr(strDevice.GetBuffer()));
-		GetInstance()->SetConfig(nCustrom,nClass,nDevice - 1);
+		GetInstance()->SetConfig(nCustrom,nClass,nDevice);
 	}
 }
 

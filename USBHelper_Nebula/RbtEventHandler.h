@@ -18,7 +18,7 @@ public:
 	HWND GetMsgReceiver() {return m_hMainWnd;};
 private:
 	//设备插拔事件
-	virtual void onDeviceChanged(eDeviceStatus status,const char *szName,int pid);
+	virtual void onDeviceChanged(eDeviceStatus status,int pid);
 	//网关状态事件
 	virtual void onGatewayStatus(eGatewayStatus status);
 	//node状态事件
@@ -65,7 +65,7 @@ private:
 	virtual void onVoteAnswer(int index,int answer);
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
-	virtual void onDongleStatus(eDongleStatus status);
+	virtual void onDongleStatus(eDongleStatus status,int mode);
 	//Dongle版本事件
 	virtual void onDongleVersion(const ST_VERSION &version);
 	//Dongle扫描事件

@@ -62,6 +62,7 @@ typedef struct st_device_info
 	uint8_t  class_num;
 	uint8_t  device_num;
 	uint8_t  mac[6];
+	uint8_t  hardware_num;
 
 }ST_DEVICE_INFO;
 

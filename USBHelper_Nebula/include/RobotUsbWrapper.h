@@ -32,9 +32,8 @@ class IRobotEventHandler
 public:
 	virtual ~IRobotEventHandler() {}
 	//设备插拔事件
-	virtual void onDeviceChanged(eDeviceStatus status,const char *szName,int pid) {
+	virtual void onDeviceChanged(eDeviceStatus status,int pid) {
 		(void)status;
-		(void)szName;
 		(void)pid;
 	}
 	//网关状态事件

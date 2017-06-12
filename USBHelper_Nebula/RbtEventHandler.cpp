@@ -16,7 +16,7 @@ void CRbtEventHandler::SetMsgReceiver(HWND hWnd)
 }
 
 //设备插拔事件
-void CRbtEventHandler::onDeviceChanged(eDeviceStatus status,const char *szName,int pid)
+void CRbtEventHandler::onDeviceChanged(eDeviceStatus status,int pid)
 {
 	if(m_hMainWnd != NULL)
 	{
@@ -224,7 +224,7 @@ void CRbtEventHandler::onVoteAnswer(int index,int answer)
 }
 //////////////////////////////dongle//////////////////////
 //Dongle状态事件
-void CRbtEventHandler::onDongleStatus(eDongleStatus status)
+void CRbtEventHandler::onDongleStatus(eDongleStatus status,int mode)
 {
 	if(m_hMainWnd != NULL)
 	{
