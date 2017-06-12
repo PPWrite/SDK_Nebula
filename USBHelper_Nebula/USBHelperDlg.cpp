@@ -1361,7 +1361,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(str);
 				str.Format(_T("%d"),report.payload[2]);
 				GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
-				str.Format(_T("%d"),report.payload[3] + 1);
+				str.Format(_T("%d"),report.payload[3]);
 				GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
 			}
 		}
@@ -1401,7 +1401,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(str);
 			str.Format(_T("%d"),info.class_num);
 			GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
-			str.Format(_T("%d"),info.device_num + 1);
+			str.Format(_T("%d"),info.device_num);
 			GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
 		}
 		break;			
