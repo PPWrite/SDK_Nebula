@@ -29,11 +29,11 @@
 *.app
 
 #
-bin/
-obj/
-Debug/
-release/
-ipch/
+*.bin/
+*.obj/
+*.Debug/
+*.release/
+*.ipch/
 *.sdf
 *.vcxproj.user
 
