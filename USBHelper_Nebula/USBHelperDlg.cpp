@@ -17,9 +17,9 @@
 
 #define RESET_NODE 0x2a
 
-#define _GATEWAY
+//#define _GATEWAY
 //#define _NODE
-//#define _DONGLE
+#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -1789,6 +1789,40 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SET_NAME:
 		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		break;
+	case ROBOT_KEY_PRESS://按键按下
+		{
+			int nStatus = report.payload[0];
+			switch(nStatus)
+			{
+			case CLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CLICK"));
+				break;
+			case DBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("DBCLICK"));
+				break;
+			case PAGEUP:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUP"));
+				break;
+			case PAGEDOWN:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWN"));
+				break;
+			case CREATEPAGE:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CREATEPAGE"));
+				break;
+			default:
+				break;
+			}
+		}
+		break;
+	case ROBOT_SHOW_PAGE://显示页码	
+		{
+			int nCurrentPage = report.payload[0];
+			int nPageCount = report.payload[1];
+			CString str;
+			str.Format(_T("第%d页,共%d页"),nCurrentPage,nPageCount);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
 		break;
 	default:
 		break;
