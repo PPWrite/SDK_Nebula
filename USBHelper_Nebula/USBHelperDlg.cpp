@@ -13,12 +13,12 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170607")
+#define _VERSION  _T("版本号:20170616")
 
 #define RESET_NODE 0x2a
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -522,6 +522,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	GetDlgItemText(IDC_BUTTON3_OPEN,csBtnTitle);
 	if (csBtnTitle.Compare(_T("关闭设备")) == 0)
 	{
+		if (X8 == m_nDeviceType)
+		{
+			GetInstance()->Send(ExitUsb);
+			Sleep(100);
+		}
 		GetInstance()->ConnectDispose();
 		resetDevice();
 		return;
@@ -566,6 +571,10 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		m_nDeviceType = RobotPen_P1;
 	}
+	else if(nPid == X8_PID)
+	{
+		m_nDeviceType = X8;
+	}
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
 
@@ -599,6 +608,22 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
+	}
+	else if (m_nDeviceType == X8)
+	{
+
+		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
+		//GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(FALSE);
+		//GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(FALSE);
+		GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
+
+		GetDlgItem(IDC_STATIC_CUS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_CLASS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
+
+		GetDlgItem(IDC_EDIT_CUSTOM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 	else
 	{
@@ -670,6 +695,9 @@ void CUSBHelperDlg::resetDevice()
 	GetDlgItem(IDC_STATIC_NOTE)->SetWindowTextW(_T(""));
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowTextW(_T(""));
+
+	GetDlgItem(IDC_STATIC_NOTE2)->SetWindowTextW(_T(""));
+	
 
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
@@ -1425,25 +1453,32 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				break;
 			else
 				m_nLastMode = nStatus;
+			if (X8 ==report.reserved)
+			{
+				if (nStatus != NODE_USB)
+				{
+					GetInstance()->Send(EnterUsb);
+				}
+			}
 			CString str;
 			switch(nStatus)
 			{
 			case 0:
 				{
 					str = _T("BLE");
-					GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
+					//GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
 				}
 				break;
 			case 1:
 				{
 					str = _T("2.4G");
-					GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
+					//GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_HIDE);
 				}
 				break;
 			case 2:
 				{
 					str = _T("USB");
-					GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
+					//GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
 				}
 				break;
 			default:

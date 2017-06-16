@@ -9,6 +9,7 @@ enum eDevicePid
 	GATEWAY_PID	=	0x6001,
 	T8A_PID		=	0x6002,
 	T9A_PID		=	0x6003,
+	X8_PID		=	0x600d,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -62,9 +63,16 @@ typedef struct st_device_info
 	uint8_t  class_num;
 	uint8_t  device_num;
 	uint8_t  mac[6];
-	uint8_t  hardware_num;
+	uint16_t  hardware_num;
 
 }ST_DEVICE_INFO;
+//…Ë±∏∞Ê±æ∫≈
+typedef struct st_device_version
+{
+	uint16_t hard_version;
+	ST_VERSION version;
+
+}ST_DEVICE_VERSION;
 
 typedef struct st_option_packet
 {

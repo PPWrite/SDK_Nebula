@@ -22,6 +22,8 @@ enum eRbtType
 	DongleScanStop,
 	DongleDisconnect,
 	VoteAnswer,
+	EnterUsb,
+	ExitUsb,
 };
 
 //回调函数
@@ -163,11 +165,11 @@ public:
 	}
 
 	//笔记优化输出
-	virtual void onOut(float x,float y,float width,int press,int status){
+	virtual void onOut(float x,float y,float width,float speed,int status){
 		(void)x;
 		(void)y;
 		(void)width;
-		(void)press;
+		(void)speed;
 		(void)status;
 	}
 };
