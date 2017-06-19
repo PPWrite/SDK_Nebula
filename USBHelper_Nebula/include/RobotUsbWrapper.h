@@ -24,6 +24,7 @@ enum eRbtType
 	VoteAnswer,
 	EnterUsb,
 	ExitUsb,
+	AdjustMode,
 };
 
 //回调函数
@@ -163,6 +164,18 @@ public:
 	virtual void onSlaveError(eSlaveError error) {
 		(void)error;
 	}
+	//模组版本事件
+	virtual void onModuleVersion(const ST_MODULE_VERSION &version) {
+		(void)version;
+	}
+	//进入模组校准事件
+	virtual void onAjdustMode() {
+	}
+	//模组校准结果事件
+	virtual void onAjdustResult(int result) {
+		(void)result;
+	}
+
 
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,float speed,int status){

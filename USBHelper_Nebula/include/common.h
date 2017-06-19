@@ -73,6 +73,14 @@ typedef struct st_device_version
 	ST_VERSION version;
 
 }ST_DEVICE_VERSION;
+//模组版本号
+typedef struct st_module_version
+{
+	uint8_t  low_version;
+	uint8_t  high_version;
+	uint8_t  adjust;
+
+}ST_MODULE_VERSION;
 
 typedef struct st_option_packet
 {
@@ -209,6 +217,9 @@ enum eRobotCmd
 	ROBOT_SLAVE_ERROR,							//错误信息
 	ROBOT_SLAVE_STATUS,							//slave状态
 	ROBOT_SLAVE_VERSION,						//slave版本
+	ROBOT_MODULE_VERSION,						//模组版本号
+	ROBOT_ENTER_ADJUST_MODE,					//进入模组校准模式
+	ROBOT_MODULE_ADJUST_RESULT,					//模组校准结果
 };
 // 笔数据信息
 typedef struct sPenInfo
@@ -269,6 +280,7 @@ enum eUpdateType
 	DONGLE_BLE = 0,
 	DONGLE_MCU,
 	SLAVE_MCU,
+	MODULE_MCU,
 };
 
 enum eSlaveError
@@ -286,4 +298,11 @@ enum eDeviceStatus
 {
 	DEVICE_IN	= 0,
 	DEVICE_OUT,
+};
+
+enum eAdujstResult
+{
+	ADJUST_SUCCESSED = 0,
+	ADJUST_FAILED,
+	ADJUST_TIMEOUT,
 };

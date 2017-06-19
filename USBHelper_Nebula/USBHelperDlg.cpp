@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170616")
+#define _VERSION  _T("版本号:20170619")
 
 #define RESET_NODE 0x2a
 
@@ -189,6 +189,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CUSBHelperDlg::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
+	ON_BN_CLICKED(IDC_BUTTON_ADJUST, &CUSBHelperDlg::OnBnClickedButtonAdjust)
 END_MESSAGE_MAP()
 
 
@@ -244,6 +245,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("GATEWAY"));
 #endif
 #ifdef _NODE
@@ -272,6 +274,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 
 	SetWindowText(_T("NODE"));
@@ -304,6 +307,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_STOP)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("DONGLE"));
 
 #endif
@@ -344,6 +348,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 
 	SetWindowText(_T("P1"));
 #endif
@@ -1028,6 +1033,7 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",Dongle);
 				break;
 			case SLAVE_MCU:
+			case MODULE_MCU:
 				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",(eDeviceType)m_nSlaveType);
 				break;
 			default:
@@ -1038,6 +1044,7 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 	case STOP_UPDATE_GATEWAY:
 	case STOP_UPDATE_NODE:
 	case STOP_UPDATE_DONGLE:
+	case STOP_UPDATE_MODULE:
 		GetInstance()->Send(UpdateStop);
 		break;
 	case SET_VERSION:
@@ -1859,6 +1866,30 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
+	case ROBOT_ENTER_ADJUST_MODE:
+		GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("进入校准模式"));
+		break;
+	case ROBOT_MODULE_ADJUST_RESULT:
+		{
+			CString str;
+			int result = report.payload[0];
+			switch(result)
+			{
+			case ADJUST_SUCCESSED:
+				str = _T("校准成功");
+				break;
+			case ADJUST_FAILED:
+				str = _T("校准失败");
+				break;
+			case ADJUST_TIMEOUT:
+				str = _T("校准超时");
+				break;
+			default:
+				break;
+			}
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
 	default:
 		break;
 	}
@@ -1978,4 +2009,11 @@ void CUSBHelperDlg::OnBnClickedButton3Reset()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(RESET_NODE);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonAdjust()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(AdjustMode);
 }

@@ -228,6 +228,7 @@ BOOL CUpdateDlg::OnInitDialog()
 	pCombobox->InsertString(0,_T("BLE"));
 	pCombobox->InsertString(1,_T("MCU"));
 	pCombobox->InsertString(2,_T("SLAVE"));
+	pCombobox->InsertString(3,_T("ฤฃื้"));
 	pCombobox->SetCurSel(2);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -242,7 +243,10 @@ void CUpdateDlg::OnBnClickedButton4Stop()
 	else if(m_nDeviceType == Gateway)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
 	else
+	{
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_DONGLE);
+
+	}
 
 }
 

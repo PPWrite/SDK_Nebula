@@ -121,4 +121,5 @@ public:
 	//afx_msg LRESULT OnRobotEvent(WPARAM wParam, LPARAM lParam);
 
 	int m_nIndexCount;
+	afx_msg void OnBnClickedButtonAdjust();
 };
