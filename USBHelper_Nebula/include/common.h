@@ -10,6 +10,7 @@ enum eDevicePid
 	T8A_PID		=	0x6002,
 	T9A_PID		=	0x6003,
 	X8_PID		=	0x600d,
+	T7PL_PID	=   0x600e,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -30,6 +31,7 @@ enum eDeviceType
 	J0_A4,
 	T9A,
 	X8,
+	T7PL,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)

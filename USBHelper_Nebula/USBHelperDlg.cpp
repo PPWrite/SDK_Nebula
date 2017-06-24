@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170619")
+#define _VERSION  _T("版本号:20170622")
 
 #define RESET_NODE 0x2a
 
@@ -580,6 +580,10 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		m_nDeviceType = X8;
 	}
+	else if(nPid == T7PL_PID)
+	{
+		m_nDeviceType = T7PL;
+	}
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
 
@@ -614,7 +618,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -629,6 +633,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CUSTOM)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
+
+		GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	}
 	else
 	{
@@ -648,6 +654,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if (m_nDeviceType != Gateway)
 		OnBnClickedButtonStatus();
+
+	TRACE("DeviceWidth:%d,DeviceHeight:%d",GetInstance()->Width(),GetInstance()->Height());
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -1602,6 +1610,30 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			CDrawDlg *pDlg = m_list[index];
 			if (NULL != pDlg)
 				pDlg->SetVote(str);
+		}
+		break;
+	case ROBOT_ENTER_ADJUST_MODE:
+		GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("进入校准模式"));
+		break;
+	case ROBOT_MODULE_ADJUST_RESULT:
+		{
+			CString str;
+			int result = report.payload[0];
+			switch(result)
+			{
+			case ADJUST_SUCCESSED:
+				str = _T("校准成功");
+				break;
+			case ADJUST_FAILED:
+				str = _T("校准失败");
+				break;
+			case ADJUST_TIMEOUT:
+				str = _T("校准超时");
+				break;
+			default:
+				break;
+			}
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
 	default:						

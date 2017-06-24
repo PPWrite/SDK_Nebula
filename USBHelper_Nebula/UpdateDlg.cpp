@@ -61,7 +61,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_nDeviceType == T8A || m_nDeviceType == T9A)
+		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
 		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
@@ -334,7 +334,7 @@ bool CUpdateDlg::IsNeedUpdate(const ST_VERSION &versionWeb,const ST_VERSION &ver
 void CUpdateDlg::SetUpgradeType(int nDeviceType)
 {
 	m_nDeviceType = nDeviceType;
-	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A) ? TRUE : FALSE;
+	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
