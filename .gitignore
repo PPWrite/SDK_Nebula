@@ -43,6 +43,9 @@ Debug/
 Release/
 bin/
 obj/
+*.opensdf
+*.ipch
+
 
 
 

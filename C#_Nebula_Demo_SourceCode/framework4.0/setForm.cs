@@ -33,10 +33,10 @@ namespace RobotPenTestDll
             this.textBox2.Text = strClassNum;
             if (nDeviceM != eDeviceType.Gateway)
             {
-                this.textBox2.Text = strDeviceNum;
+                this.textBox3.Text = strDeviceNum;
             }
 
-            if (edevType != eDeviceType.Gateway)
+            if (edevType == eDeviceType.Gateway)
             {
                 this.textBox3.Hide();
                 this.label3.Hide();

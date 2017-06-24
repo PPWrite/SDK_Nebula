@@ -862,6 +862,7 @@ namespace RobotPenTestDll
                 // 绑定相关事件即可
                 robotpenController.GetInstance().nodeStatusEvt += Form1_nodeStatusEvt;
                 robotpenController.GetInstance().gatewatVersionEvt += Form1_gatewatVersionEvt;
+                robotpenController.GetInstance().setDeviceNetNumEvt += Form1_setDeviceNetNumEvt;
                 date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
                 robotpenController.GetInstance().initDeletgate(ref date);
             }
@@ -1158,10 +1159,18 @@ namespace RobotPenTestDll
                     {
                         strStatus = "NEBULA_STATUS_MASSDATA";
                     }break;
-                case GATEWAY_STATUS.NEBULA_STATUS_END:
-                    {
-                        strStatus = "NEBULA_STATUS_END";
-                    } break;
+                case GATEWAY_STATUS.NEBULA_STATUS_VOTE_ANSWER:
+                    strStatus = ("VOTE_ANSWER");
+                    break;
+                case GATEWAY_STATUS.NEBULA_STATUS_CONFIG:
+                    strStatus = ("CONFIG");
+                    break;
+                case GATEWAY_STATUS.NEBULA_STATUS_DFU:
+                   strStatus = ("DFU");
+                    break;
+                case GATEWAY_STATUS.NEBULA_STATUS_MULTI_VOTE:
+                    strStatus = ("MULTI_VOTE");
+                    break;
                 default:
                     {
                         strStatus = "UNKNOW";
