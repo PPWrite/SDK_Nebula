@@ -196,6 +196,7 @@ namespace RobotPenTestDll
 
                 this.update_button.Hide();
                 this.mode_label_tip.Hide();
+                this.comboBox2.Hide();
 
                 this.WindowState = FormWindowState.Normal;
 
