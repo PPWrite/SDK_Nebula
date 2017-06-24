@@ -41,6 +41,8 @@
 *.pdb
 Debug/
 Release/
+bin/
+obj/
 
 
 

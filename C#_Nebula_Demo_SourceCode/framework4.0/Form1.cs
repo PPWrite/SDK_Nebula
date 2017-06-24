@@ -1557,11 +1557,12 @@ namespace RobotPenTestDll
         private void dongle_san_button_Click(object sender, EventArgs e)
         {
             this.slave_listView.BeginUpdate();
-            int nItemCount = this.slave_listView.Items.Count;
-            for (int i = 0; i < nItemCount; ++i)
+ 
+            while (this.slave_listView.Items.Count > 0)
             {
-                this.slave_listView.Items.RemoveAt(i);
+                this.slave_listView.Items.RemoveAt(0);
             }
+
             this.slave_listView.EndUpdate();
 
             robotpenController.GetInstance()._Send(cmdId.DongleScanStart);
