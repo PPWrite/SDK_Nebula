@@ -39,6 +39,8 @@
 *.sln
 *.aps
 *.pdb
+Debug/
+Release/
 
 
 
