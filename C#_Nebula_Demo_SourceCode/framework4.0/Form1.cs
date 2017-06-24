@@ -17,6 +17,8 @@ namespace RobotPenTestDll
     {
         GATEWAY_DEMO,
         NODE_DEMO,
+        DONGLE_DEMO,
+        P1_DEMO,
     }
 
     public partial class Form1 : Form
@@ -29,11 +31,28 @@ namespace RobotPenTestDll
         // NODE单独窗口
         private myControl nodeDataWindow = null;
 
-        private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
+        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        private eDeviceType eDeviceTy;
 
         public Form1()
         {
             InitializeComponent();
+
+            if (demo_type == demoEnum.GATEWAY_DEMO)
+            {
+                eDeviceTy = eDeviceType.Gateway;
+            }
+            else if (demo_type == demoEnum.NODE_DEMO) {
+                eDeviceTy = eDeviceType.T8A;
+            }
+            else if (demo_type == demoEnum.DONGLE_DEMO)
+            {
+                eDeviceTy = eDeviceType.Dongle;
+            }
+            else if (demo_type == demoEnum.P1_DEMO)
+            {
+                eDeviceTy = eDeviceType.RobotPen_P1;
+            }
             init();
             this.comboBox2.SelectedIndex = 0;
 
@@ -55,9 +74,9 @@ namespace RobotPenTestDll
                     {
                         this.listView1.Items.Add(strDeviceName);
                         string strVID = Convert.ToString(nvid);
-                        this.listView1.Items[0].SubItems.Add(strVID);
+                        this.listView1.Items[i].SubItems.Add(strVID);
                         string strPID = Convert.ToString(npid);
-                        this.listView1.Items[0].SubItems.Add(strPID);
+                        this.listView1.Items[i].SubItems.Add(strPID);
                     }
                 }
                 this.listView1.EndUpdate();
@@ -133,7 +152,7 @@ namespace RobotPenTestDll
                         xCount++;
                     }
 
-                    this.subNodeWindow[i] = new myControl();
+                    this.subNodeWindow[i] = new myControl(canvasType.GATEWAY);
                     this.subNodeWindow[i].m_nIndex = i + 1;
                     this.subNodeWindow[i].canvasShowEvt += dbClkCanvas;
                     this.subNodeWindow[i].setControlSize(nWinSize, nWinSize);
@@ -143,10 +162,12 @@ namespace RobotPenTestDll
                     //this.subNodeWindow[i].start();
                     this.SuspendLayout();
                 }
+
+                notDongleMode();
             }
             else if (demo_type == demoEnum.NODE_DEMO)
             {
-                nodeDataWindow = new myControl();
+                nodeDataWindow = new myControl(canvasType.NODE);
                 this.nodeDataWindow.canvasShowEvt += dbClkCanvas;
                 this.nodeDataWindow.setControlSize(200, 200);
                 this.nodeDataWindow.Location = new Point(nSubWinStartX, nSubWinStartY);
@@ -185,6 +206,38 @@ namespace RobotPenTestDll
                 this.screen_set_label.Location = new Point(this.screen_set_label.Location.X, this.screen_set_label.Location.Y - 400);
                 this.comboBox1.Location = new Point(this.comboBox1.Location.X, this.comboBox1.Location.Y - 400);
                 this.Size = new System.Drawing.Size(1146, 630);
+
+                notDongleMode();
+            }
+            else if (demo_type == demoEnum.DONGLE_DEMO)
+            {
+                this.WindowState = FormWindowState.Normal;
+                isDongleMode();
+
+                nodeDataWindow = new myControl(canvasType.DONGLE);
+                this.nodeDataWindow.canvasShowEvt += dbClkCanvas;
+                this.nodeDataWindow.setControlSize(200, 200);
+                this.nodeDataWindow.Location = new Point(630, 500);
+                this.nodeDataWindow.BackColor = Color.Black;
+                this.Controls.Add(this.nodeDataWindow);
+                //this.subNodeWindow[i].start();
+                this.SuspendLayout();
+
+                this.Size = new System.Drawing.Size(1146, 800);
+            }
+            else if (demo_type == demoEnum.P1_DEMO)
+            {
+                isP1Mode();
+                this.WindowState = FormWindowState.Normal;
+                nodeDataWindow = new myControl(canvasType.P1);
+                this.nodeDataWindow.canvasShowEvt += dbClkCanvas;
+                this.nodeDataWindow.setControlSize(200, 200);
+                this.nodeDataWindow.Location = new Point(500, 20);
+                this.nodeDataWindow.BackColor = Color.Black;
+                this.Controls.Add(this.nodeDataWindow);
+                this.SuspendLayout();
+
+                this.Size = new System.Drawing.Size(800, 300);
             }
 
 
@@ -211,6 +264,462 @@ namespace RobotPenTestDll
             this.comboBox1.Text = bScreen ? "横屏" : "竖屏";
             this.set_button.Enabled = false;
         }
+
+        private void notDongleMode()
+        {
+            this.slave_listView.Hide();
+            this.dongle_san_button.Hide();
+            this.dongle_stopsan_button.Hide();
+            this.dg_con_button.Hide();
+            this.dg_discon_button.Hide();
+            this.slave_ststus_label.Hide();
+            this.slave_status_label1.Hide();
+            this.slave_version_label.Hide();
+            this.slave_version1_label.Hide();
+            this.slave_name_textBox.Hide();
+
+            this.slave_name_set_button.Hide();
+            this.adjust_button.Hide();
+            this.start_sync_button.Hide();
+            this.end_sync_button.Hide();
+            this.offline_label.Hide();
+        }
+
+        private void isDongleMode()
+        {
+            this.comboBox2.Hide();
+            this.button1.Hide();
+            this.button2.Hide();
+            this.voteClear_button.Hide();
+            this.ns_start_button.Hide();
+            this.ms_end_button.Hide();
+            this.msClear_button.Hide();
+            this.set_button.Hide();
+
+            this.custom_label.Hide();
+            this.custom_textBox.Hide();
+            this.class_label.Hide();
+            this.class_textBox.Hide();
+            this.device_label.Hide();
+            this.msClear_button.Hide();
+            this.device_textBox.Hide();
+
+            this.slave_listView.Columns.Add("Num", 50, HorizontalAlignment.Center);
+            this.slave_listView.Columns.Add("名称", 120, HorizontalAlignment.Center);
+            this.slave_listView.Columns.Add("Mac地址", 300, HorizontalAlignment.Center);
+
+
+            robotpenController.GetInstance().dongleStatusEvt += new robotpenController.dongleStatus(Form1_dongleStatusEvt);
+            robotpenController.GetInstance().dongleScanResultEvt += new robotpenController.dongleSanResult(Form1_dongleScanResultEvt);
+            robotpenController.GetInstance().dongleVersionEvt += new robotpenController.dongleVersion(Form1_dongleVersionEvt);
+            robotpenController.GetInstance().dongleDataPacketEvt += new robotpenController.dongleDataPacket(Form1_dongleDataPacketEvt);
+            robotpenController.GetInstance().slaveStatusEvt += new robotpenController.slaveStatus(Form1_slaveStatusEvt);
+            robotpenController.GetInstance().slaveVersionEvt += new robotpenController.slaveVersion(Form1_slaveVersionEvt);
+            robotpenController.GetInstance().startSyncNoteDataEvt += new robotpenController.startSyncNoteData(Form1_startSyncNoteDataEvt);
+            robotpenController.GetInstance().syncNoteDataEvt += new robotpenController.syncNoteData(Form1_syncNoteDataEvt);
+            robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
+            robotpenController.GetInstance().enterAdjustModeEvt += new robotpenController.enterAdjustMode(Form1_enterAdjustModeEvt);
+            robotpenController.GetInstance().adjustResultEvt += new robotpenController.adjustResult(Form1_adjustResultEvt);
+        }
+
+        private void isP1Mode()
+        {
+            notDongleMode();
+
+            this.comboBox2.Hide();
+            this.button1.Hide();
+            this.button2.Hide();
+            this.voteClear_button.Hide();
+            this.ns_start_button.Hide();
+            this.ms_end_button.Hide();
+            this.msClear_button.Hide();
+            this.set_button.Hide();
+            this.update_button.Hide();
+            this.mode_label_tip.Hide();
+            this.version_label.Hide();
+            this.status_button_query.Hide();
+            this.status_label_title.Hide();
+            this.version_label_show.Hide();
+            this.status_label.Hide();
+
+            this.custom_label.Hide();
+            this.custom_textBox.Hide();
+            this.class_label.Hide();
+            this.class_textBox.Hide();
+            this.device_label.Hide();
+            this.msClear_button.Hide();
+            this.device_textBox.Hide();
+
+            robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
+        }
+
+        // 收到P1设备数据
+        private void Form1_returnP1PointDataEvt(byte bPenStatus, short sx, short sy, short sPress)
+        {
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(sx), Convert.ToInt32(sy));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            int npenStatus = Convert.ToInt32(bPenStatus);
+            if (npenStatus != 17)
+            {
+                npenStatus = 0;
+            }
+            nodeCanvasWindow.recvData(npenStatus, Convert.ToInt32(sx), Convert.ToInt32(sy), 0);
+        }
+
+        void Form1_slaveVersionEvt(st_version version)
+        {
+            string str = Convert.ToString((int)version.version) + "." +
+                    Convert.ToString((int)version.version2) + "." + Convert.ToString((int)version.version3) + "." +
+                    Convert.ToString((int)version.version4);
+            UpdateControlUI(str, updateControl.eslaveversion);
+        }
+
+        void Form1_slaveStatusEvt(node_status status)
+        {
+            string str;
+            switch ((NODE_STATUS)status.device_status)
+            {
+                case NODE_STATUS.DEVICE_POWER_OFF:
+                    str = "DEVICE_POWER_OFF";
+                    break;
+                case NODE_STATUS.DEVICE_STANDBY:
+                    str = "DEVICE_STANDBY";
+                    break;
+                case NODE_STATUS.DEVICE_INIT_BTN:
+                    str = "DEVICE_INIT_BTN";
+                    break;
+                case NODE_STATUS.DEVICE_OFFLINE:
+                    str = "DEVICE_OFFLINE";
+                    break;
+                case NODE_STATUS.DEVICE_ACTIVE:
+                    str = "DEVICE_ACTIVE";
+                    break;
+                case NODE_STATUS.DEVICE_LOW_POWER_ACTIVE:
+                    str ="DEVICE_LOW_POWER_ACTIVE";
+                    break;
+                case NODE_STATUS.DEVICE_OTA_MODE:
+                    str = "DEVICE_OTA_MODE";
+                    break;
+                case NODE_STATUS.DEVICE_OTA_WAIT_SWITCH:
+                    str = "DEVICE_OTA_WAIT_SWITCH";
+                    break;
+                case NODE_STATUS.DEVICE_TRYING_POWER_OFF:
+                    str = "DEVICE_TRYING_POWER_OFF";
+                    break;
+                case NODE_STATUS.DEVICE_FINISHED_PRODUCT_TEST:
+                    str = "DEVICE_FINISHED_PRODUCT_TEST";
+                    break;
+                case NODE_STATUS.DEVICE_SYNC_MODE:
+                    str = "DEVICE_SYNC_MODE";
+                    break;
+                default:
+                    str = "error";
+                    break;
+            }
+
+            UpdateControlUI(str, updateControl.eslavestatus);
+            string strNoteCount = "离线笔迹:" + Convert.ToInt32(status.note_num) + "条";
+            UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+        }
+
+        // dongle数据上报
+        private void Form1_dongleDataPacketEvt(PEN_INFO data)
+        {
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(data.nX), Convert.ToInt32(data.nY));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+            
+            nodeCanvasWindow.recvData(Convert.ToInt32(data.nPress), Convert.ToInt32(data.nX), Convert.ToInt32(data.nY), 0);
+        }
+
+        private void Form1_dongleVersionEvt(st_version version)
+        {
+            string str = Convert.ToString((int)version.version) + "." + 
+                Convert.ToString((int)version.version2) + "." + Convert.ToString((int)version.version3) + "." + 
+                Convert.ToString((int)version.version4);
+            UpdateControlUI(str, updateControl.edongleversion);
+        }
+
+        private void Form1_dongleScanResultEvt(st_ble_device slaveInfo)
+        {
+            string strSlaveName = System.Text.Encoding.ASCII.GetString(slaveInfo.device_name);
+            string strMac = Convert.ToString(slaveInfo.addr[0], 16) + ":" + Convert.ToString(slaveInfo.addr[1], 16) + ":" +
+                Convert.ToString(slaveInfo.addr[2], 16) + ":" + Convert.ToString(slaveInfo.addr[3], 16) + ":" +
+                Convert.ToString(slaveInfo.addr[4], 16) + ":" + Convert.ToString(slaveInfo.addr[5], 16);
+            UpdateSlaveDeviceListView(slaveInfo.num, strSlaveName, strMac);
+        }
+
+        private void Form1_dongleStatusEvt(eDongleStatus status)
+        {
+            string str;
+            switch (status)
+            {
+                case eDongleStatus.BLE_STANDBY:
+                    str = ("BLE_STANDBY");
+                    break;
+                case eDongleStatus.BLE_SCANNING:			//正在扫描	
+                    str = ("BLE_SCANNING");
+                    break;
+                case eDongleStatus.BLE_CONNECTING:		//连接中
+                    str = ("BLE_CONNECTING");
+                    break;
+                case eDongleStatus.BLE_CONNECTED:			//连接成功
+                    {
+                        str = ("BLE_CONNECTED");
+                        UpdateControlUI("", updateControl.econnectSlaveName);
+                    }
+                    break;
+                case eDongleStatus.BLE_ACTIVE_DISCONNECT://正在断开链接
+                    str = ("BLE_ACTIVE_DISCONNECT");
+                    break;
+                case eDongleStatus.BLE_RECONNECTING:		//重新连接
+                    str = ("BLE_RECONNECTING");
+                    break;
+                case eDongleStatus.BLE_LINK_BREAKOUT:		//蓝牙正在升级中
+                   str = ("BLE_LINK_BREAKOUT");
+                    break;
+                case eDongleStatus.BLE_DFU_START:			//蓝牙dfu模式
+                    str = ("BLE_DFU_START");
+                    break;
+                default:
+                    {
+                        str = "UNKNOW:";
+                        string strStatus = Convert.ToString((int)status);
+                    }
+                    break;
+            }
+            UpdateControlUI(str, updateControl.edonglestatus);
+        }
+
+        private void Form1_endSyncNoteDataEvt()
+        {
+            string strNoteCount = "同步结束";
+            UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+        }
+
+        private void Form1_syncNoteDataEvt(byte bPenStatus, short sx, short sy, short sPress)
+        {
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(sx), Convert.ToInt32(sy));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            Console.WriteLine("sPress={0} | sx={1} | y={2}", sPress, sx, sy);
+            nodeCanvasWindow.recvData(sPress, Convert.ToInt32(sx), Convert.ToInt32(sy), 0);
+        }
+
+        private void Form1_startSyncNoteDataEvt(byte noteCount)
+        {
+            string strNoteCount = "离线笔迹:" + Convert.ToInt32(noteCount) + "条";
+            UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+        }
+
+        // 进入校准模式
+        private void Form1_enterAdjustModeEvt()
+        {
+            string str = "进入校准模式";
+            UpdateControlUI(str, updateControl.edonglestatus);
+        }
+
+
+        private void Form1_adjustResultEvt(eAdujstResult result)
+        {
+            string str;
+            switch (result)
+            {
+                case eAdujstResult.ADJUST_SUCCESSED:
+                    str = ("校准成功");
+                    break;
+                case eAdujstResult.ADJUST_FAILED:
+                    str = ("校准失败");
+                    break;
+                case eAdujstResult.ADJUST_TIMEOUT:
+                    str = ("校准超时");
+                    break;
+                default:
+                    str = "未知错误";
+                    break;
+            }
+            UpdateControlUI(str, updateControl.edonglestatus);
+        }
+
+        // 
+        public enum updateControl
+        {
+            edongleversion,
+            edonglestatus,
+            eslavestatus,
+            eofflinecount,
+            eslaveversion,
+            econnectSlaveName,
+        }
+
+        public delegate void UpdateControlDelegate(string str1, updateControl uty);
+        public delegate void UpdateSlaveDeviceListViewDelegate(int nNum, string strSlaveName, string strMac);
+
+        public void UpdateSlaveDeviceListView(int nNum, string strSlaveName, string strMac)
+        {
+            if (this.slave_listView.InvokeRequired)
+            {
+                while (!this.slave_listView.IsHandleCreated)
+                {
+                    if (this.slave_listView.Disposing || this.slave_listView.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                UpdateSlaveDeviceListViewDelegate d = new UpdateSlaveDeviceListViewDelegate(UpdateSlaveDeviceListView);
+                this.slave_listView.Invoke(d, new object[] { nNum, strSlaveName, strMac });
+            }
+            else
+            {
+                addSlaveDevice(nNum, ref strSlaveName, ref strMac);
+            }
+        }
+
+        public void UpdateControlUI(string param, updateControl uty)
+        {
+            switch (uty)
+            {
+                case updateControl.edongleversion:
+                    {
+                        if (this.version_label_show.InvokeRequired)
+                        {
+                            while (!this.version_label_show.IsHandleCreated)
+                            {
+                                if (this.version_label_show.Disposing || this.version_label_show.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.version_label_show.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            this.version_label_show.Text = param;
+                        }
+                    }
+                    break;
+                case updateControl.edonglestatus:
+                    {
+                        if (this.status_label.InvokeRequired)
+                        {
+                            while (!this.status_label.IsHandleCreated)
+                            {
+                                if (this.status_label.Disposing || this.status_label.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.status_label.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            this.status_label.Text = param;
+                        }
+                    }
+                    break;
+                case updateControl.eslavestatus:
+                    {
+                        if (this.slave_status_label1.InvokeRequired)
+                        {
+                            while (!this.slave_status_label1.IsHandleCreated)
+                            {
+                                if (this.slave_status_label1.Disposing || this.slave_status_label1.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.slave_status_label1.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            this.slave_status_label1.Text = param;
+                        }
+                    }
+                    break;
+                case updateControl.eofflinecount:
+                    {
+                        if (this.offline_label.InvokeRequired)
+                        {
+                            while (!this.offline_label.IsHandleCreated)
+                            {
+                                if (this.offline_label.Disposing || this.offline_label.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.offline_label.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            this.offline_label.Text = param;
+                        }
+                    }
+                    break;
+                case updateControl.eslaveversion:
+                    {
+                        if (this.slave_version1_label.InvokeRequired)
+                        {
+                            while (!this.slave_version1_label.IsHandleCreated)
+                            {
+                                if (this.slave_version1_label.Disposing || this.slave_version1_label.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.slave_version1_label.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            this.slave_version1_label.Text = param;
+                        }
+                    }
+                    break;
+                case updateControl.econnectSlaveName:
+                    {
+                        if (this.slave_name_textBox.InvokeRequired)
+                        {
+                            while (!this.slave_name_textBox.IsHandleCreated)
+                            {
+                                if (this.slave_name_textBox.Disposing || this.slave_name_textBox.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.slave_name_textBox.Invoke(d, new object[] { param, uty });
+                        }
+                        else
+                        {
+                            if (this.slave_listView.SelectedItems.Count != 1)
+                            {
+                                return;
+                            }
+                            string strSlaveName = this.slave_listView.SelectedItems[0].SubItems[1].Text;
+                            this.slave_name_textBox.Text = strSlaveName;
+                        }
+                    }
+                    break;
+            }
+
+        }
+
         private TrailsShowFrom[] canvasWindow = new TrailsShowFrom[60];
         private TrailsShowFrom nodeCanvasWindow = null;
 
@@ -221,7 +730,7 @@ namespace RobotPenTestDll
                 int nIndex = Convert.ToInt32(strIndex);
                 if (canvasWindow[nIndex - 1] == null || canvasWindow[nIndex - 1].IsDisposed)
                 {
-                    canvasWindow[nIndex - 1] = new TrailsShowFrom();
+                    canvasWindow[nIndex - 1] = new TrailsShowFrom(canvasType.GATEWAY);
                     canvasWindow[nIndex - 1].bScreenO = bScreen;
                     canvasWindow[nIndex - 1].TopMost = true;
                     canvasWindow[nIndex - 1].Show();
@@ -246,7 +755,7 @@ namespace RobotPenTestDll
             {
                 if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
                 {
-                    nodeCanvasWindow = new TrailsShowFrom();
+                    nodeCanvasWindow = new TrailsShowFrom(canvasType.NODE);
                     nodeCanvasWindow.bScreenO = bScreen;
                     nodeCanvasWindow.TopMost = true;
                     nodeCanvasWindow.Show();
@@ -267,15 +776,65 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.Show();
                     nodeCanvasWindow.Text = strIndex;
                 }
+            } else if (demo_type == demoEnum.DONGLE_DEMO)
+            {
+                if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                {
+                    nodeCanvasWindow = new TrailsShowFrom(canvasType.DONGLE);
+                    nodeCanvasWindow.bScreenO = bScreen;
+                    nodeCanvasWindow.TopMost = true;
+                    nodeCanvasWindow.Show();
+                    nodeCanvasWindow.Text = strIndex;
+                    nodeCanvasWindow.canvastype = canvasType.DONGLE;
+                    if (!bScreen)
+                    {
+                        nodeCanvasWindow.Size = new Size(426, 625);
+                    }
+                    else
+                    {
+                        nodeCanvasWindow.Size = new Size(625, 480);
+                    }
+                }
+                else
+                {
+                    nodeCanvasWindow.TopMost = true;
+                    nodeCanvasWindow.Show();
+                    nodeCanvasWindow.Text = strIndex;
+                }
+            }
+            else if (demo_type == demoEnum.P1_DEMO)
+            {
+                  if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                {
+                    nodeCanvasWindow = new TrailsShowFrom(canvasType.P1);
+                    nodeCanvasWindow.bScreenO = bScreen;
+                    nodeCanvasWindow.TopMost = true;
+                    nodeCanvasWindow.Show();
+                    nodeCanvasWindow.Text = strIndex;
+                    nodeCanvasWindow.canvastype = canvasType.P1;
+                    if (!bScreen)
+                    {
+                        nodeCanvasWindow.Size = new Size(426, 625);
+                    }
+                    else
+                    {
+                        nodeCanvasWindow.Size = new Size(625, 480);
+                    }
+                }
+                else
+                {
+                    nodeCanvasWindow.TopMost = true;
+                    nodeCanvasWindow.Show();
+                    nodeCanvasWindow.Text = strIndex;
+                }
             }
         }
 
         private RobotpenGateway.robotpenController.returnPointData date = null;//new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
-        private int nDeviceType = 9;  // 默认为网关设备
 
         public void init()
         {
-            robotpenController.GetInstance()._ConnectInitialize(nDeviceType, IntPtr.Zero);
+            robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
             if (demo_type == demoEnum.GATEWAY_DEMO)
             {
                 robotpenController.GetInstance().gateWayStatusEvt += Form1_gateWayStatusEvt;
@@ -287,16 +846,22 @@ namespace RobotPenTestDll
                 robotpenController.GetInstance().onlineStatusEvt += Form1_onlineStatusEvt;
                 robotpenController.GetInstance().setDeviceNetNumEvt += Form1_setDeviceNetNumEvt;
                 robotpenController.GetInstance().exitVoteEvt += Form1_ExitVoteEvt;
+
+                robotpenController.GetInstance().nodeStatusEvt += Form1_nodeStatusEvt;
+                robotpenController.GetInstance().gatewatVersionEvt += Form1_gatewatVersionEvt;
+                date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
+                robotpenController.GetInstance().initDeletgate(ref date);
             }
             else if (demo_type == demoEnum.NODE_DEMO)
             {
                 // 绑定相关事件即可
+                robotpenController.GetInstance().nodeStatusEvt += Form1_nodeStatusEvt;
+                robotpenController.GetInstance().gatewatVersionEvt += Form1_gatewatVersionEvt;
+                date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
+                robotpenController.GetInstance().initDeletgate(ref date);
             }
             //robotpenController.GetInstance().gateWayStatusEvt += Form1_gateWayStatusEvt;
-            robotpenController.GetInstance().nodeStatusEvt += Form1_nodeStatusEvt;
-            robotpenController.GetInstance().gatewatVersionEvt += Form1_gatewatVersionEvt;
-            date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
-            robotpenController.GetInstance().initDeletgate(ref date);
+
         }
 
         private void Form1_setDeviceNetNumEvt(bool bres, byte b1, byte b2, byte b3)
@@ -855,12 +1420,12 @@ namespace RobotPenTestDll
                     return;
                 }
 
-                robotpenController.GetInstance()._ConnectInitialize(nDeviceType, IntPtr.Zero);
+                robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
             }
             else if (nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T8A_PID) || nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T9A_PID))
             {
-                nDeviceType = 6;   // node节点
-                robotpenController.GetInstance()._ConnectInitialize(nDeviceType, IntPtr.Zero);
+                eDeviceTy = eDeviceType.T8A;   // node节点
+                robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
             }
 
             if (this.open_button.Text == "打开设备")
@@ -873,7 +1438,7 @@ namespace RobotPenTestDll
                 }
                 this.open_button.Text = "关闭设备";
                 this.set_button.Enabled = true;
-                if (nDeviceType != 9)
+                if (eDeviceTy != eDeviceType.Gateway)
                 {
                     status_button_query_Click(null, null);
                 }
@@ -901,7 +1466,7 @@ namespace RobotPenTestDll
         // 设置
         private void set_button_Click(object sender, EventArgs e)
         {
-            setForm setWindow = new setForm(nDeviceType, strCustomNum, strClassNum, strDeviceNum);
+            setForm setWindow = new setForm(eDeviceTy, strCustomNum, strClassNum, strDeviceNum);
             setWindow.StartPosition = FormStartPosition.CenterParent;
             DialogResult res = setWindow.ShowDialog();
             if (res != DialogResult.Cancel)
@@ -914,7 +1479,7 @@ namespace RobotPenTestDll
 
                 int nCustomNum = Convert.ToInt32(strCustomID);
                 int nClassNum = Convert.ToInt32(strClassID);
-                int nDeviceNum = ((nDeviceType == 0) ? 0 : Convert.ToInt32(strDevice));
+                int nDeviceNum = ((eDeviceTy == eDeviceType.Gateway) ? 0 : Convert.ToInt32(strDevice));
 
                 robotpenController.GetInstance()._SetConfig(nCustomNum, nClassNum, nDeviceNum);
             }
@@ -981,6 +1546,97 @@ namespace RobotPenTestDll
 
             // 重新加载设备
             loadDevice();
+        }
+
+
+        // dongle 开始扫描
+        private void dongle_san_button_Click(object sender, EventArgs e)
+        {
+            this.slave_listView.BeginUpdate();
+            int nItemCount = this.slave_listView.Items.Count;
+            for (int i = 0; i < nItemCount; ++i)
+            {
+                this.slave_listView.Items.RemoveAt(i);
+            }
+            this.slave_listView.EndUpdate();
+
+            robotpenController.GetInstance()._Send(cmdId.DongleScanStart);
+        }
+
+        // dongle stop scan
+        private void dongle_stopsan_button_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.DongleScanStop);
+        }
+
+        // 添加扫描到的设备到列表
+        private void addSlaveDevice(int nNum, ref string slaveName, ref string slaveMacAddr)
+        {
+            // 过滤扫描到的重复设备
+            this.slave_listView.BeginUpdate();
+            int nItemCount = this.slave_listView.Items.Count;
+            for (int i = 1; i < nItemCount; ++i)
+            {
+                string strNum = this.slave_listView.Items[0].SubItems[0].Text;
+                int iNum = Convert.ToInt32(strNum);
+                if (iNum == nNum)
+                    return;
+            }
+           
+            string strNumber = Convert.ToString(nNum);
+            this.slave_listView.Items.Add(strNumber);
+            this.slave_listView.Items[nItemCount].SubItems.Add(slaveName);
+            this.slave_listView.Items[nItemCount].SubItems.Add(slaveMacAddr);
+            this.slave_listView.EndUpdate();
+        }
+
+        // 连接蓝牙设备
+        private void dg_con_button_Click(object sender, EventArgs e)
+        {
+            if (this.slave_listView.SelectedItems.Count != 1)
+            {
+                MessageBox.Show("请先选择需要连接的设备!");
+                return;
+            }
+
+            string strNum = this.slave_listView.SelectedItems[0].SubItems[0].Text;
+            int nNum = Convert.ToInt32(strNum);
+            robotpenController.GetInstance().connectSlaveDevice(nNum);
+        }
+
+        // 断开蓝牙设备的连接
+        private void dg_discon_button_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.DongleDisconnect);
+        }
+
+        // 设置蓝牙名称
+        private void slave_name_set_button_Click(object sender, EventArgs e)
+        {
+            string strSlaveNewName = this.slave_name_textBox.Text;
+            if (strSlaveNewName == "")
+            {
+                MessageBox.Show("名称不能为空!");
+                return;
+            }
+            robotpenController.GetInstance().setSlaveDeviceName(strSlaveNewName);
+        }
+
+        // 离线笔记开始同步
+        private void start_sync_button_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.SyncBegin);
+        }
+
+        // 结束同步
+        private void end_sync_button_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.SyncEnd);
+        }
+
+        private void adjust_button_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.AdjustMode);
         }
     }
 }

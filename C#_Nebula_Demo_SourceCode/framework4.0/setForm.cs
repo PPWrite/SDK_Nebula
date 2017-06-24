@@ -6,31 +6,32 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using RobotpenGateway;
 
 namespace RobotPenTestDll
 {
     public partial class setForm : Form
     {
 
-        private int nDeviceM = 0;
+        private eDeviceType nDeviceM = 0;
         public string strCustomNum { get; set; }
         public string strClassNum { get; set; }
         public string strDeviceNum { get; set; }
 
-        public setForm(int nDeviceType, string strCustomNum, string strClassNum, string strDeviceNum)
+        public setForm(eDeviceType edevType, string strCustomNum, string strClassNum, string strDeviceNum)
         {
             InitializeComponent();
-            if (nDeviceType == 0)
+            if (edevType == eDeviceType.Gateway)
             {
                 this.label3.Hide();
                 this.textBox3.Hide();
             }
 
-            nDeviceM = nDeviceType;
+            nDeviceM = edevType;
 
             this.textBox1.Text = strCustomNum;
             this.textBox2.Text = strClassNum;
-            if (nDeviceM != 0)
+            if (nDeviceM != eDeviceType.Gateway)
             {
                 this.textBox2.Text = strDeviceNum;
             }

@@ -55,6 +55,21 @@
             this.screen_set_label = new System.Windows.Forms.Label();
             this.listView1 = new System.Windows.Forms.ListView();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.slave_listView = new System.Windows.Forms.ListView();
+            this.dongle_san_button = new System.Windows.Forms.Button();
+            this.dongle_stopsan_button = new System.Windows.Forms.Button();
+            this.dg_con_button = new System.Windows.Forms.Button();
+            this.dg_discon_button = new System.Windows.Forms.Button();
+            this.slave_ststus_label = new System.Windows.Forms.Label();
+            this.slave_status_label1 = new System.Windows.Forms.Label();
+            this.slave_version_label = new System.Windows.Forms.Label();
+            this.slave_version1_label = new System.Windows.Forms.Label();
+            this.slave_name_textBox = new System.Windows.Forms.TextBox();
+            this.slave_name_set_button = new System.Windows.Forms.Button();
+            this.adjust_button = new System.Windows.Forms.Button();
+            this.start_sync_button = new System.Windows.Forms.Button();
+            this.end_sync_button = new System.Windows.Forms.Button();
+            this.offline_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -85,12 +100,11 @@
             // 
             this.status_label.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.status_label.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.status_label.Location = new System.Drawing.Point(295, 250);
+            this.status_label.Location = new System.Drawing.Point(244, 260);
             this.status_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.status_label.Name = "status_label";
-            this.status_label.Size = new System.Drawing.Size(388, 44);
+            this.status_label.Size = new System.Drawing.Size(354, 31);
             this.status_label.TabIndex = 2;
-            this.status_label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Error_label
             // 
@@ -129,12 +143,11 @@
             // version_label_show
             // 
             this.version_label_show.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.version_label_show.Location = new System.Drawing.Point(295, 203);
+            this.version_label_show.Location = new System.Drawing.Point(258, 203);
             this.version_label_show.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.version_label_show.Name = "version_label_show";
             this.version_label_show.Size = new System.Drawing.Size(245, 29);
             this.version_label_show.TabIndex = 7;
-            this.version_label_show.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // status_button_query
             // 
@@ -374,11 +387,179 @@
             this.comboBox2.Size = new System.Drawing.Size(121, 32);
             this.comboBox2.TabIndex = 27;
             // 
+            // slave_listView
+            // 
+            this.slave_listView.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_listView.FullRowSelect = true;
+            this.slave_listView.GridLines = true;
+            this.slave_listView.Location = new System.Drawing.Point(630, 12);
+            this.slave_listView.Name = "slave_listView";
+            this.slave_listView.Size = new System.Drawing.Size(472, 156);
+            this.slave_listView.TabIndex = 28;
+            this.slave_listView.UseCompatibleStateImageBehavior = false;
+            this.slave_listView.View = System.Windows.Forms.View.Details;
+            // 
+            // dongle_san_button
+            // 
+            this.dongle_san_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dongle_san_button.Location = new System.Drawing.Point(630, 195);
+            this.dongle_san_button.Name = "dongle_san_button";
+            this.dongle_san_button.Size = new System.Drawing.Size(102, 45);
+            this.dongle_san_button.TabIndex = 29;
+            this.dongle_san_button.Text = "开始扫描";
+            this.dongle_san_button.UseVisualStyleBackColor = true;
+            this.dongle_san_button.Click += new System.EventHandler(this.dongle_san_button_Click);
+            // 
+            // dongle_stopsan_button
+            // 
+            this.dongle_stopsan_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dongle_stopsan_button.Location = new System.Drawing.Point(757, 195);
+            this.dongle_stopsan_button.Name = "dongle_stopsan_button";
+            this.dongle_stopsan_button.Size = new System.Drawing.Size(96, 45);
+            this.dongle_stopsan_button.TabIndex = 29;
+            this.dongle_stopsan_button.Text = "停止扫描";
+            this.dongle_stopsan_button.UseVisualStyleBackColor = true;
+            this.dongle_stopsan_button.Click += new System.EventHandler(this.dongle_stopsan_button_Click);
+            // 
+            // dg_con_button
+            // 
+            this.dg_con_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dg_con_button.Location = new System.Drawing.Point(878, 195);
+            this.dg_con_button.Name = "dg_con_button";
+            this.dg_con_button.Size = new System.Drawing.Size(108, 45);
+            this.dg_con_button.TabIndex = 29;
+            this.dg_con_button.Text = "连接";
+            this.dg_con_button.UseVisualStyleBackColor = true;
+            this.dg_con_button.Click += new System.EventHandler(this.dg_con_button_Click);
+            // 
+            // dg_discon_button
+            // 
+            this.dg_discon_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dg_discon_button.Location = new System.Drawing.Point(1008, 195);
+            this.dg_discon_button.Name = "dg_discon_button";
+            this.dg_discon_button.Size = new System.Drawing.Size(94, 45);
+            this.dg_discon_button.TabIndex = 29;
+            this.dg_discon_button.Text = "断开";
+            this.dg_discon_button.UseVisualStyleBackColor = true;
+            this.dg_discon_button.Click += new System.EventHandler(this.dg_discon_button_Click);
+            // 
+            // slave_ststus_label
+            // 
+            this.slave_ststus_label.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_ststus_label.Location = new System.Drawing.Point(630, 288);
+            this.slave_ststus_label.Name = "slave_ststus_label";
+            this.slave_ststus_label.Size = new System.Drawing.Size(60, 36);
+            this.slave_ststus_label.TabIndex = 30;
+            this.slave_ststus_label.Text = "状态:";
+            // 
+            // slave_status_label1
+            // 
+            this.slave_status_label1.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_status_label1.Location = new System.Drawing.Point(686, 288);
+            this.slave_status_label1.Name = "slave_status_label1";
+            this.slave_status_label1.Size = new System.Drawing.Size(222, 29);
+            this.slave_status_label1.TabIndex = 31;
+            // 
+            // slave_version_label
+            // 
+            this.slave_version_label.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_version_label.Location = new System.Drawing.Point(921, 288);
+            this.slave_version_label.Name = "slave_version_label";
+            this.slave_version_label.Size = new System.Drawing.Size(60, 36);
+            this.slave_version_label.TabIndex = 30;
+            this.slave_version_label.Text = "版本:";
+            // 
+            // slave_version1_label
+            // 
+            this.slave_version1_label.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_version1_label.Location = new System.Drawing.Point(987, 287);
+            this.slave_version1_label.Name = "slave_version1_label";
+            this.slave_version1_label.Size = new System.Drawing.Size(171, 36);
+            this.slave_version1_label.TabIndex = 30;
+            // 
+            // slave_name_textBox
+            // 
+            this.slave_name_textBox.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_name_textBox.Location = new System.Drawing.Point(625, 348);
+            this.slave_name_textBox.Multiline = true;
+            this.slave_name_textBox.Name = "slave_name_textBox";
+            this.slave_name_textBox.Size = new System.Drawing.Size(144, 39);
+            this.slave_name_textBox.TabIndex = 32;
+            // 
+            // slave_name_set_button
+            // 
+            this.slave_name_set_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.slave_name_set_button.Location = new System.Drawing.Point(857, 348);
+            this.slave_name_set_button.Name = "slave_name_set_button";
+            this.slave_name_set_button.Size = new System.Drawing.Size(98, 35);
+            this.slave_name_set_button.TabIndex = 33;
+            this.slave_name_set_button.Text = "设置";
+            this.slave_name_set_button.UseVisualStyleBackColor = true;
+            this.slave_name_set_button.Click += new System.EventHandler(this.slave_name_set_button_Click);
+            // 
+            // adjust_button
+            // 
+            this.adjust_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.adjust_button.Location = new System.Drawing.Point(983, 347);
+            this.adjust_button.Name = "adjust_button";
+            this.adjust_button.Size = new System.Drawing.Size(98, 35);
+            this.adjust_button.TabIndex = 33;
+            this.adjust_button.Text = "校准";
+            this.adjust_button.UseVisualStyleBackColor = true;
+            this.adjust_button.Click += new System.EventHandler(this.adjust_button_Click);
+            // 
+            // start_sync_button
+            // 
+            this.start_sync_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.start_sync_button.Location = new System.Drawing.Point(627, 442);
+            this.start_sync_button.Name = "start_sync_button";
+            this.start_sync_button.Size = new System.Drawing.Size(98, 35);
+            this.start_sync_button.TabIndex = 33;
+            this.start_sync_button.Text = "开始同步";
+            this.start_sync_button.UseVisualStyleBackColor = true;
+            this.start_sync_button.Click += new System.EventHandler(this.start_sync_button_Click);
+            // 
+            // end_sync_button
+            // 
+            this.end_sync_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.end_sync_button.Location = new System.Drawing.Point(772, 442);
+            this.end_sync_button.Name = "end_sync_button";
+            this.end_sync_button.Size = new System.Drawing.Size(98, 35);
+            this.end_sync_button.TabIndex = 33;
+            this.end_sync_button.Text = "结束同步";
+            this.end_sync_button.UseVisualStyleBackColor = true;
+            this.end_sync_button.Click += new System.EventHandler(this.end_sync_button_Click);
+            // 
+            // offline_label
+            // 
+            this.offline_label.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.offline_label.Location = new System.Drawing.Point(895, 442);
+            this.offline_label.Name = "offline_label";
+            this.offline_label.Size = new System.Drawing.Size(186, 36);
+            this.offline_label.TabIndex = 30;
+            this.offline_label.Text = "离线笔记:";
+            this.offline_label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1128, 885);
+            this.Controls.Add(this.adjust_button);
+            this.Controls.Add(this.end_sync_button);
+            this.Controls.Add(this.start_sync_button);
+            this.Controls.Add(this.slave_name_set_button);
+            this.Controls.Add(this.slave_name_textBox);
+            this.Controls.Add(this.slave_status_label1);
+            this.Controls.Add(this.slave_version1_label);
+            this.Controls.Add(this.slave_version_label);
+            this.Controls.Add(this.offline_label);
+            this.Controls.Add(this.slave_ststus_label);
+            this.Controls.Add(this.dg_discon_button);
+            this.Controls.Add(this.dg_con_button);
+            this.Controls.Add(this.dongle_stopsan_button);
+            this.Controls.Add(this.dongle_san_button);
+            this.Controls.Add(this.slave_listView);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.screen_set_label);
@@ -446,6 +627,21 @@
         private System.Windows.Forms.Label screen_set_label;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ListView slave_listView;
+        private System.Windows.Forms.Button dongle_san_button;
+        private System.Windows.Forms.Button dongle_stopsan_button;
+        private System.Windows.Forms.Button dg_con_button;
+        private System.Windows.Forms.Button dg_discon_button;
+        private System.Windows.Forms.Label slave_ststus_label;
+        private System.Windows.Forms.Label slave_status_label1;
+        private System.Windows.Forms.Label slave_version_label;
+        private System.Windows.Forms.Label slave_version1_label;
+        private System.Windows.Forms.TextBox slave_name_textBox;
+        private System.Windows.Forms.Button slave_name_set_button;
+        private System.Windows.Forms.Button adjust_button;
+        private System.Windows.Forms.Button start_sync_button;
+        private System.Windows.Forms.Button end_sync_button;
+        private System.Windows.Forms.Label offline_label;
     }
 }
 

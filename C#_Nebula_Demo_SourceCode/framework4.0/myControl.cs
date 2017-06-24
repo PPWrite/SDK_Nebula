@@ -12,15 +12,20 @@ namespace RobotPenTestDll
 {
     public partial class myControl : UserControl
     {
-        public myControl()
+        public myControl(canvasType canvasTy)
         {
             InitializeComponent();
             this.m_onLine = false;
+
+            windowType = canvasTy;
         }
+
         public int m_nIndex { get; set; }
         public bool m_onLine { get; set; }
         private Font indexFont = new Font("Times New Roman", 14);
         private Font voteFont = new Font("Times New Roman", 18);
+
+        canvasType windowType { get; set; }
         //public void delegate testDelegate();
 
         #region  波形网格数据
@@ -113,9 +118,22 @@ namespace RobotPenTestDll
             g.FillEllipse(b, bottomLog);
 
             // 绘制索引
-            string strIndex = Convert.ToString(m_nIndex);
-            SizeF sizeString = g.MeasureString(strIndex, indexFont);
-            RectangleF rf = new RectangleF(this.Width/2 - sizeString.Width, this.Height - sizeString.Height - 4, sizeString.Width, sizeString.Height);
+            string strIndex;
+           
+            RectangleF rf;
+            if (windowType == canvasType.DONGLE || windowType == canvasType.P1)
+            {
+                strIndex = "双击显示画布";
+                SizeF sizeString = g.MeasureString(strIndex, indexFont);
+                rf = new RectangleF(0,0, sizeString.Width, sizeString.Height);
+            }
+            else
+            {
+                strIndex = Convert.ToString(m_nIndex);
+                SizeF sizeString = g.MeasureString(strIndex, indexFont);
+                rf = new RectangleF(this.Width / 2 - sizeString.Width, this.Height - sizeString.Height - 4, sizeString.Width, sizeString.Height);
+            }
+            
             g.DrawRectangle(Pens.Transparent, rf.Left, rf.Top, rf.Width, rf.Height);
             Brush bString = new SolidBrush(Color.FromArgb(0, Color.Green));
             g.FillRectangle(bString, rf);

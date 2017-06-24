@@ -20,14 +20,37 @@ namespace RobotPenTestDll
     {
         GATEWAY,
         NODE,
+        DONGLE,
+        P1,
     }
 
     public partial class TrailsShowFrom : Form
     {
-        public TrailsShowFrom()
+        private int m_nDeviceW;
+        private int m_nDeviceH;
+
+        public TrailsShowFrom(canvasType canvasty)
         {
             InitializeComponent();
-            canvastype = canvasType.GATEWAY;
+            canvastype = canvasty;
+            if (canvastype == canvasType.DONGLE)
+            {
+                m_nDeviceW = 14335;
+                m_nDeviceH = 8191;
+
+                m_nDeviceW = 22015;
+                m_nDeviceH = 15359;
+            }
+            else if (canvastype == canvasType.P1)
+            {
+                m_nDeviceW = 17407;
+                m_nDeviceH = 10751;
+            }
+            else
+            {
+                m_nDeviceW = 22015;
+                m_nDeviceH = 15359;
+            }
         }
 
         // 绘制线条
@@ -81,12 +104,12 @@ namespace RobotPenTestDll
         private void compressPoint(ref PointF point)
         {
             //
-            if (canvastype == canvasType.NODE)
+            //if (canvastype == canvasType.NODE)
             {
                 if (!bScreenO)
                 {
                     float fY = point.Y;
-                    point.Y = 22015 - point.X;
+                    point.Y = m_nDeviceW - point.X;
                     point.X = fY;
                 }
             }
@@ -96,21 +119,21 @@ namespace RobotPenTestDll
             {
                 int nValidWidth = this.ClientRectangle.Width - nBordereW / 2;
                 int nValidHeight = this.ClientRectangle.Height - nBordereW;
-                m_nCompress = ((double)(22015) / nValidWidth);  // 设备与屏幕的宽比例
+                m_nCompress = ((double)(m_nDeviceW) / nValidWidth);  // 设备与屏幕的宽比例
                                                              // 计算高的比例
-                double nNeedCanvasHeight = (double)(22015 / m_nCompress);
+                double nNeedCanvasHeight = (double)(m_nDeviceW / m_nCompress);
                 if (nNeedCanvasHeight > nValidHeight)
-                    m_nCompress = (double)(22015 / nValidHeight);
+                    m_nCompress = (double)(m_nDeviceW / nValidHeight);
             }
             else   // 竖屏
             {
                 int nValidWidth = this.Width - nBordereW;
                 int nValidHeight = this.ClientRectangle.Height - nBordereW/2;
-                m_nCompress = ((double)(15359) / nValidWidth);  // 设备与屏幕的宽比例
+                m_nCompress = ((double)(m_nDeviceH) / nValidWidth);  // 设备与屏幕的宽比例
                                                              // 计算高的比例
-                double nNeedCanvasHeight = (double)(15359 / m_nCompress);
+                double nNeedCanvasHeight = (double)(m_nDeviceH / m_nCompress);
                 if (nNeedCanvasHeight > nValidHeight)
-                    m_nCompress = (double)(15359 / nValidHeight);
+                    m_nCompress = (double)(m_nDeviceH / nValidHeight);
             }
 
 
@@ -121,9 +144,6 @@ namespace RobotPenTestDll
             //Console.WriteLine("压缩后的数据为:{0} {1}", nx, ny);
         }
 
-        private int m_nDeviceW = 22015;
-        //private int m_nDeviceH = 17539;
-        private int m_nDeviceH = 15359;
         public void recvData(int nPenStatus, int x, int y, int nCompress)
         {
             PointF pointf;
