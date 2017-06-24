@@ -36,6 +36,9 @@
 *.ipch/
 *.sdf
 *.vcxproj.user
+*.sln
+*.aps
+*.pdb
 
 
 

@@ -18,8 +18,8 @@
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT

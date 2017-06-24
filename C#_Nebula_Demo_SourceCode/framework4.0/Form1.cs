@@ -31,7 +31,7 @@ namespace RobotPenTestDll
         // NODE单独窗口
         private myControl nodeDataWindow = null;
 
-        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        private demoEnum demo_type = demoEnum.NODE_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
@@ -163,6 +163,9 @@ namespace RobotPenTestDll
                     this.SuspendLayout();
                 }
 
+                this.device_label.Hide();
+                this.device_textBox.Hide();
+
                 notDongleMode();
             }
             else if (demo_type == demoEnum.NODE_DEMO)
@@ -189,7 +192,7 @@ namespace RobotPenTestDll
                 this.ns_start_button.Hide();
                 this.ms_end_button.Hide();
                 this.msClear_button.Hide();
-                this.set_button.Hide();
+                //this.set_button.Hide();
 
                 this.update_button.Hide();
                 this.mode_label_tip.Hide();
@@ -197,14 +200,15 @@ namespace RobotPenTestDll
                 this.WindowState = FormWindowState.Normal;
 
                 // 移动控件
-                this.custom_label.Location = new Point(this.custom_label.Location.X, this.custom_label.Location.Y - 300);
-                this.custom_textBox.Location = new Point(this.custom_textBox.Location.X, this.custom_textBox.Location.Y - 300);
-                this.class_label.Location = new Point(this.class_label.Location.X, this.class_label.Location.Y - 300);
-                this.class_textBox.Location = new Point(this.class_textBox.Location.X, this.class_textBox.Location.Y - 300);
-                this.device_label.Location = new Point(this.device_label.Location.X, this.device_label.Location.Y - 300);
-                this.device_textBox.Location = new Point(this.device_textBox.Location.X, this.device_textBox.Location.Y - 300);
-                this.screen_set_label.Location = new Point(this.screen_set_label.Location.X, this.screen_set_label.Location.Y - 400);
-                this.comboBox1.Location = new Point(this.comboBox1.Location.X, this.comboBox1.Location.Y - 400);
+                this.custom_label.Location = new Point(this.custom_label.Location.X, this.custom_label.Location.Y - 200);
+                this.custom_textBox.Location = new Point(this.custom_textBox.Location.X, this.custom_textBox.Location.Y - 200);
+                this.class_label.Location = new Point(this.class_label.Location.X, this.class_label.Location.Y - 200);
+                this.class_textBox.Location = new Point(this.class_textBox.Location.X, this.class_textBox.Location.Y - 200);
+                this.device_label.Location = new Point(this.device_label.Location.X, this.device_label.Location.Y - 200);
+                this.device_textBox.Location = new Point(this.device_textBox.Location.X, this.device_textBox.Location.Y - 200);
+                this.set_button.Location = new Point(this.set_button.Location.X, this.set_button.Location.Y - 150);
+                this.screen_set_label.Location = new Point(this.screen_set_label.Location.X, this.screen_set_label.Location.Y - 300);
+                this.comboBox1.Location = new Point(this.comboBox1.Location.X, this.comboBox1.Location.Y - 300);
                 this.Size = new System.Drawing.Size(1146, 630);
 
                 notDongleMode();

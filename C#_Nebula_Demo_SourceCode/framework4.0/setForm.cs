@@ -13,7 +13,7 @@ namespace RobotPenTestDll
     public partial class setForm : Form
     {
 
-        private eDeviceType nDeviceM = 0;
+        private eDeviceType nDeviceM;
         public string strCustomNum { get; set; }
         public string strClassNum { get; set; }
         public string strDeviceNum { get; set; }
@@ -35,6 +35,12 @@ namespace RobotPenTestDll
             {
                 this.textBox2.Text = strDeviceNum;
             }
+
+            if (edevType != eDeviceType.Gateway)
+            {
+                this.textBox3.Hide();
+                this.label3.Hide();
+            }
         }
 
         // 点击确认
@@ -42,9 +48,15 @@ namespace RobotPenTestDll
         {
             strCustomNum = this.textBox1.Text;
             strClassNum = this.textBox2.Text;
-            if (nDeviceM != 0)
+            if (nDeviceM != eDeviceType.Gateway)
             {
                 strDeviceNum = this.textBox3.Text;
+                if (strDeviceNum == string.Empty)
+                {
+                    MessageBox.Show("设备号不能为空");
+                    return;
+                }
+
                 int nDeviceNum = Convert.ToInt32(strDeviceNum);
                 if (nDeviceNum > 59)
                 {
