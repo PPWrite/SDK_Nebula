@@ -40,7 +40,7 @@
 *.aps
 *.pdb
 Debug/
-Release/
+*.Release/
 bin/
 obj/
 *.opensdf
