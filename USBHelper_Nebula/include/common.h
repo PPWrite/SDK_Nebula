@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#define FILEVERSION "1.1.0.2"
+
 #define NEBULA_VID		0x0483
 #define P1_VID			0x0ED1
 
@@ -210,7 +212,7 @@ enum eRobotCmd
 	ROBOT_SYNC_PACKET,							//上传坐标
 	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
 	ROBOT_VOTE_ANSWER,							//抢答模式
-	ROBOT_OPTIMIZE_PACKET,						//抢答模式
+	ROBOT_OPTIMIZE_PACKET,						//优化笔记
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本
