@@ -45,6 +45,9 @@ bin/
 obj/
 *.opensdf
 *.ipch
+Release/
+*.obj
+*.tlog
 
 
 
