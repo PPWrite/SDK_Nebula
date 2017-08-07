@@ -1,6 +1,5 @@
 #pragma once
 
-
 // CWBDlg ¶Ô»°¿ò
 #define DEV_WIDTH	14335
 #define DEV_HEIGHT	8191
@@ -48,7 +47,8 @@ protected:
 	void compressPoint(CPoint& point);
 	bool pointIsInvalid( int nPenStatus, CPoint& pointValue );
 public:
-	void onRecvData(PEN_INFO& penInfo);
+	void onRecvData(const PEN_INFO& penInfo);
+	void processData(const PEN_INFO& penInfo);
 	void moveCursor(CPoint& pos);
 	void Clear();
 	void Clear(const CPoint& pt);
@@ -58,11 +58,22 @@ public:
 	void readIni();
 	void ResetWindow();
 	PCHAR w2m(PWCHAR WideStr);
-	void SetPage(CString strPage);
+	void SetPage(const PAGE_INFO &pageInfo);
+	void SetCanvasPage(const PAGE_INFO &pageInfo);
+	void SetID(int nID);
+	std::vector<PEN_INFO> m_vecPenInfo;
+	void ReadData();
+	void SaveData(const PAGE_INFO &pageInfo,const std::vector<PEN_INFO> &vecPenInfo);
+	std::vector<PAGE_INFO> m_vecPageNum;
 private:
+	PAGE_INFO m_pageInfo;
+	PAGE_INFO m_canvasPageInfo;
 	int m_nWidth;
 	int m_nHeight;
 	int m_nState;
+	int m_nID;
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedButtonLeft();
+	afx_msg void OnBnClickedButtonRight();
 };

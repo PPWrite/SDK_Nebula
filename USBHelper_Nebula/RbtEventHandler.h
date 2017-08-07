@@ -60,7 +60,7 @@ private:
 	//离线笔记结束
 	virtual void onSyncEnd(int result);
 	//上报页码
-	virtual void onPageNo(int pageNo);
+	virtual void onMassShowPage(int index,int pageNo);
 	//抢答事件
 	virtual void onVoteAnswer(int index,int answer);
 	//////////////////////////////dongle//////////////////////

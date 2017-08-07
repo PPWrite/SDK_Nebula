@@ -27,7 +27,6 @@ void CUpdateDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 }
 
-
 BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON4_UPDATE, &CUpdateDlg::OnBnClickedButton4Update)
 	ON_BN_CLICKED(IDC_BUTTON_BROWER, &CUpdateDlg::OnBnClickedButtonBrower)
@@ -40,6 +39,7 @@ END_MESSAGE_MAP()
 
 
 // CUpdateDlg 消息处理程序
+
 
 
 void CUpdateDlg::OnBnClickedButton4Update()
@@ -161,6 +161,17 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 				str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
 				GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
 			}
+			else if(sArrayVersion.GetCount() == 4)
+			{
+				m_version.version = atoi(WideCharToMultichar(sArrayVersion[0].GetBuffer()).c_str());
+				m_version.version2 = atoi(WideCharToMultichar(sArrayVersion[1].GetBuffer()).c_str());
+				m_version.version3 = atoi(WideCharToMultichar(sArrayVersion[2].GetBuffer()).c_str());
+				m_version.version4 = atoi(WideCharToMultichar(sArrayVersion[3].GetBuffer()).c_str());
+
+				CString str;
+				str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
+				GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+			}
 			else
 				AfxMessageBox(_T("文件格式不匹配！"));
 		}
@@ -184,7 +195,6 @@ void CUpdateDlg::SetVersion(const CString &strVersion)
 		m_version = CString2Version(strVersion);
 	}
 }
-
 
 void CUpdateDlg::OnNcDestroy()
 {
@@ -339,13 +349,15 @@ void CUpdateDlg::SetUpgradeType(int nDeviceType)
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
 
-	if (m_nDeviceType == Dongle)
+	if (Dongle == m_nDeviceType)
 	{
-		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(TRUE);
 		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(FALSE);
 	}
 	else
-		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(FALSE);
+	{
+		GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(TRUE);
+		//GetDlgItem(IDC_COMBO_TYPE)->ShowWindow(FALSE);
+	}
 }
 
 void CUpdateDlg::ResetUI()
@@ -365,23 +377,27 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 	// TODO: 在此添加控件通知处理程序代码
 	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
 
-	CStringArray sArray;
-	SplitFields(m_strDongleVersion,sArray,_T("_"));
-	if (sArray.GetCount() != 2)
+	if (Dongle == m_nDeviceType)
 	{
-		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));;
-		return;
+		CStringArray sArray;
+		SplitFields(m_strDongleVersion,sArray,_T("_"));
+		if (sArray.GetCount() != 2)
+		{
+			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));;
+			return;
+		}
+
+		CString strVersion = _T("");
+		if (nIndex == 0 || nIndex == 1)
+			strVersion = sArray[0];
+		else
+			strVersion = sArray[1];
+
+		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
+		m_version = CString2Version(strVersion);
 	}
 
-	CString strVersion = _T("");
-	if (nIndex == 0 || nIndex == 1)
-		strVersion = sArray[0];
-	else
-		strVersion = sArray[1];
-
-	GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
-	m_version = CString2Version(strVersion);
-	if (nIndex == 1 )
+	if (nIndex == 0 || nIndex == 2)
 	{
 		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_HIDE);

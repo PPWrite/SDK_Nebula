@@ -42,7 +42,8 @@ public:
 	void SetOnLine(bool bOn = false);
 	void SetText(CString str = _T(""));
 	void SetVote(CString strVote = _T(""));
-	void SetPage(CString strPage = _T(""));
+	void SetPage(const PAGE_INFO &pageInfo);
+	void SetID(int nID);
 	CString GetText(){return m_strText;}
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();
@@ -53,6 +54,5 @@ public:
 	void ResetUI(bool bClear = false);
 
 	void ResetWindow();
-
 	void Clear();
 };

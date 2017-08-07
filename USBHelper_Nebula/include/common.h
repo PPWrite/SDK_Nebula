@@ -1,7 +1,9 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.0.2"
+#define FILEVERSION "1.1.0.9"
+
+#define NUM 60
 
 #define NEBULA_VID		0x0483
 #define P1_VID			0x0ED1
@@ -13,6 +15,7 @@ enum eDevicePid
 	T9A_PID		=	0x6003,
 	X8_PID		=	0x600d,
 	T7PL_PID	=   0x600e,
+	T7E_TS_PID	=	0x600f,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -34,6 +37,8 @@ enum eDeviceType
 	T9A,
 	X8,
 	T7PL,
+	T7E_TS,
+	T7_TS,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -184,7 +189,6 @@ enum eRobotCmd
 	ROBOT_EXIT_VOTE_MULIT,						//多选投票模式
 	ROBOT_ENTER_BIG_DATA,						//进入大数据模式
 	ROBOT_MASS_DATA,							//大数据上报
-	ROBOT_PAGE_NO,								//页码显示
 	ROBOT_EXIT_BIG_DATA,						//退出大数据模式
 	ROBOT_GATEWAY_ERROR,						//错误
 	ROBOT_NODE_MODE,							//设备服务模式
@@ -224,15 +228,33 @@ enum eRobotCmd
 	ROBOT_MODULE_VERSION,						//模组版本号
 	ROBOT_ENTER_ADJUST_MODE,					//进入模组校准模式
 	ROBOT_MODULE_ADJUST_RESULT,					//模组校准结果
+	ROBOT_GET_X8_MAC,							//获取mac地址
 };
 // 笔数据信息
-typedef struct sPenInfo
+typedef struct pen_info
 {
 	uint8_t nStatus;		// 笔状态
 	uint16_t nX;			// 笔x轴坐标
 	uint16_t nY;			// 笔y轴坐标
 	uint16_t nPress;		// 笔压力
 }PEN_INFO;  
+
+//页码信息
+typedef struct page_info
+{
+	uint8_t page_num : 8;
+	uint8_t note_num : 6;
+	bool operator==(page_info &pageInfo) const
+	{
+		if (pageInfo.page_num == this->page_num
+			&& pageInfo.note_num == this->note_num)
+		{
+			return true;
+		}
+		return false;
+	}
+}PAGE_INFO;
+
 //设备信息
 typedef struct usb_info
 {
@@ -310,3 +332,18 @@ enum eAdujstResult
 	ADJUST_FAILED,
 	ADJUST_TIMEOUT,
 };
+
+#define WIDTH_T7P	22015
+#define HEIGHT_T7P	15359
+
+#define WIDTH_P1	17407
+#define HEIGHT_P1	10751
+
+#define WIDTH_A4	22600
+#define HEIGHT_A4	16650
+
+#define WIDTH_A5	14335
+#define HEIGHT_A5	8191
+
+#define WIDTH_X8	22100
+#define HEIGHT_X8	14650

@@ -205,12 +205,12 @@ void CRbtEventHandler::onSyncEnd(int result)
 	}
 }
 //上报页码
-void CRbtEventHandler::onPageNo(int pageNo)
+void CRbtEventHandler::onMassShowPage(int index,int pageNo)
 {
 	if(m_hMainWnd != NULL)
 	{
 		//::PostMessage(m_hMainWnd, WM_MSGID(ROBOT_PAGE_NO), (WPARAM)&pageNo, 0);
-		::PostMessage(m_hMainWnd, WM_RBTEVENT, ROBOT_PAGE_NO, 0);
+		::PostMessage(m_hMainWnd, WM_RBTEVENT, ROBOT_SHOW_PAGE, 0);
 	}
 }
 //抢答事件

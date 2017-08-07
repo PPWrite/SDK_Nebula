@@ -225,11 +225,15 @@ void CDrawDlg::SetVote(CString strVote)
 	this->Invalidate(FALSE);
 }
 
-void CDrawDlg::SetPage(CString strPage)
+void CDrawDlg::SetPage(const PAGE_INFO &pageInfo)
 {
-	m_pWBDlg->SetPage(strPage);
+	m_pWBDlg->SetPage(pageInfo);
 }
 
+void CDrawDlg::SetID(int nID)
+{
+	m_pWBDlg->SetID(nID);
+}
 
 void CDrawDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 {

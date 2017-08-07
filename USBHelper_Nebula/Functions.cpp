@@ -78,6 +78,11 @@ CString GetAppPath(void)
     return sPath.Left(iPath);
 }
 
+CString GetDataFloder()
+{
+	return GetAppPath() + _T("\\Data");
+}
+
 CCriticalSection g_csWriteLog;
 void WriteLog(LPCTSTR lpszText)
 {

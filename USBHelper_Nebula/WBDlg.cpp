@@ -5,9 +5,18 @@
 #include "USBHelper.h"
 #include "WBDlg.h"
 #include "afxdialogex.h"
+#include <algorithm>
 
-
+//#define  USE_FILE
 // CWBDlg 对话框
+
+bool compare(const PAGE_INFO & a,const PAGE_INFO &b)
+{
+	if (a.note_num == b.note_num)
+		return a.page_num < b.page_num;
+
+	return a.note_num < b.note_num;
+}
 
 IMPLEMENT_DYNAMIC(CWBDlg, CDialog)
 
@@ -23,8 +32,10 @@ CWBDlg::CWBDlg(CWnd* pParent /*=NULL*/)
 	, m_nState(0)
 	, m_nPenWidth(1)
 	, m_lastPoint(0,0)
+	, m_nID(0)
 {
-
+	memset(&m_pageInfo,0,sizeof(PAGE_INFO));
+	memset(&m_canvasPageInfo,0,sizeof(PAGE_INFO));
 }
 
 CWBDlg::~CWBDlg()
@@ -46,6 +57,8 @@ BEGIN_MESSAGE_MAP(CWBDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_NCDESTROY()
 	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_BUTTON_LEFT, &CWBDlg::OnBnClickedButtonLeft)
+	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CWBDlg::OnBnClickedButtonRight)
 END_MESSAGE_MAP()
 
 
@@ -85,6 +98,11 @@ BOOL CWBDlg::OnInitDialog()
 	AdjustWindowRect(rect, GetStyle(), FALSE);
 	MoveWindow(rect);
 	//SetWindowPos(NULL,rand_width,rand_height,width,height,SWP_HIDEWINDOW);
+
+#ifdef USE_FILE
+	GetDlgItem(IDC_BUTTON_LEFT)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_RIGHT)->ShowWindow(SW_SHOW);
+#endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
@@ -365,7 +383,22 @@ void CWBDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CDialog::OnLButtonDblClk(nFlags, point);
 }
 
-void CWBDlg::onRecvData(PEN_INFO& penInfo)
+void CWBDlg::onRecvData(const PEN_INFO& penInfo)
+{
+#ifdef USE_FILE
+	if (m_canvasPageInfo == m_pageInfo)
+	{}
+	else
+	{
+		SetCanvasPage(m_pageInfo);
+	}
+	m_vecPenInfo.push_back(penInfo);
+#endif
+
+	processData(penInfo);
+}
+
+void CWBDlg::processData(const PEN_INFO& penInfo)
 {
 	CPoint point(penInfo.nX, penInfo.nY);
 	//Clear(point);
@@ -390,6 +423,11 @@ void CWBDlg::onRecvData(PEN_INFO& penInfo)
 	
 	if (penInfo.nPress  == 0)// 笔离开板子
 	{
+#ifdef USE_FILE
+		if (m_pageInfo.page_num > 0)
+			SaveData(m_pageInfo,m_vecPenInfo);
+		m_vecPenInfo.clear();
+#endif
 		endTrack(true);
 		m_nFlags = 0;
 	}
@@ -410,6 +448,7 @@ void CWBDlg::onRecvData(PEN_INFO& penInfo)
 		}
 	}
 }
+
 
 void CWBDlg::moveCursor(CPoint& pos)
 {
@@ -619,10 +658,162 @@ HBRUSH CWBDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return hbr;
 }
 
-void CWBDlg::SetPage(CString strPage)
+void CWBDlg::SetPage(const PAGE_INFO &pageInfo)
 {
+	if (pageInfo.note_num == 0 && pageInfo.page_num == 0)
+		return ;
+
+	if(m_pageInfo.note_num == pageInfo.note_num && m_pageInfo.page_num == pageInfo.page_num)
+		return;
+	memcpy(&m_pageInfo,&pageInfo,sizeof(PAGE_INFO));
+
+#ifdef USE_FILE
+	bool bFound = false;
+	for (int i=0;i<m_vecPageNum.size();i++)
+	{
+		if (pageInfo == m_vecPageNum[i])
+		{
+			bFound = true;
+		}
+	}
+	if (!bFound)
+	{
+		m_vecPageNum.push_back(pageInfo);
+		sort(m_vecPageNum.begin(),m_vecPageNum.end(),compare);
+	}
+
+	SetCanvasPage(pageInfo);
+#else
 	CString str;
-	GetDlgItem(IDC_STATIC_PAGE)->GetWindowText(str);
-	if (str != strPage)
-		GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(strPage);
+	str.Format(_T("第%d页"),pageInfo.page_num);
+
+	GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(str);
+#endif
+}
+
+void CWBDlg::SetCanvasPage(const PAGE_INFO &pageInfo)
+{
+	memcpy(&m_canvasPageInfo,&pageInfo,sizeof(PAGE_INFO));
+
+	CString str;
+	str.Format(_T("第%d本,第%d页,共%d页"),m_canvasPageInfo.note_num,m_canvasPageInfo.page_num,m_vecPageNum.size());
+
+	GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(str);
+
+	Clear();
+	ReadData();
+}
+
+void CWBDlg::SetID(int nID)
+{
+	m_nID = nID;
+}
+
+
+void CWBDlg::ReadData()
+{
+	CString strFileName;
+	strFileName.Format(_T("%s\\%d.bat"),GetDataFloder(),m_nID);
+	try
+	{
+		CFileFind find;
+		CFile file;
+		if(find.FindFile(strFileName))
+		{
+			file.Open(strFileName, CFile::modeRead);
+			if(file !=INVALID_HANDLE_VALUE)
+			{
+				PAGE_PEN_INFO pagePenInfo = {0};
+				while (true)
+				{
+					int nRead = file.Read(&pagePenInfo,sizeof(PAGE_PEN_INFO));
+					if(nRead < sizeof(PAGE_PEN_INFO))
+						break;
+					if (m_canvasPageInfo == pagePenInfo.pageInfo)
+					{
+						processData(pagePenInfo.penInfo);
+					}
+				}
+			}
+
+		}
+		find.Close();
+	}
+	catch (...)
+	{
+	}
+}
+
+void CWBDlg::SaveData(const PAGE_INFO &pageInfo,const std::vector<PEN_INFO> &vecPenInfo)
+{
+	CString strFileName;
+	strFileName.Format(_T("%s\\%d.bat"),GetDataFloder(),m_nID);
+	try
+	{
+		CFileFind find;
+		CFile file;
+		if(find.FindFile(strFileName))
+		{
+			file.Open(strFileName, CFile::modeWrite);
+			if(file !=INVALID_HANDLE_VALUE)
+				file.SeekToEnd();
+		}
+		else
+		{
+			file.Open(strFileName, CFile::modeCreate | CFile::modeWrite);
+		}
+		find.Close();
+
+		if(file !=INVALID_HANDLE_VALUE)
+		{
+			PAGE_PEN_INFO pagePenInfo = {0};
+			for(int i=0;i<vecPenInfo.size();i++)
+			{
+				memcpy(&pagePenInfo.pageInfo,&pageInfo,sizeof(PAGE_INFO));
+				memcpy(&pagePenInfo.penInfo,&vecPenInfo[i],sizeof(PEN_INFO));
+				file.Write(&pagePenInfo,sizeof(PAGE_PEN_INFO));
+				/*file.Write(&nPageNum,sizeof(uint8_t));
+				file.Write(&vecPenInfo[i],sizeof(PEN_INFO));*/
+			}
+
+			file.Close();
+		}
+	}
+	catch (...)
+	{
+	}
+}
+
+void CWBDlg::OnBnClickedButtonLeft()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int nCount = m_vecPageNum.size();
+	for (int i=0;i<nCount;i++)
+	{
+		if (m_vecPageNum[i] == m_canvasPageInfo)
+		{
+			if (i > 0)
+			{
+				SetCanvasPage(m_vecPageNum[i-1]);
+				return;
+			}
+		}
+	}
+}
+
+void CWBDlg::OnBnClickedButtonRight()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int nCount = m_vecPageNum.size();
+	for (int i=0;i<nCount;i++)
+	{
+		if (m_vecPageNum[i] == m_canvasPageInfo)
+		{
+			if (i < (nCount-1))
+			{
+				SetCanvasPage(m_vecPageNum[i+1]);
+				return;
+			}
+		}
+	}
 }

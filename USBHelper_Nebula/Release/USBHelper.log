@@ -1,26 +1,42 @@
-﻿生成启动时间为 2017/6/24 20:12:31。
-     1>项目“G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 2 上(build 个目标)。
-     1>InitializeBuildStatus:
+﻿生成启动时间为 2017/8/7 13:35:57。
+     1>项目“D:\Robot\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 4 上(rebuild 个目标)。
+     1>_PrepareForClean:
+         正在删除文件“Release\USBHelper.lastbuildstate”。
+       InitializeBuildStatus:
          正在创建“Release\USBHelper.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
-         所有输出均为最新。
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\sdk\ /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\USBHelper.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt USBHelperDlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\sdk\ /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Release\USBHelper.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\sdk\ /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\USBHelper.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt DrawDlg.cpp Functions.cpp RbtEventHandler.cpp SettingDlg.cpp UpdateDlg.cpp USBHelper.cpp USBHelperDlg.cpp WBDlg.cpp
+         DrawDlg.cpp
+         Functions.cpp
+         RbtEventHandler.cpp
+         SettingDlg.cpp
+         UpdateDlg.cpp
+         USBHelper.cpp
          USBHelperDlg.cpp
-     1>USBHelperDlg.cpp(669): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(684): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(847): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(945): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(1143): warning C4018: “>”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(1307): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(1453): warning C4018: “<”: 有符号/无符号不匹配
-     1>USBHelperDlg.cpp(1457): warning C4800: “const uint8_t”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>USBHelperDlg.cpp(1723): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>USBHelperDlg.cpp(675): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(690): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(851): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(950): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1179): warning C4018: “>”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1343): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1496): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1500): warning C4800: “const uint8_t”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>USBHelperDlg.cpp(1766): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : 参见“sprintf”的声明
-     1>USBHelperDlg.cpp(2027): warning C4018: “<”: 有符号/无符号不匹配
+         WBDlg.cpp
+     1>WBDlg.cpp(80): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+     1>WBDlg.cpp(179): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
+     1>WBDlg.cpp(271): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+     1>WBDlg.cpp(272): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+     1>WBDlg.cpp(321): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
+     1>WBDlg.cpp(535): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+     1>WBDlg.cpp(770): warning C4018: “<”: 有符号/无符号不匹配
        ResourceCompile:
-         所有输出均为最新。
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0804" /IRelease\ /nologo /fo"Release\USBHelper.res" USBHelper.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\Release\USBHelper.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /ManifestFile:"Release\USBHelper.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\Release\USBHelper.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\Release\USBHelper.lib" /MACHINE:X86 Release\USBHelper.res
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Robot\Robotpen_Nebula\Release\USBHelper.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /ManifestFile:"Release\USBHelper.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Robot\Robotpen_Nebula\Release\USBHelper.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Robot\Robotpen_Nebula\Release\USBHelper.lib" /MACHINE:X86 Release\USBHelper.res
          Release\DrawDlg.obj
          Release\Functions.obj
          Release\RbtEventHandler.obj
@@ -32,14 +48,14 @@
          Release\WBDlg.obj
          正在生成代码
          已完成代码的生成
-         USBHelper.vcxproj -> G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\Release\USBHelper.exe
+         USBHelper.vcxproj -> D:\Robot\Robotpen_Nebula\Release\USBHelper.exe
        Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\Release\USBHelper.exe;#1" /manifest Release\USBHelper.exe.intermediate.manifest "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\Robot\Robotpen_Nebula\Release\USBHelper.exe;#1" /manifest Release\USBHelper.exe.intermediate.manifest "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
        FinalizeBuildStatus:
          正在删除文件“Release\USBHelper.unsuccessfulbuild”。
          正在对“Release\USBHelper.lastbuildstate”执行 Touch 任务。
-     1>已完成生成项目“G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”(build 个目标)的操作。
+     1>已完成生成项目“D:\Robot\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”(rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:01.30
+已用时间 00:00:13.63

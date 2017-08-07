@@ -13,17 +13,18 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170622")
+#define _VERSION  _T("版本号:20170806")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
 
+static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -136,6 +137,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_pWBDlg(NULL)
 	, m_nIndexCount(0)
 	, m_nSlaveType(0)
+	, m_nCurNoteNum(0)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -247,7 +249,11 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("GATEWAY"));
+
+	DeleteDir(GetDataFloder());
+	CreateAllDirectories(GetDataFloder());
 #endif
+
 #ifdef _NODE
 	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_MS)->ShowWindow(SW_HIDE);
@@ -274,9 +280,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_NOTE2)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_SHOW);
-	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
-
+	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -348,7 +354,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
-	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 
 	SetWindowText(_T("P1"));
 #endif
@@ -365,22 +371,17 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	AfxBeginThread(ThreadProc,this);
 
-	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);
+	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);//*/
 
-//#ifdef _NODE
+	//#ifdef _NODE
 
 	m_pWBDlg = new CWBDlg;
 	m_pWBDlg->Create(IDD_WBDLG);
 	m_pWBDlg->ShowWindow(SW_HIDE);
 	m_pWBDlg->SetWindowText(_T("离线笔记"));
-	m_pWBDlg->SetPage(_T(""));
-//#else
-	((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
-//#endif
-
-#ifdef _P1
-	m_list[0]->SetPage(_T(""));
-#endif
+	//#else
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);//*/
+	//#endif
 
 	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
@@ -584,6 +585,10 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		m_nDeviceType = T7PL;
 	}
+	else if(nPid == T7E_TS_PID)
+	{
+		m_nDeviceType = T7E_TS;
+	}
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
 
@@ -655,7 +660,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if (m_nDeviceType != Gateway)
 		OnBnClickedButtonStatus();
 
-	TRACE("DeviceWidth:%d,DeviceHeight:%d",GetInstance()->Width(),GetInstance()->Height());
+	if (m_nDeviceType == X8)
+		GetInstance()->Send(GetMac);
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -671,7 +677,7 @@ void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
 		CDrawDlg *pDlg = m_list[i];
 		pDlg = NULL;
 	}//*/
-	
+
 	DestroyInstance();
 
 	//Sleep(100);
@@ -710,7 +716,7 @@ void CUSBHelperDlg::resetDevice()
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowTextW(_T(""));
 
 	GetDlgItem(IDC_STATIC_NOTE2)->SetWindowTextW(_T(""));
-	
+
 
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
@@ -720,8 +726,6 @@ void CUSBHelperDlg::resetDevice()
 	m_nLastStatus = -1;
 	m_nLastMode = -1;
 	memset(&m_lastInfo,0,sizeof(m_lastInfo));
-
-	AddList();
 
 	while(m_queueData.size() > 0)
 	{
@@ -808,7 +812,7 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 		{
 			GetInstance()->Send(VoteBegin);
 		}
-		else if (nIndex == 0)
+		else if (nIndex == 1)
 		{
 			GetInstance()->VoteMulit();
 		}
@@ -925,14 +929,15 @@ void CUSBHelperDlg::CreateChart(int nHStart)
 			m_list.push_back(pDlg);
 			CString str;
 			str.Format(_T("%d"),m_list.size());
-#ifdef _GATEWAY
-			pDlg->SetText(str);
-#else
-			pDlg->SetText(_T("双击显示画布"));
-#endif
 			//pDlg->SetVote(str);
 			pDlg->Create(IDD_DRAWDLG,this);
 			pDlg->MoveWindow(nHStart + i*nSpaceMax,nVStart + j*nSpaceMax,nItemSize,nItemSize); 
+#ifdef _GATEWAY
+			pDlg->SetText(str);
+			pDlg->SetID(m_list.size());
+#else
+			pDlg->SetText(_T("双击显示画布"));
+#endif
 			pDlg->ShowWindow(SW_SHOWNORMAL);
 		}
 	}
@@ -1041,6 +1046,8 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",Dongle);
 				break;
 			case SLAVE_MCU:
+				GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),(eDeviceType)m_nSlaveType);
+				break;
 			case MODULE_MCU:
 				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",(eDeviceType)m_nSlaveType);
 				break;
@@ -1105,7 +1112,10 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				{
 				}
 				else
+				{
 					resetDevice();
+					AddList();
+				}
 			}
 		}
 		break;
@@ -1116,6 +1126,8 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 			else
 				AfxMessageBox(_T("设置失败！"));
 			resetDevice();
+			AddList();
+
 		}
 		break;
 	case ROBOT_DEVICE_CHANGE:
@@ -1123,11 +1135,35 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 			if (wParam == 0)
 				AddList();
 			else
+			{
 				resetDevice();
+				AddList();
+			}
 		}
 		break;
 	case ROBOT_SET_NAME:
 		AfxMessageBox(_T("设置成功！"));
+		break;
+	case ROBOT_MODULE_ADJUST_RESULT:
+		{
+			CString str;
+			switch(wParam)
+			{
+			case ADJUST_SUCCESSED:
+				str = _T("校准成功");
+				break;
+			case ADJUST_FAILED:
+				str = _T("校准失败");
+				break;
+			case ADJUST_TIMEOUT:
+				str = _T("校准超时");
+				break;
+			default:
+				break;
+			}
+
+			AfxMessageBox(str);
+		}
 		break;
 	default:
 		break;
@@ -1203,9 +1239,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	/*CString strHex("");
 	for(int i=0;i<60;i++)
 	{
-		CString str;
-		str.Format(_T("%02x "),report.payload[i]);
-		strHex += str;
+	CString str;
+	str.Format(_T("%02x "),report.payload[i]);
+	strHex += str;
 	}
 	strHex += "\r\n";
 	WriteLog(strHex);//*/
@@ -1349,16 +1385,23 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				pDlg->AddData(penInfo);
 		}
 		break;
-	case  ROBOT_PAGE_NO:
+	case  ROBOT_SHOW_PAGE:
 		{
-			uint16_t nPage;
-			memcpy(&nPage,report.payload,sizeof(nPage));
+			PAGE_INFO pageInfo = {0};
+			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
 
-			CString str;
-			str.Format(_T("第%d页"),nPage);
-			CDrawDlg *pDlg = m_list[report.reserved];
-			if (NULL != pDlg)
-				pDlg->SetPage(str);
+			if (report.reserved >= m_list.size())
+			{
+				CDrawDlg *pDlg = m_list[0];
+				if (NULL != pDlg)
+					pDlg->SetPage(pageInfo);
+			}
+			else
+			{
+				CDrawDlg *pDlg = m_list[report.reserved];
+				if (NULL != pDlg)
+					pDlg->SetPage(pageInfo);
+			}
 		}
 		break;
 	case ROBOT_GATEWAY_ERROR://错误
@@ -1468,6 +1511,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				break;
 			else
 				m_nLastMode = nStatus;
+
 			if (X8 ==report.reserved)
 			{
 				if (nStatus != NODE_USB)
@@ -1475,6 +1519,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 					GetInstance()->Send(EnterUsb);
 				}
 			}
+
 			CString str;
 			switch(nStatus)
 			{
@@ -1510,7 +1555,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
-			//TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
 
 			m_list[0]->AddData(penInfo);
 		}
@@ -1540,19 +1585,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			}
 		}
 		break;
-	case ROBOT_SHOW_PAGE://显示页码	
-		{
-			int nCurrentPage = report.payload[0];
-			int nPageCount = report.payload[1];
-			CString str;
-			str.Format(_T("第%d页,共%d页"),nCurrentPage,nPageCount);
-			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
-		}
-		break;
 	case ROBOT_SYNC_TRANS_BEGIN:
 		{
 			ST_NOTE_HEADER_INFO info = {0};
 			memcpy(&info,report.payload,sizeof(ST_NOTE_HEADER_INFO));
+
+			m_nCurNoteNum = info.note_number;
 
 			int nCount = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount();
 			CString str,strID;
@@ -1582,6 +1620,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(_T("同步结束"));
 			if (((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount() > 0)
 				((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
+
+			OnCbnSelchangeCombo1();
+
+			OnBnClickedButtonVoteOff();
 		}
 		break;
 	case ROBOT_SYNC_PACKET:
@@ -1593,12 +1635,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
 			//T9A
-			if (report.reserved < MAX_NOTE)
+			if (m_nCurNoteNum < MAX_NOTE)
 			{
-				vecPenInfo[report.reserved].push_back(penInfo);
+				vecPenInfo[m_nCurNoteNum].push_back(penInfo);
 			}
 
-			m_list[0]->AddData(penInfo);
+			//m_list[0]->AddData(penInfo);
 		}
 		break;
 	case ROBOT_VOTE_ANSWER:
@@ -1617,7 +1659,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_MODULE_ADJUST_RESULT:
 		{
-			CString str;
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+			/*CString str;
 			int result = report.payload[0];
 			switch(result)
 			{
@@ -1633,7 +1676,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			default:
 				break;
 			}
-			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);//*/
 		}
 		break;
 	default:						
@@ -1707,8 +1750,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			memcpy(&version,report.payload,sizeof(version));
 
 			CString str;
-			str.Format(_T("%d.%d.%d.%d"),version.version2,version.version,
-				version.version4,version.version3);
+			str.Format(_T("%d.%d.%d.%d"),version.version,version.version2,
+				version.version3,version.version4);
 			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
 		}
 		break;
@@ -1856,7 +1899,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			//TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
 
 			m_list[0]->AddData(penInfo);
 		}
@@ -1891,10 +1934,10 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SHOW_PAGE://显示页码	
 		{
-			int nCurrentPage = report.payload[0];
-			int nPageCount = report.payload[1];
+			PAGE_INFO pageInfo = {0};
+			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
 			CString str;
-			str.Format(_T("第%d页,共%d页"),nCurrentPage,nPageCount);
+			str.Format(_T("第%d页"),pageInfo.page_num);
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
@@ -2024,9 +2067,12 @@ void CUSBHelperDlg::OnCbnSelchangeCombo1()
 	m_pWBDlg->Clear();
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(nIndex,str);
 	int nNoteNum = atoi(WideCharToMultichar(str.GetBuffer()).c_str());
-	for(int j=0;j<vecPenInfo[nNoteNum].size();j++)
+	if (nNoteNum < MAX_NOTE)
 	{
-		m_pWBDlg->onRecvData(vecPenInfo[nNoteNum][j]);
+		for(int j=0;j<vecPenInfo[nNoteNum].size();j++)
+		{
+			m_pWBDlg->onRecvData(vecPenInfo[nNoteNum][j]);
+		}
 	}
 #endif
 }
@@ -2048,4 +2094,24 @@ void CUSBHelperDlg::OnBnClickedButtonAdjust()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(AdjustMode);
+}
+
+void CUSBHelperDlg::DeleteDir(CString str)
+{
+	CFileFind finder;
+	CString strdel,strdir;
+	strdir = str + _T("\\*");
+	BOOL b_found=finder.FindFile(strdir,0); 
+	while(b_found) 
+	{
+		b_found=finder.FindNextFile(); 
+		strdel=finder.GetFileName(); 
+		strdel=str+ "\\" + strdel;
+		if(finder.IsReadOnly())//清除只读属性
+		{    
+			SetFileAttributes(strdel,GetFileAttributes(strdel)&(~FILE_ATTRIBUTE_READONLY));
+		}
+		DeleteFile(strdel); //删除文件
+	}
+	finder.Close();
 }

@@ -38,6 +38,7 @@
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 #include "Functions.h"
 #include <list>
+#include <vector>
 #include <Dbt.h>
 #include <stdint.h>
 
@@ -53,6 +54,15 @@ using namespace Gdiplus;
 #include "include/RobotUsbWrapper.h"
 #pragma comment(lib,"lib/RobotUsbWrapper.lib")
 
+
+#pragma pack(1)
+typedef struct page_pen_info 
+{
+	PAGE_INFO pageInfo;
+	PEN_INFO penInfo;
+
+}PAGE_PEN_INFO;
+#pragma pack()
 
 #ifdef _UNICODE
 #if defined _M_IX86

@@ -22,6 +22,7 @@
 #endif
 // 获取应用程序路径
 extern CString GetAppPath(void);
+extern CString GetDataFloder();
 
 // 写日志
 // lpszText － [in] 日志内容

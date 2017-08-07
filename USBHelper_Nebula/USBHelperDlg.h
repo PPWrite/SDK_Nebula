@@ -4,7 +4,6 @@
 
 #pragma once
 #include <vector>
-#include "UsbDevInterface.h"
 #include <map>
 #include "DrawDlg.h"
 #include <queue>
@@ -12,7 +11,9 @@
 
 using namespace std;
 
-#define MAX_NOTE 256
+//#define MAX_NOTE 256
+#define MAX_NOTE 65536
+
 typedef struct sync_info
 {
 	int note_num;
@@ -110,8 +111,6 @@ public:
 	afx_msg void OnBnClickedButtonSetName();
 	afx_msg void OnBnClickedButtonSyncStop();
 	afx_msg void OnBnClickedButtonSyncStart();
-private: 
-	std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 public:
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnBnClickedButtonSyncOpen();
@@ -122,4 +121,7 @@ public:
 
 	int m_nIndexCount;
 	afx_msg void OnBnClickedButtonAdjust();
+	static void DeleteDir(CString str);
+
+	int m_nCurNoteNum;
 };

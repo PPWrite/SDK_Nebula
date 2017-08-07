@@ -25,6 +25,8 @@ enum eRbtType
 	EnterUsb,
 	ExitUsb,
 	AdjustMode,
+	GetMac,
+	GetNodeInfo,
 };
 
 //回调函数
@@ -107,16 +109,16 @@ public:
 		(void)result;
 	}
 	//页面显示事件
-	virtual void onShowPage(int count, int current) {
-		(void)count;
-		(void)current;
+	virtual void onShowPage(const PAGE_INFO &pageInfo) {
+		(void)pageInfo;
 	}
 	//离线笔记坐标数据事件
 	virtual void onSyncPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
 	//离线笔记开始
-	virtual void onSyncBegin(int noteNum,const ST_RTC_INFO &rtcInfo){
+	virtual void onSyncBegin(int leftNum,int noteNum,const ST_RTC_INFO &rtcInfo){
+		(void)leftNum;
 		(void)noteNum;
 		(void)rtcInfo;
 	}
@@ -125,8 +127,9 @@ public:
 		(void)result;
 	}
 	//上报页码
-	virtual void onPageNo(int pageNo){
-		(void)pageNo;
+	virtual void onMassShowPage(int index,const PAGE_INFO &pageInfo){
+		(void)index;
+		(void)pageInfo;
 	}
 	//抢答事件
 	virtual void onVoteAnswer(int index,int answer){
