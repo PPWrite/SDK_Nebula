@@ -22,6 +22,7 @@ namespace RobotPenTestDll
         NODE,
         DONGLE,
         P1,
+        T7E_TS,
     }
 
     public partial class TrailsShowFrom : Form
@@ -45,6 +46,11 @@ namespace RobotPenTestDll
             {
                 m_nDeviceW = 17407;
                 m_nDeviceH = 10751;
+            }
+            else if (canvasty == canvasType.T7E_TS)
+            {
+                m_nDeviceW = 14335;
+                m_nDeviceH = 8191;
             }
             else
             {
@@ -155,7 +161,25 @@ namespace RobotPenTestDll
             {
                 pointf = new PointF(x, y);
             }*/
-            pointf = new PointF(x, y);
+            if (canvastype == canvasType.T7E_TS)
+            {
+                //int nx = m_nDeviceH - y;
+                //int ny = x;
+
+                int nx = m_nDeviceW - x;
+                int ny = m_nDeviceH - y;
+                pointf = new PointF(nx, ny);
+
+
+                //Console.Write(pointf);
+                //Console.Write("\r\n");
+            }
+            else
+            {
+                pointf = new PointF(x, y);
+            }
+
+            
             if (!pointIsInvalid(nPenStatus, ref pointf))
                 return;
 

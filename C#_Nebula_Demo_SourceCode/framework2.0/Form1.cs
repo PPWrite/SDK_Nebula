@@ -19,6 +19,7 @@ namespace RobotPenTestDll
         NODE_DEMO,
         DONGLE_DEMO,
         P1_DEMO,
+        T7E_TS_DEMO,
     }
 
     public partial class Form1 : Form
@@ -31,10 +32,11 @@ namespace RobotPenTestDll
         // NODE单独窗口
         private UserControl1 nodeDataWindow = null;
 
-        private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
+        //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
         //private demoEnum demo_type = demoEnum.NODE_DEMO;
         //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
+        private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
@@ -55,6 +57,10 @@ namespace RobotPenTestDll
             else if (demo_type == demoEnum.P1_DEMO)
             {
                 eDeviceTy = eDeviceType.RobotPen_P1;
+            }
+            else if (demo_type == demoEnum.T7E_TS_DEMO)
+            {
+                eDeviceTy = eDeviceType.T7E_TS;
             }
             init();
             this.comboBox2.SelectedIndex = 0;
@@ -233,11 +239,12 @@ namespace RobotPenTestDll
 
                 this.Size = new System.Drawing.Size(1146, 800);
             }
-            else if (demo_type == demoEnum.P1_DEMO)
+            else if (demo_type == demoEnum.P1_DEMO ||
+                demo_type == demoEnum.T7E_TS_DEMO)
             {
                 isP1Mode();
                 this.WindowState = FormWindowState.Normal;
-                nodeDataWindow = new UserControl1(canvasType.P1);
+                nodeDataWindow = (demo_type == demoEnum.P1_DEMO) ?  new UserControl1(canvasType.P1) : new UserControl1(canvasType.T7E_TS);
                 this.nodeDataWindow.canvasShowEvt += dbClkCanvas;
                 this.nodeDataWindow.setControlSize(200, 200);
                 this.nodeDataWindow.Location = new Point(500, 20);
@@ -358,7 +365,15 @@ namespace RobotPenTestDll
             this.msClear_button.Hide();
             this.device_textBox.Hide();
 
-            robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
+            if ( demo_type == demoEnum.T7E_TS_DEMO)
+            {
+                date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
+                robotpenController.GetInstance().initDeletgate(ref date);
+            }
+            else
+            {
+                robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
+            }
         }
 
         // 收到P1设备数据
@@ -759,7 +774,7 @@ namespace RobotPenTestDll
                     canvasWindow[nIndex - 1].Text = strIndex;
                 }
             }
-            else if (demo_type == demoEnum.NODE_DEMO)
+            else if (demo_type == demoEnum.NODE_DEMO )
             {
                 if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
                 {
@@ -786,6 +801,7 @@ namespace RobotPenTestDll
                 }
             } else if (demo_type == demoEnum.DONGLE_DEMO)
             {
+                
                 if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
                 {
                     nodeCanvasWindow = new TrailsShowFrom(canvasType.DONGLE);
@@ -810,16 +826,17 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.Text = strIndex;
                 }
             }
-            else if (demo_type == demoEnum.P1_DEMO)
+            else if (demo_type == demoEnum.P1_DEMO || demo_type == demoEnum.T7E_TS_DEMO)
             {
-                  if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                canvasType ctype = (demo_type == demoEnum.P1_DEMO) ? canvasType.P1 : canvasType.T7E_TS;
+                if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
                 {
-                    nodeCanvasWindow = new TrailsShowFrom(canvasType.P1);
+                    nodeCanvasWindow = new TrailsShowFrom(ctype);
                     nodeCanvasWindow.bScreenO = bScreen;
                     nodeCanvasWindow.TopMost = true;
                     nodeCanvasWindow.Show();
                     nodeCanvasWindow.Text = strIndex;
-                    nodeCanvasWindow.canvastype = canvasType.P1;
+                    nodeCanvasWindow.canvastype = ctype;
                     if (!bScreen)
                     {
                         nodeCanvasWindow.Size = new Size(426, 625);
@@ -937,6 +954,22 @@ namespace RobotPenTestDll
                     return;
 
                 nodeCanvasWindow.recvData(Convert.ToInt32(bPress), Convert.ToInt32(bx), Convert.ToInt32(by), 0);
+            }
+            else if (demo_type == demoEnum.T7E_TS_DEMO)
+            {
+                if (null != nodeDataWindow)
+                {
+                    nodeDataWindow.dataArrive(Convert.ToInt32(bx), Convert.ToInt32(by));
+                }
+                if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                    return;
+
+                int npenStatus = Convert.ToInt32(bPenStatus);
+                if (npenStatus != 17)
+                {
+                    npenStatus = 0;
+                }
+                nodeCanvasWindow.recvData(npenStatus, Convert.ToInt32(bx), Convert.ToInt32(by), 0);
             }
         }
 

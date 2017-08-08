@@ -115,7 +115,7 @@ namespace RobotPenTestDll
             string strIndex;
 
             RectangleF rf;
-            if (windowType == canvasType.DONGLE || windowType == canvasType.P1)
+            if (windowType == canvasType.DONGLE || windowType == canvasType.P1 || windowType == canvasType.T7E_TS)
             {
                 strIndex = "双击显示画布";
                 SizeF sizeString = g.MeasureString(strIndex, indexFont);
