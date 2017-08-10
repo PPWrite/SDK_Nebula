@@ -242,6 +242,8 @@ public:
 	virtual void In(const PEN_INFO &penInfo) = 0;
 	//是否开启压感
 	virtual void SetPressStatus(bool bPress) = 0;
+	//是否开启笔记优化
+	virtual void SetOptimizeStatus(bool bOptimize) = 0;
 };
 
 //初始化 回调
@@ -292,7 +294,8 @@ extern "C" DECLDIR void VoteMulit(bool bMulit);
 extern "C" DECLDIR void In(const PEN_INFO &penInfo);
 //是否开启压感
 extern "C" DECLDIR void SetPressStatus(bool bPress);
-
+//是否开启笔记优化
+extern "C" DECLDIR void SetOptimizeStatus(bool bOptimize);
 extern "C" 
 {
 	//获取实例 

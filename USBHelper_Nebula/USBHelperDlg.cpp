@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170806")
+#define _VERSION  _T("版本号:20170808")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -385,6 +385,13 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
+
+	//优化笔记设置
+	/*GetInstance()->SetPenWidth(1.2);
+
+	GetInstance()->SetOptimizeStatus(true);
+
+	GetInstance()->SetPressStatus(true);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -1502,7 +1509,14 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		}
 		break;				
 	case ROBOT_DEVICE_CHANGE://设备改变
-		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		{
+			/*CString str;
+			str.Format(_T("ROBOT_DEVICE_CHANGE:%d"),report.reserved);
+			WriteLog(str);//*/
+
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		}
+		
 		break;	
 	case ROBOT_NODE_MODE:
 		{
@@ -1677,6 +1691,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				break;
 			}
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);//*/
+		}
+		break;
+	case ROBOT_OPTIMIZE_PACKET:
+		{
+			PEN_INFOF penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
 		}
 		break;
 	default:						
@@ -1963,6 +1984,13 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				break;
 			}
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_OPTIMIZE_PACKET:
+		{
+			PEN_INFOF penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
 		}
 		break;
 	default:
