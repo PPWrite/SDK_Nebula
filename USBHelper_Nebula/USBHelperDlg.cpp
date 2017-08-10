@@ -386,11 +386,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
 
-	GetInstance()->SetPenWidth(1.2);
+	//优化笔记设置
+	/*GetInstance()->SetPenWidth(1.2);
 
 	GetInstance()->SetOptimizeStatus(true);
 
-	GetInstance()->SetPressStatus(true);
+	GetInstance()->SetPressStatus(true);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
