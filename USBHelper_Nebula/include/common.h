@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.1.0"
+#define FILEVERSION "1.1.1.1"
 
 #define NUM 60
 
@@ -238,6 +238,14 @@ typedef struct pen_info
 	uint16_t nY;			// 笔y轴坐标
 	uint16_t nPress;		// 笔压力
 }PEN_INFO;  
+// 优化笔数据信息
+typedef struct pen_infof
+{
+	uint8_t nStatus;		// 笔状态
+	uint16_t nX;			// 笔x轴坐标
+	uint16_t nY;			// 笔y轴坐标
+	float nWidth;			// 笔宽度
+}PEN_INFOF;  
 
 //页码信息
 typedef struct page_info

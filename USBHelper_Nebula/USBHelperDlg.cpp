@@ -386,6 +386,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
 
+	GetInstance()->SetPenWidth(1.2);
+
+	GetInstance()->SetOptimizeStatus(true);
+
+	GetInstance()->SetPressStatus(true);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -1686,6 +1692,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);//*/
 		}
 		break;
+	case ROBOT_OPTIMIZE_PACKET:
+		{
+			PEN_INFOF penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
+		}
+		break;
 	default:						
 		break;
 	}
@@ -1970,6 +1983,13 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				break;
 			}
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_OPTIMIZE_PACKET:
+		{
+			PEN_INFOF penInfo = {0};
+			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
 		}
 		break;
 	default:
