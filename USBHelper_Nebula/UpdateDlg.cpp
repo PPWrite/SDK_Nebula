@@ -383,7 +383,7 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 		SplitFields(m_strDongleVersion,sArray,_T("_"));
 		if (sArray.GetCount() != 2)
 		{
-			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));;
+			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));
 			return;
 		}
 
@@ -416,5 +416,10 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 
 		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_HIDE);
+	}
+
+	if (nIndex == 3)
+	{
+		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T("0.0.0.0"));
 	}
 }

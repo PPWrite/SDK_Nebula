@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170806")
+#define _VERSION  _T("版本号:20170808")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -1502,7 +1502,14 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		}
 		break;				
 	case ROBOT_DEVICE_CHANGE://设备改变
-		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		{
+			/*CString str;
+			str.Format(_T("ROBOT_DEVICE_CHANGE:%d"),report.reserved);
+			WriteLog(str);//*/
+
+			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		}
+		
 		break;	
 	case ROBOT_NODE_MODE:
 		{
