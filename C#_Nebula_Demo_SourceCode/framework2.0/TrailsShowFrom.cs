@@ -191,6 +191,7 @@ namespace RobotPenTestDll
             {
                 pointf = new PointF(x, y);
             }*/
+           // Console.WriteLine("origin x={0} y={1}", x, y);
             if (canvastype == canvasType.T7E_TS)
             {
                 //int nx = m_nDeviceH - y;

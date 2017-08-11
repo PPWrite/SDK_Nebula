@@ -34,9 +34,9 @@ namespace RobotPenTestDll
 
         //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
         //private demoEnum demo_type = demoEnum.NODE_DEMO;
-        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
-        //private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
+        private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
@@ -370,12 +370,33 @@ namespace RobotPenTestDll
             {
                 date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
                 robotpenController.GetInstance().initDeletgate(ref date);
+                robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
             }
             else
             {
                 robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
                 robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnP1OptimizePointDataEvt);
             }
+        }
+
+        // 收到设备优化点数据
+        void Form1_returnOptimizePointDataEvt(byte bPenStatus, ushort bx, ushort by, float fPenWidthF)
+        {
+
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(bx), Convert.ToInt32(by));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            int npenStatus = Convert.ToInt32(bPenStatus);
+            if (npenStatus != 17)
+            {
+                npenStatus = 0;
+            }
+            nodeCanvasWindow.recvOptimizeData(npenStatus, Convert.ToInt32(bx), Convert.ToInt32(by), fPenWidthF);
+
         }
 
         // 收到P1设备数据
