@@ -1,14 +1,19 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿生成启动时间为 2017/8/11 11:54:05。
      1>项目“G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 2 上(build 个目标)。
 =======
 ﻿生成启动时间为 2017/8/12 14:57:22。
+=======
+﻿生成启动时间为 2017/8/12 16:08:07。
+>>>>>>> 2b6f63e0b13f71946026f969e33e33d790398d54
      1>项目“D:\Robot\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 2 上(build 个目标)。
 >>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
      1>InitializeBuildStatus:
          正在创建“Release\USBHelper.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
          所有输出均为最新。
+<<<<<<< HEAD
 <<<<<<< HEAD
          所有输出均为最新。
 =======
@@ -25,6 +30,9 @@
      1>USBHelperDlg.cpp(1801): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : 参见“sprintf”的声明
 >>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
+=======
+         所有输出均为最新。
+>>>>>>> 2b6f63e0b13f71946026f969e33e33d790398d54
        ResourceCompile:
          所有输出均为最新。
        Link:
@@ -40,7 +48,11 @@
 生成成功。
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 已用时间 00:00:00.04
 =======
 已用时间 00:00:02.15
 >>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
+=======
+已用时间 00:00:01.23
+>>>>>>> 2b6f63e0b13f71946026f969e33e33d790398d54
