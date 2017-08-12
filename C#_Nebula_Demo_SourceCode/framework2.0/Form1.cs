@@ -335,6 +335,7 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
             robotpenController.GetInstance().enterAdjustModeEvt += new robotpenController.enterAdjustMode(Form1_enterAdjustModeEvt);
             robotpenController.GetInstance().adjustResultEvt += new robotpenController.adjustResult(Form1_adjustResultEvt);
+            robotpenController.GetInstance().dongleDataOptimizePacketEvt += new robotpenController.dongleOptimizeDataPacket(Form1_dongleOptimizeDataPacketEvt);
         }
 
         private void isP1Mode()
@@ -369,11 +370,33 @@ namespace RobotPenTestDll
             {
                 date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
                 robotpenController.GetInstance().initDeletgate(ref date);
+                robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
             }
             else
             {
                 robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
+                robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnP1OptimizePointDataEvt);
             }
+        }
+
+        // 收到设备优化点数据
+        void Form1_returnOptimizePointDataEvt(byte bPenStatus, ushort bx, ushort by, float fPenWidthF)
+        {
+
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(bx), Convert.ToInt32(by));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            int npenStatus = Convert.ToInt32(bPenStatus);
+            if (npenStatus != 17)
+            {
+                npenStatus = 0;
+            }
+            nodeCanvasWindow.recvOptimizeData(npenStatus, Convert.ToInt32(bx), Convert.ToInt32(by), fPenWidthF);
+
         }
 
         // 收到P1设备数据
@@ -392,6 +415,24 @@ namespace RobotPenTestDll
                 npenStatus = 0;
             }
             nodeCanvasWindow.recvData(npenStatus, Convert.ToInt32(sx), Convert.ToInt32(sy), 0);
+        }
+
+        // 收到P1优化点数据
+        private void Form1_returnP1OptimizePointDataEvt(byte bPenStatus, ushort sx, ushort sy, float fPenWidth)
+        {
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(sx), Convert.ToInt32(sy));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            int npenStatus = Convert.ToInt32(bPenStatus);
+            if (npenStatus != 17)
+            {
+                npenStatus = 0;
+            }
+            nodeCanvasWindow.recvOptimizeData(npenStatus, Convert.ToUInt16(sx), Convert.ToUInt16(sy), fPenWidth);
         }
 
         void Form1_slaveVersionEvt(st_version version)
@@ -461,6 +502,25 @@ namespace RobotPenTestDll
                 return;
             
             nodeCanvasWindow.recvData(Convert.ToInt32(data.nPress), Convert.ToInt32(data.nX), Convert.ToInt32(data.nY), 0);
+        }
+
+        // dongle优化数据上报
+        private void Form1_dongleOptimizeDataPacketEvt(byte bPenStatus, ushort sx, ushort sy, float fPenWidth)
+        {
+            if (null != nodeDataWindow)
+            {
+                nodeDataWindow.dataArrive(Convert.ToInt32(sx), Convert.ToInt32(sy));
+            }
+            if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
+                return;
+
+            int npenStatus = Convert.ToInt32(bPenStatus);
+
+            if (npenStatus != 17)
+            {
+                npenStatus = 0;
+            }
+            nodeCanvasWindow.recvOptimizeData(npenStatus, Convert.ToUInt16(sx), Convert.ToUInt16(sy), fPenWidth);
         }
 
         private void Form1_dongleVersionEvt(st_version version)
@@ -812,7 +872,8 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.canvastype = canvasType.DONGLE;
                     if (!bScreen)
                     {
-                        nodeCanvasWindow.Size = new Size(426, 625);
+                        //nodeCanvasWindow.Size = new Size(426, 625);
+                        nodeCanvasWindow.Size = new Size(826, 1025);
                     }
                     else
                     {
@@ -1458,6 +1519,12 @@ namespace RobotPenTestDll
                 MessageBox.Show("请先选择需要打开的设备!");
                 return;
             }
+
+            // 是否开启笔记优化
+            robotpenController.GetInstance().setPenWidthF((float)1.2);
+            robotpenController.GetInstance().setTrailsIsOptimize(true);
+            //robotpenController.GetInstance().setPressStatus(false);
+
 
             string strPID = this.listView1.SelectedItems[0].SubItems[2].Text;
             UInt16 nPid = Convert.ToUInt16(strPID);
