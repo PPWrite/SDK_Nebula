@@ -39,6 +39,7 @@ enum eDeviceType
 	T7PL,
 	T7E_TS,
 	T7_TS,
+	T7_XGL,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -242,9 +243,10 @@ typedef struct pen_info
 typedef struct pen_infof
 {
 	uint8_t nStatus;		// 笔状态
-	uint16_t nX;			// 笔x轴坐标
+	uint16_t nX;			// 笔x轴坐标8
 	uint16_t nY;			// 笔y轴坐标
-	float nWidth;			// 笔宽度
+	float fWidth;			// 笔宽度
+	float fSpeed;			// 速度
 }PEN_INFOF;  
 
 //页码信息
