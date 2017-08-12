@@ -1,10 +1,30 @@
+<<<<<<< HEAD
 ﻿生成启动时间为 2017/8/11 11:54:05。
      1>项目“G:\work\Robot-Nebula-SDK\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 2 上(build 个目标)。
+=======
+﻿生成启动时间为 2017/8/12 14:57:22。
+     1>项目“D:\Robot\SDK_Nebula\USBHelper_Nebula\USBHelper.vcxproj”在节点 2 上(build 个目标)。
+>>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
      1>InitializeBuildStatus:
          正在创建“Release\USBHelper.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
          所有输出均为最新。
+<<<<<<< HEAD
          所有输出均为最新。
+=======
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\sdk\ /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\USBHelper.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt USBHelperDlg.cpp
+         USBHelperDlg.cpp
+     1>USBHelperDlg.cpp(685): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(700): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(861): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(960): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1189): warning C4018: “>”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1353): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1506): warning C4018: “<”: 有符号/无符号不匹配
+     1>USBHelperDlg.cpp(1510): warning C4800: “const uint8_t”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>USBHelperDlg.cpp(1801): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : 参见“sprintf”的声明
+>>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
        ResourceCompile:
          所有输出均为最新。
        Link:
@@ -19,4 +39,8 @@
 
 生成成功。
 
+<<<<<<< HEAD
 已用时间 00:00:00.04
+=======
+已用时间 00:00:02.15
+>>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d

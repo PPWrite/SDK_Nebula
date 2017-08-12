@@ -13,14 +13,19 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170808")
+#define _VERSION  _T("版本号:20170812")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
 //#define _NODE
+<<<<<<< HEAD
 //#define _DONGLE
 #define _P1
+=======
+#define _DONGLE
+//#define _P1
+>>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
 
 //#define TEST_COUNT
 
@@ -388,10 +393,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	//优化笔记设置
 	/*GetInstance()->SetPenWidth(1.2);
-
 	GetInstance()->SetOptimizeStatus(true);
-
-	GetInstance()->SetPressStatus(true);//*/
+	GetInstance()->SetPressStatus(false);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -538,6 +541,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		if (X8 == m_nDeviceType)
 		{
 			GetInstance()->Send(ExitUsb);
+			Sleep(100);
+		}
+		else if (Dongle == m_nDeviceType)
+		{
+			GetInstance()->Send(DongleDisconnect);
 			Sleep(100);
 		}
 		GetInstance()->ConnectDispose();
@@ -1695,9 +1703,20 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_OPTIMIZE_PACKET:
 		{
-			PEN_INFOF penInfo = {0};
-			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
-			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
+			PEN_INFOF penInfof = {0};
+			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
+			
+			PEN_INFO penInfo = {0};
+			penInfo.nX = penInfof.nX;
+			penInfo.nY = penInfof.nY;
+			penInfo.nStatus = penInfof.nStatus;
+			if (penInfof.nStatus == 17)
+				penInfo.nPress = 1;
+			else
+				penInfo.nPress = 0;
+
+			m_list[0]->AddData(penInfo);
 		}
 		break;
 	default:						
@@ -1988,9 +2007,20 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_OPTIMIZE_PACKET:
 		{
-			PEN_INFOF penInfo = {0};
-			memcpy(&penInfo,report.payload,sizeof(PEN_INFOF));
-			TRACE(_T("X:%d-Y:%d-Status:%d-Width:%f\n"),penInfo.nX,penInfo.nY,penInfo.nStatus,penInfo.nWidth);
+			PEN_INFOF penInfof = {0};
+			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
+			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
+
+			PEN_INFO penInfo = {0};
+			penInfo.nX = penInfof.nX;
+			penInfo.nY = penInfof.nY;
+			penInfo.nStatus = penInfof.nStatus;
+			if (penInfof.nStatus == 17)
+				penInfo.nPress = 1;
+			else
+				penInfo.nPress = 0;
+
+			m_list[0]->AddData(penInfo);
 		}
 		break;
 	default:
