@@ -100,7 +100,7 @@ namespace RobotPenTestDll
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            robotpenController.GetInstance().deviceChangeEvt += new robotpenController.DeviceChange(Form1_deviceChangeEvt);
             // init device list
             this.listView1.Columns.Add("设备名称", 200, HorizontalAlignment.Center);
             this.listView1.Columns.Add("VID", 100, HorizontalAlignment.Center);
@@ -279,6 +279,14 @@ namespace RobotPenTestDll
             this.comboBox1.Text = bScreen ? "横屏" : "竖屏";
             this.set_button.Enabled = false;
         }
+
+        // 设备插拔消息
+        void Form1_deviceChangeEvt(bool bStatus, ushort uPid)
+        {
+            //throw new NotImplementedException();
+            Console.WriteLine("设备状态{0} PID = {1}", bStatus, uPid);
+        }
+
 
         private void notDongleMode()
         {
@@ -1521,8 +1529,8 @@ namespace RobotPenTestDll
             }
 
             // 是否开启笔记优化
-            robotpenController.GetInstance().setPenWidthF((float)1.2);
-            robotpenController.GetInstance().setTrailsIsOptimize(true);
+            //robotpenController.GetInstance().setPenWidthF((float)1.2);
+            //robotpenController.GetInstance().setTrailsIsOptimize(true);
             //robotpenController.GetInstance().setPressStatus(false);
 
 
