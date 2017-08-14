@@ -136,6 +136,10 @@ public:
 		(void)index;
 		(void)answer;
 	}
+	//x8 mac事件
+	virtual void onX8Mac(uint8_t *mac){
+		(void)mac;
+	}
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
 	virtual void onDongleStatus(eDongleStatus status,int mode) {

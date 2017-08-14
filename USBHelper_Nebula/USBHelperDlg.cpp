@@ -18,14 +18,9 @@
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-//#define _NODE
-<<<<<<< HEAD
+#define _NODE
 //#define _DONGLE
-#define _P1
-=======
-#define _DONGLE
 //#define _P1
->>>>>>> 34b50ed15fa5bab5cfcdef8f51cb2f5477d0ff4d
 
 //#define TEST_COUNT
 
@@ -538,16 +533,16 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	GetDlgItemText(IDC_BUTTON3_OPEN,csBtnTitle);
 	if (csBtnTitle.Compare(_T("关闭设备")) == 0)
 	{
-		if (X8 == m_nDeviceType)
-		{
-			GetInstance()->Send(ExitUsb);
-			Sleep(100);
-		}
-		else if (Dongle == m_nDeviceType)
+		if (Dongle == m_nDeviceType)
 		{
 			GetInstance()->Send(DongleDisconnect);
 			Sleep(100);
 		}
+		/*else if (X8 == m_nDeviceType)
+		{
+			GetInstance()->Send(ExitUsb);
+			Sleep(100);
+		}//*/
 		GetInstance()->ConnectDispose();
 		resetDevice();
 		return;
@@ -604,6 +599,10 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		m_nDeviceType = T7E_TS;
 	}
+	else if (nPid == T9_J0_PID)
+	{
+		m_nDeviceType = T9_J0;
+	}
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
 
@@ -633,7 +632,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == T8A || m_nDeviceType == T9A)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -675,8 +674,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if (m_nDeviceType != Gateway)
 		OnBnClickedButtonStatus();
 
-	if (m_nDeviceType == X8)
-		GetInstance()->Send(GetMac);
+	/*if (m_nDeviceType == X8)
+		GetInstance()->Send(GetMac);*/
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -1534,13 +1533,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			else
 				m_nLastMode = nStatus;
 
-			if (X8 ==report.reserved)
+			/*if (X8 ==report.reserved)
 			{
 				if (nStatus != NODE_USB)
 				{
 					GetInstance()->Send(EnterUsb);
 				}
-			}
+			}//*/
 
 			CString str;
 			switch(nStatus)
