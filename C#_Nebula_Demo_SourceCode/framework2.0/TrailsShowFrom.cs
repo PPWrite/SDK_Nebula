@@ -192,7 +192,7 @@ namespace RobotPenTestDll
                 pointf = new PointF(x, y);
             }*/
            // Console.WriteLine("origin x={0} y={1}", x, y);
-            if (canvastype == canvasType.T7E_TS)
+            /*if (canvastype == canvasType.T7E_TS)
             {
                 //int nx = m_nDeviceH - y;
                 //int ny = x;
@@ -205,7 +205,7 @@ namespace RobotPenTestDll
                 //Console.Write(pointf);
                 //Console.Write("\r\n");
             }
-            else
+            else*/
             {
                 pointf = new PointF(x, y);
             }
@@ -246,13 +246,13 @@ namespace RobotPenTestDll
 
             //Console.WriteLine("origin status={0} x={1} y={2} penWidth={3}", nPenStatus, x, y, fPenSize);
             PointF pointf;
-            if (canvastype == canvasType.T7E_TS)
+            /*if (canvastype == canvasType.T7E_TS)
             {
                 int nx = m_nDeviceW - x;
                 int ny = m_nDeviceH - y;
                 pointf = new PointF(nx, ny);
             }
-            else
+            else*/
             {
                 pointf = new PointF(x, y);
             }
