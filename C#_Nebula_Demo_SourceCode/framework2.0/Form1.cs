@@ -1477,7 +1477,7 @@ namespace RobotPenTestDll
         // 窗口关闭时
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (this.open_button.Text == "关闭设备")
+            //if (this.open_button.Text == "关闭设备")
             {
                 robotpenController.GetInstance()._ConnectDispose();
             }
