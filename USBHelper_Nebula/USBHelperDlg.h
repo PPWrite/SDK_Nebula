@@ -124,4 +124,6 @@ public:
 	static void DeleteDir(CString str);
 
 	int m_nCurNoteNum;
+	afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, UINT nEventData);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

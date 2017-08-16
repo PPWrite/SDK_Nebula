@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170812")
+#define _VERSION  _T("版本号:20170815")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -192,6 +192,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
 	ON_BN_CLICKED(IDC_BUTTON_ADJUST, &CUSBHelperDlg::OnBnClickedButtonAdjust)
+	ON_WM_POWERBROADCAST()
 END_MESSAGE_MAP()
 
 
@@ -506,11 +507,11 @@ void CUSBHelperDlg::AddList()
 	int nCount = GetInstance()->GetDeviceCount();
 	for (int i=0;i<nCount;i++)
 	{
-		USB_INFO usbInfo;
+		USB_INFO usbInfo = {0};
 		if (GetInstance()->GetDeviceInfo(i,usbInfo))
 		{
 			int nIndex = pListView->GetItemCount();
-			pListView->InsertItem(i,MultiCharToWideChar(usbInfo.szDevName).c_str());
+			pListView->InsertItem(nIndex,MultiCharToWideChar(usbInfo.szDevName).c_str());
 			CString str;
 			str.Format(_T("%d"),usbInfo.nVendorNum);
 			pListView->SetItemText(nIndex,1,str);
@@ -536,7 +537,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		if (Dongle == m_nDeviceType)
 		{
 			GetInstance()->Send(DongleDisconnect);
-			Sleep(100);
+			Sleep(200);
 		}
 		/*else if (X8 == m_nDeviceType)
 		{
@@ -1736,7 +1737,13 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				switch(nStatus)
 				{
 				case BLE_STANDBY:
-					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+					{
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+						GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T(""));
+						GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(_T(""));
+						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(_T(""));
+						GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T(""));
+					}
 					break;
 				case BLE_SCANNING:			//正在扫描	
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
@@ -2171,4 +2178,23 @@ void CUSBHelperDlg::DeleteDir(CString str)
 		DeleteFile(strdel); //删除文件
 	}
 	finder.Close();
+}
+
+UINT CUSBHelperDlg::OnPowerBroadcast(UINT nPowerEvent, UINT nEventData)
+{
+	OnBnClickedButtonStatus();
+	return CDialogEx::OnPowerBroadcast(nPowerEvent, nEventData);
+}
+
+
+BOOL CUSBHelperDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	
+	//屏蔽ESC关闭窗体/
+	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_ESCAPE ) return TRUE;
+	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
+	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN && pMsg->wParam) return TRUE;
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }
