@@ -18,6 +18,7 @@ enum eRbtType
 	SyncEnd,
 	UpdateStop,
 	GetConfig,
+	DongleVersion,
 	DongleScanStart,
 	DongleScanStop,
 	DongleDisconnect,

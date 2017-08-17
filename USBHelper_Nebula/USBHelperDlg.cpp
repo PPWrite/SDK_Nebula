@@ -1125,6 +1125,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				}
 				else if (m_nDongleUpdateType == DONGLE_BLE)
 				{
+					GetInstance()->Send(DongleVersion);
 				}
 				else
 				{
@@ -1743,9 +1744,11 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(_T(""));
 						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(_T(""));
 						GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T(""));
+						GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(TRUE);
 					}
 					break;
 				case BLE_SCANNING:			//正在扫描	
+					GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(FALSE);
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
 					break;	
 				case BLE_CONNECTING:		//连接中
