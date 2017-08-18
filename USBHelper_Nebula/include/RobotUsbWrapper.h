@@ -28,6 +28,7 @@ enum eRbtType
 	AdjustMode,
 	GetMac,
 	GetNodeInfo,
+	ModuleVersion,
 };
 
 //»Øµ÷º¯Êý
