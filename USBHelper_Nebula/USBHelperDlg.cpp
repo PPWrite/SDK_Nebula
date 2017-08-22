@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170815")
+#define _VERSION  _T("版本号:20170821")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
@@ -510,6 +510,9 @@ void CUSBHelperDlg::AddList()
 		USB_INFO usbInfo = {0};
 		if (GetInstance()->GetDeviceInfo(i,usbInfo))
 		{
+			DEVICE_INFO deviceInfo = {0};
+			GetInstance()->GetDeviceInfo(i,deviceInfo);
+
 			int nIndex = pListView->GetItemCount();
 			pListView->InsertItem(nIndex,MultiCharToWideChar(usbInfo.szDevName).c_str());
 			CString str;
@@ -517,6 +520,7 @@ void CUSBHelperDlg::AddList()
 			pListView->SetItemText(nIndex,1,str);
 			str.Format(_T("%d"),usbInfo.nProductNum);
 			pListView->SetItemText(nIndex,2,str);
+			pListView->SetItemData(nIndex,deviceInfo.type);
 		}
 	}
 
@@ -524,7 +528,33 @@ void CUSBHelperDlg::AddList()
 	{
 		pListView->SetItemState(0,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 	}
+
+	openT7E();
 }
+
+void CUSBHelperDlg::openT7E()
+{
+	CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE);
+	int nCount = pListView->GetItemCount();
+	for (int i=0;i<nCount;i++)
+	{
+		CString strName = pListView->GetItemText(i, 0);
+		if (strName == "T7E BOOT")
+		{
+			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+			OnBnClickedButton3Open();
+
+			if (m_nDeviceType == T7E_TS)
+			{
+				Sleep(100);
+				this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
+			}
+
+			return;
+		}
+	}
+}
+
 // 打开设备
 void CUSBHelperDlg::OnBnClickedButton3Open()
 {
@@ -568,7 +598,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	int nVid = atoi(WideStrToMultiStr(strVid.GetBuffer()));
 	int nPid = atoi(WideStrToMultiStr(strPid.GetBuffer()));
 
-	if (nPid == GATEWAY_PID)
+	/*if (nPid == GATEWAY_PID)
 	{
 		m_nDeviceType = Gateway;
 	}
@@ -604,9 +634,14 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	{
 		m_nDeviceType = T9_J0;
 	}
+	else if (nPid == J0_A4_P_PID)
+	{
+		m_nDeviceType = J0_A4_P;
+	}//*/
+
+	m_nDeviceType = (eDeviceType)((CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE))->GetItemData(nItem);
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
-
 
 	int nRes = GetInstance()->ConnectOpen();
 	ASSERT(nRes == 0);
@@ -633,7 +668,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P )
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));

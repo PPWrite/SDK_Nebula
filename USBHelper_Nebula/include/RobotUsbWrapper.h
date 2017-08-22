@@ -43,6 +43,11 @@ public:
 		(void)status;
 		(void)pid;
 	}
+	//设备插拔事件
+	virtual void onDeviceChanged(eDeviceStatus status,eDeviceType type) {
+		(void)status;
+		(void)type;
+	}
 	//网关状态事件
 	virtual void onGatewayStatus(eGatewayStatus status){
 		(void)status;
@@ -220,6 +225,7 @@ public:
 	//获取可用设备
 	virtual DWORD GetAvailableDevice() = 0;
 	virtual bool GetDeviceInfo(int index,USB_INFO &usbInfo) = 0;
+	virtual bool GetDeviceInfo(int index,DEVICE_INFO &devInfo) = 0;
 	//根据PID和VID打开设备
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
 	//连接蓝牙设备
@@ -272,6 +278,8 @@ extern "C" DECLDIR void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
 extern "C" DECLDIR int GetDeviceCount();
 //获取可用设备
 extern "C" DECLDIR bool GetDeviceInfo(int index,USB_INFO &usbInfo);
+//获取可用设备
+extern "C" DECLDIR bool GetDeviceInfo2(int index,DEVICE_INFO &devInfo);
 //根据PID和VID打开设备
 extern "C" DECLDIR int  Open(int nVid,int nPid,bool bAll = true);
 //连接蓝牙设备

@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.1.5"
+#define FILEVERSION "1.1.1.6"
 
 #define NUM 60
 
@@ -17,6 +17,7 @@ enum eDevicePid
 	T7PL_PID	=   0x600e,
 	T7E_TS_PID	=	0x600f,
 	T9_J0_PID	=	0x6012,
+	J0_A4_P_PID	=	0x6013,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -207,6 +208,7 @@ enum eRobotCmd
 	ROBOT_GATEWAY_VERSION,						//设备版本号
 	ROBOT_ONLINE_STATUS,						//在线状态
 	ROBOT_DEVICE_CHANGE,						//设备改变
+	ROBOT_DEVICE_CHANGED,						//设备改变2
 	ROBOT_NODE_INFO,							//设备信息
 	ROBOT_NODE_ERROR,							//node错误
 	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
@@ -276,6 +278,13 @@ typedef struct usb_info
 	unsigned short nVendorNum;    
 	unsigned short nProductNum;         
 }USB_INFO;
+
+//设备信息
+typedef struct device_info
+{
+	char szDevName[260];
+	eDeviceType type;
+}DEVICE_INFO;
 
 enum eKeyPress
 {

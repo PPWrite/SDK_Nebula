@@ -96,6 +96,7 @@ public:
 	void AddList();
 	void GetTime();
 	void AddSlaveList(int nNum,const CString &strName,const CString &strMac);
+	void openT7E();
 protected:
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
