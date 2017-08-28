@@ -550,7 +550,7 @@ void CUSBHelperDlg::openT7E()
 
 			if (m_nDeviceType == T7E_TS)
 			{
-				SetTimer(0,1000,NULL);
+				SetTimer(1,1000,NULL);
 			}
 
 			return;
@@ -712,7 +712,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if (m_nDeviceType != Gateway)
 	{
 		//OnBnClickedButtonStatus();
-		SetTimer(1,500,NULL);
+		SetTimer(0,500,NULL);
 	}
 
 	/*if (m_nDeviceType == X8)
@@ -2253,12 +2253,6 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 	case 0:
 		{
-			KillTimer(0);
-			this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
-		}
-		break;
-	case 1:
-		{
 			/*	CString str;
 			GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 			if (!str.IsEmpty())
@@ -2266,7 +2260,14 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(1);
 			break;
 			}*/
+			KillTimer(0);
 			OnBnClickedButtonStatus();
+		}
+		break;
+	case 1:
+		{
+			KillTimer(1);
+			this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
 		}
 		break;
 	default:
