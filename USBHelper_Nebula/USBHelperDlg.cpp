@@ -18,11 +18,12 @@
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
+//#define TEST_T7E
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -193,6 +194,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
 	ON_BN_CLICKED(IDC_BUTTON_ADJUST, &CUSBHelperDlg::OnBnClickedButtonAdjust)
 	ON_WM_POWERBROADCAST()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -529,7 +531,9 @@ void CUSBHelperDlg::AddList()
 		pListView->SetItemState(0,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 	}
 
+#ifdef TEST_T7E
 	openT7E();
+#endif
 }
 
 void CUSBHelperDlg::openT7E()
@@ -546,8 +550,7 @@ void CUSBHelperDlg::openT7E()
 
 			if (m_nDeviceType == T7E_TS)
 			{
-				Sleep(100);
-				this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
+				SetTimer(0,1000,NULL);
 			}
 
 			return;
@@ -567,7 +570,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		if (Dongle == m_nDeviceType)
 		{
 			GetInstance()->Send(DongleDisconnect);
-			Sleep(200);
+			Sleep(300);
 		}
 		/*else if (X8 == m_nDeviceType)
 		{
@@ -706,9 +709,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
-
 	if (m_nDeviceType != Gateway)
-		OnBnClickedButtonStatus();
+	{
+		//OnBnClickedButtonStatus();
+		SetTimer(1,500,NULL);
+	}
 
 	/*if (m_nDeviceType == X8)
 		GetInstance()->Send(GetMac);*/
@@ -1069,6 +1074,9 @@ void CUSBHelperDlg::OnBnClickedButton3Update()
 			str += strSlave;
 		}
 		m_pDlg->SetVersion(str);
+#ifdef TEST_T7E
+		m_pDlg->AutoSetPath();
+#endif
 		m_pDlg->CenterWindow(this);
 		m_pDlg->ShowWindow(SW_SHOWDEFAULT);
 	}
@@ -2235,4 +2243,35 @@ BOOL CUSBHelperDlg::PreTranslateMessage(MSG* pMsg)
 	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN && pMsg->wParam) return TRUE;
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	switch(nIDEvent)
+	{
+	case 0:
+		{
+			KillTimer(0);
+			this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
+		}
+		break;
+	case 1:
+		{
+			/*	CString str;
+			GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
+			if (!str.IsEmpty())
+			{
+			KillTimer(1);
+			break;
+			}*/
+			OnBnClickedButtonStatus();
+		}
+		break;
+	default:
+		break;
+	}
+	
+	CDialogEx::OnTimer(nIDEvent);
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.1.6"
+#define FILEVERSION "1.1.1.7"
 
 #define NUM 60
 

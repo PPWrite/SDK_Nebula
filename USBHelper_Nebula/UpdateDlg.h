@@ -42,7 +42,7 @@ public:
 
 	void SetVersion(const CString &strVersion);
 	afx_msg void OnNcDestroy();
-
+	void AutoSetPath();
 	afx_msg LRESULT OnProcess(WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButton4Stop();

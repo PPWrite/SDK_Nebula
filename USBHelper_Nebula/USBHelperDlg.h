@@ -127,4 +127,5 @@ public:
 	int m_nCurNoteNum;
 	afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, UINT nEventData);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

@@ -423,3 +423,62 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T("0.0.0.0"));
 	}
 }
+
+void CUpdateDlg::AutoSetPath()
+{
+	((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->SetCurSel(1);
+	OnCbnSelchangeComboType();
+
+	CString strFilePath;
+	GetPrivateProfileString(_T("General"),_T("Path"),_T(""),strFilePath.GetBuffer(MAX_PATH),MAX_PATH,GetAppPath() + _T("\\USBHelper.ini"));
+
+	CString strFileName = strFilePath;
+	CFileFind ff;
+	BOOL find = ff.FindFile(strFilePath);
+	if (find)
+	{
+		ff.FindNextFile();
+		strFileName = ff.GetFileName();
+	}
+
+	if (m_nDeviceType == T8A ||m_nDeviceType == T9A)
+	{
+		if(strFileName.MakeLower().Find(_T("mcu")) < 0)
+		{
+			AfxMessageBox(_T("固件类型不匹配！"));
+			return;
+		}
+	}
+
+	GetDlgItem(IDC_EDIT_MCU)->SetWindowText(strFilePath);
+	CStringArray sArray;
+	SplitFields(strFileName.Left(strFileName.GetLength()-4),sArray,_T("_"));
+
+	if(sArray.GetCount() == 3)
+	{
+		CStringArray sArrayVersion;
+		SplitFields(sArray[2],sArrayVersion,_T("."));
+
+		if(sArrayVersion.GetCount() == 2)
+		{
+			m_version.version = atoi(WideCharToMultichar(sArrayVersion[0].GetBuffer()).c_str());
+			m_version.version2 = atoi(WideCharToMultichar(sArrayVersion[1].GetBuffer()).c_str());
+
+			CString str;
+			str.Format(_T("%d.%d.%d.%d"),m_version.version,m_version.version2,m_version.version3,m_version.version4);
+			GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+		}
+		else if(sArrayVersion.GetCount() == 4)
+		{
+			CString str;
+			str.Format(_T("%s.%s.%s.%s"),sArrayVersion[0],sArrayVersion[1],sArrayVersion[2],sArrayVersion[3]);
+			GetDlgItem(IDC_EDIT_VERSION2)->SetWindowText(str);
+		}
+		else
+			AfxMessageBox(_T("文件格式不匹配！"));
+	}
+	else
+	{
+		AfxMessageBox(_T("文件格式不匹配！"));
+	}
+}
