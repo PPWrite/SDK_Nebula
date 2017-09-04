@@ -460,6 +460,7 @@ void CUSBHelperDlg::InitListCtrl()
 	pListView->InsertColumn(0, _T("设备名称"), LVCFMT_LEFT, 180);
 	pListView->InsertColumn(1, _T("VID"), LVCFMT_LEFT, 80);
 	pListView->InsertColumn(2, _T("PID"), LVCFMT_LEFT, 80);
+	pListView->InsertColumn(3, _T(""), LVCFMT_LEFT, 10);
 	pListView->SetExtendedStyle (LVS_EX_FULLROWSELECT |LVS_EX_GRIDLINES );//设置扩展
 
 	pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
@@ -523,6 +524,7 @@ void CUSBHelperDlg::AddList()
 			str.Format(_T("%d"),usbInfo.nProductNum);
 			pListView->SetItemText(nIndex,2,str);
 			pListView->SetItemData(nIndex,deviceInfo.type);
+			pListView->SetItemText(nIndex,3,MultiCharToWideChar(usbInfo.szDevPath).c_str());
 		}
 	}
 
@@ -827,6 +829,7 @@ void CUSBHelperDlg::ProcessMassData()
 					else
 						this->parseRobotReport(report);
 				}
+				Sleep(1);
 			}
 			break;
 		case 1:
@@ -1788,6 +1791,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(_T(""));
 						GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T(""));
 						GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(TRUE);
+						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(TRUE);
 					}
 					break;
 				case BLE_SCANNING:			//正在扫描	
@@ -1807,6 +1811,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						CString strName = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 1);
 
 						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(strName);
+
+						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(FALSE);
 					}
 					break;
 				case BLE_ACTIVE_DISCONNECT://正在断开链接

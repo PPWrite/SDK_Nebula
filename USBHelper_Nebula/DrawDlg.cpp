@@ -143,7 +143,7 @@ void CDrawDlg::AddData(PEN_INFO& penInfo)
 	}
 	CRect rect;
 	this->GetClientRect(rect);
-	m_Sum[0] = penInfo.nX%rect.Height();
+	m_Sum[0] = (penInfo.nX+penInfo.nY)%rect.Height();
 	m_nIndex++;
 
 	this->Invalidate(FALSE);	
