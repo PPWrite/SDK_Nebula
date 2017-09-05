@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.1.8"
+#define FILEVERSION "1.1.1.9"
 
 #define NUM 60
 
@@ -18,6 +18,7 @@ enum eDevicePid
 	T7E_TS_PID	=	0x600f,
 	T9_J0_PID	=	0x6012,
 	J0_A4_P_PID	=	0x6013,
+	T9E_PID		=	0x6014,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -44,6 +45,7 @@ enum eDeviceType
 	T7_XGL,
 	T9_J0,
 	J0_A4_P,
+	T9E,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
