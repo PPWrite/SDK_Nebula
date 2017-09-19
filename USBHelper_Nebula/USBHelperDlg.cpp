@@ -13,17 +13,19 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20170821")
+#define _VERSION  _T("°æ±¾ºÅ:20170914")
 
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 //#define TEST_COUNT
 //#define TEST_T7E
+
+//#define USE_POWERBROADCAST
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -193,7 +195,9 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
 	ON_BN_CLICKED(IDC_BUTTON_ADJUST, &CUSBHelperDlg::OnBnClickedButtonAdjust)
+#ifdef USE_POWER
 	ON_WM_POWERBROADCAST()
+#endif
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
