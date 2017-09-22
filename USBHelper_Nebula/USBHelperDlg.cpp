@@ -2120,7 +2120,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			memcpy(&id,report.payload,5);
 			CString str;
 			str.Format(_T("%I64d"),id);
-			GetDlgItem(IDC_STATIC_STATUS)->SetWindowText(str);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
 	case ROBOT_VIRTUAL_KEY_PRESS:
