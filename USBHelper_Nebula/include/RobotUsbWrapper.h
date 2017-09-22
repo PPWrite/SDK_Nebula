@@ -29,6 +29,7 @@ enum eRbtType
 	GetMac,
 	GetNodeInfo,
 	ModuleVersion,
+	GetDeviceID,
 };
 
 //回调函数
@@ -230,6 +231,8 @@ public:
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
 	//连接蓝牙设备
 	virtual void ConnectSlave(int nID) = 0;
+	//绑定
+	virtual void Bind(unsigned char *mac) = 0;
 	//设置蓝牙名称
 	virtual void SetSlaveName(const char *name) = 0;
 	//设置设备类型

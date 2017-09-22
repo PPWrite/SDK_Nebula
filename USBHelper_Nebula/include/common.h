@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.2.0"
+#define FILEVERSION "1.1.2.1"
 
 #define NUM 60
 
@@ -237,6 +237,9 @@ enum eRobotCmd
 	ROBOT_ENTER_ADJUST_MODE,					//进入模组校准模式
 	ROBOT_MODULE_ADJUST_RESULT,					//模组校准结果
 	ROBOT_GET_X8_MAC,							//获取mac地址
+	ROBOT_DONGLE_BIND,							//绑定
+	ROBOT_GET_DEVICE_ID,						//获取设备唯一ID
+	ROBOT_VIRTUAL_KEY_PRESS,					//虚拟按键按下
 };
 // 笔数据信息
 typedef struct pen_info

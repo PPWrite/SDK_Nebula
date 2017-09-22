@@ -18,9 +18,11 @@
 #define RESET_NODE 0x2a
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
+
+#define _CY
 
 //#define TEST_COUNT
 //#define TEST_T7E
@@ -199,6 +201,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_WM_POWERBROADCAST()
 #endif
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_GET_ID, &CUSBHelperDlg::OnBnClickedButtonGetId)
 END_MESSAGE_MAP()
 
 
@@ -365,6 +368,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	SetWindowText(_T("P1"));
 #endif
+
+#ifdef _CY
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
+#endif
+
 	InitListCtrl();
 
 	resetUI();
@@ -782,6 +791,15 @@ void CUSBHelperDlg::resetDevice()
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		unsigned char *pMac = (unsigned char*)pListView->GetItemData(i);
+		if (pMac)
+		{
+			delete pMac;
+			pMac = NULL;
+		}
+	}//*/
 	pListView->DeleteAllItems();
 
 	m_nLastStatus = -1;
@@ -1862,14 +1880,15 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			ST_BLE_DEVICE device = {0};
 			memcpy(&device,report.payload,sizeof(device));
 
-			const unsigned char* pDevName  = device.device_name;
+			/*const unsigned char* pDevName  = device.device_name;
 
 			unsigned char szMac[25] = {0};
 			sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",device.addr[0],device.addr[1],device.addr[2],device.addr[3],device.addr[4],device.addr[5]);
 
 			std::string strName = (char*)pDevName;
 			std::string strMac = (char*)szMac;
-			AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());
+			AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());//*/
+			AddSlaveList(device.num,device.device_name,device.addr);
 		}
 		break;
 	case ROBOT_ORIGINAL_PACKET:
@@ -2085,6 +2104,33 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			m_list[0]->AddData(penInfo);
 		}
 		break;
+	case ROBOT_DONGLE_BIND:
+		{
+			CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_SLAVE);
+			POSITION pos = pListView->GetFirstSelectedItemPosition();
+			int nItem = pListView->GetNextSelectedItem(pos);
+			CString strNum = pListView->GetItemText(nItem, 0);
+			int nNum = atoi(WideStrToMultiStr(strNum.GetBuffer()));
+			GetInstance()->ConnectSlave(nNum);
+		}
+		break;
+	case ROBOT_GET_DEVICE_ID:
+		{
+			__int64 id;
+			memcpy(&id,report.payload,5);
+			CString str;
+			str.Format(_T("%I64d"),id);
+			GetDlgItem(IDC_STATIC_STATUS)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_VIRTUAL_KEY_PRESS:
+		{
+			uint8_t nKey = report.payload[0];
+			CString str;
+			str.Format(_T("%d"),nKey);
+			GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
+		}
+		break;
 	default:
 		break;
 	}
@@ -2096,6 +2142,15 @@ void CUSBHelperDlg::OnBnClickedButtonScan()
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		unsigned char *pMac = (unsigned char*)pListView->GetItemData(i);
+		if (pMac)
+		{
+			delete pMac;
+			pMac = NULL;
+		}
+	}//*/
 	pListView->DeleteAllItems();
 
 	GetInstance()->Send(DongleScanStart);
@@ -2110,19 +2165,23 @@ void CUSBHelperDlg::OnBnClickedButtonScanStop()
 void CUSBHelperDlg::OnBnClickedButtonConnect()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetFirstSelectedItemPosition();
+	CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_SLAVE);
+	POSITION pos = pListView->GetFirstSelectedItemPosition();
 	if (pos == nullptr)
 	{
 		MessageBox(_T("请先选中设备!"), _T("提示"), IDOK);
 		return;
 	}
 
-	int nItem = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetNextSelectedItem(pos);
-	CString strNum = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 0);
-
+	int nItem = pListView->GetNextSelectedItem(pos);
+	CString strNum = pListView->GetItemText(nItem, 0);
+#ifdef _CY
+	unsigned char *pMac = (unsigned char*)pListView->GetItemData(nItem);
+	GetInstance()->Bind(pMac);
+#else
 	int nNum = atoi(WideStrToMultiStr(strNum.GetBuffer()));
-
 	GetInstance()->ConnectSlave(nNum);
+#endif
 }
 
 void CUSBHelperDlg::OnBnClickedButtonDisconnect()
@@ -2131,8 +2190,14 @@ void CUSBHelperDlg::OnBnClickedButtonDisconnect()
 	GetInstance()->Send(DongleDisconnect);
 }
 
-void CUSBHelperDlg::AddSlaveList(int nNum,const CString &strName,const CString &strMac)
+void CUSBHelperDlg::AddSlaveList(int nNum,unsigned char *name,unsigned char *mac)
 {
+	char szMac[25] = {0};
+	sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+
+	std::string strName = (char*)name;
+	std::string strMac = (char*)szMac;
+
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
@@ -2151,8 +2216,12 @@ void CUSBHelperDlg::AddSlaveList(int nNum,const CString &strName,const CString &
 	CString strID;
 	strID.Format(_T("%d"),nNum);
 	pListView->InsertItem(nIndex,strID);
-	pListView->SetItemText(nIndex,1,strName);
-	pListView->SetItemText(nIndex,2,strMac);
+	pListView->SetItemText(nIndex,1,MultiCharToWideChar(strName).c_str());
+	pListView->SetItemText(nIndex,2,MultiCharToWideChar(strMac).c_str());
+
+	unsigned char *pMac = new unsigned char[6];
+	memcpy(pMac,mac,6);
+	pListView->SetItemData(nIndex,(DWORD)pMac);
 }
 
 void CUSBHelperDlg::OnBnClickedButtonSetName()
@@ -2285,4 +2354,11 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 	
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonGetId()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(GetDeviceID);
 }
