@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define FILEVERSION "1.1.2.1"
+#define FILEVERSION "1.1.2.2"
 
 #define NUM 60
 
@@ -46,6 +46,7 @@ enum eDeviceType
 	T9_J0,
 	J0_A4_P,
 	T9E,
+	J0_T9,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)

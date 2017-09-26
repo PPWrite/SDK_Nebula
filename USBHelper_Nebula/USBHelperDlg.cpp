@@ -666,6 +666,17 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if(nRes == 0)
 		GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
 
+	/*if (nRes == 0)
+	{
+		AfxMessageBox(_T("打开成功"));
+	}
+	else
+	{
+		CString str;
+		str.Format(_T("打开失败,返回值:%d"),nRes);
+		AfxMessageBox(str);
+	}//*/
+
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
 	bool bShow = (m_nDeviceType == Gateway) ? TRUE : FALSE;
