@@ -1,7 +1,10 @@
 #pragma once
-#include <stdint.h>
 
 #define FILEVERSION "1.1.2.2"
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 
 #define NUM 60
 

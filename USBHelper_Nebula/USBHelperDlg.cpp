@@ -258,6 +258,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("GATEWAY"));
 
 	DeleteDir(GetDataFloder());
@@ -293,6 +294,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -365,6 +367,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 
 	SetWindowText(_T("P1"));
 #endif
@@ -666,16 +669,12 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if(nRes == 0)
 		GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
 
-	/*if (nRes == 0)
-	{
-		AfxMessageBox(_T("打开成功"));
-	}
-	else
+	if (nRes != 0)
 	{
 		CString str;
-		str.Format(_T("打开失败,返回值:%d"),nRes);
+		str.Format(_T("打开失败,错误码:%d"),nRes);
 		AfxMessageBox(str);
-	}//*/
+	}
 
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
@@ -2224,15 +2223,36 @@ void CUSBHelperDlg::AddSlaveList(int nNum,unsigned char *name,unsigned char *mac
 		}
 	}
 
+	CString strName_ = MultiCharToWideChar(strName).c_str();
+	CString strMac_ = MultiCharToWideChar(strMac).c_str();
+
+	if (SalveExist(strName_,strMac_))
+		return;
+
 	CString strID;
 	strID.Format(_T("%d"),nNum);
 	pListView->InsertItem(nIndex,strID);
-	pListView->SetItemText(nIndex,1,MultiCharToWideChar(strName).c_str());
-	pListView->SetItemText(nIndex,2,MultiCharToWideChar(strMac).c_str());
+	pListView->SetItemText(nIndex,1,strName_);
+	pListView->SetItemText(nIndex,2,strMac_);
 
 	unsigned char *pMac = new unsigned char[6];
 	memcpy(pMac,mac,6);
 	pListView->SetItemData(nIndex,(DWORD)pMac);
+}
+
+bool CUSBHelperDlg::SalveExist(CString name,CString mac)
+{
+	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		CString strName = pListView->GetItemText(i,1);
+		CString strMac = pListView->GetItemText(i,2);
+		if (name == strName && mac == strMac)
+			return true;
+	}
+
+	return false;
 }
 
 void CUSBHelperDlg::OnBnClickedButtonSetName()

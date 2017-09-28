@@ -102,6 +102,7 @@ public:
 	void GetTime();
 	void AddSlaveList(int nNum,unsigned char *name,unsigned char *mac);
 	void openT7E();
+	bool SalveExist(CString name,CString mac);
 protected:
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
