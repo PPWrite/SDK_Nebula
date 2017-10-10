@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.2.2"
+#define FILEVERSION "1.1.2.3"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -50,6 +50,7 @@ enum eDeviceType
 	J0_A4_P,
 	T9E,
 	J0_T9,
+	T7_CY,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)

@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20170914")
+#define _VERSION  _T("°æ±¾ºÅ:20170928")
 
 #define RESET_NODE 0x2a
 
@@ -22,7 +22,7 @@
 #define _DONGLE
 //#define _P1
 
-#define _CY
+//#define _CY
 
 //#define TEST_COUNT
 //#define TEST_T7E
