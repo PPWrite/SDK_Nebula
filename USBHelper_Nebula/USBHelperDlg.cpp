@@ -13,16 +13,17 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170928")
+#define _VERSION  _T("版本号:20171011")
 
 #define RESET_NODE 0x2a
+#define RESET_MCU  0x29
 
 //#define _GATEWAY
 //#define _NODE
 #define _DONGLE
 //#define _P1
 
-//#define _CY
+#define _CY
 
 //#define TEST_COUNT
 //#define TEST_T7E
@@ -585,11 +586,13 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	GetDlgItemText(IDC_BUTTON3_OPEN,csBtnTitle);
 	if (csBtnTitle.Compare(_T("关闭设备")) == 0)
 	{
+#ifndef _CY
 		if (Dongle == m_nDeviceType)
 		{
 			GetInstance()->Send(DongleDisconnect);
 			Sleep(300);
 		}
+#endif
 		/*else if (X8 == m_nDeviceType)
 		{
 			GetInstance()->Send(ExitUsb);
