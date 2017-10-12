@@ -13,10 +13,10 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171011")
+#define _VERSION  _T("版本号:20171012")
 
 #define RESET_NODE 0x2a
-#define RESET_MCU  0x29
+#define RESET_ALL  0x29
 
 //#define _GATEWAY
 //#define _NODE
@@ -203,6 +203,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 #endif
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_GET_ID, &CUSBHelperDlg::OnBnClickedButtonGetId)
+	ON_BN_CLICKED(IDC_BUTTON3_RESET2, &CUSBHelperDlg::OnBnClickedButton3Reset2)
 END_MESSAGE_MAP()
 
 
@@ -296,6 +297,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -595,8 +597,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 #endif
 		/*else if (X8 == m_nDeviceType)
 		{
-			GetInstance()->Send(ExitUsb);
-			Sleep(100);
+		GetInstance()->Send(ExitUsb);
+		Sleep(100);
 		}//*/
 		GetInstance()->ConnectDispose();
 		resetDevice();
@@ -624,43 +626,43 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	/*if (nPid == GATEWAY_PID)
 	{
-		m_nDeviceType = Gateway;
+	m_nDeviceType = Gateway;
 	}
 	else if (nPid == T8A_PID )
 	{
-		m_nDeviceType = T8A;
+	m_nDeviceType = T8A;
 	}
 	else if (nPid == T9A_PID )
 	{
-		m_nDeviceType = T9A;
+	m_nDeviceType = T9A;
 	}
 	else if (nPid == DONGLE_PID)
 	{
-		m_nDeviceType = Dongle;
+	m_nDeviceType = Dongle;
 	}
 	else if (nPid == P1_PID)
 	{
-		m_nDeviceType = RobotPen_P1;
+	m_nDeviceType = RobotPen_P1;
 	}
 	else if(nPid == X8_PID)
 	{
-		m_nDeviceType = X8;
+	m_nDeviceType = X8;
 	}
 	else if(nPid == T7PL_PID)
 	{
-		m_nDeviceType = T7PL;
+	m_nDeviceType = T7PL;
 	}
 	else if(nPid == T7E_TS_PID)
 	{
-		m_nDeviceType = T7E_TS;
+	m_nDeviceType = T7E_TS;
 	}
 	else if (nPid == T9_J0_PID)
 	{
-		m_nDeviceType = T9_J0;
+	m_nDeviceType = T9_J0;
 	}
 	else if (nPid == J0_A4_P_PID)
 	{
-		m_nDeviceType = J0_A4_P;
+	m_nDeviceType = J0_A4_P;
 	}//*/
 
 	m_nDeviceType = (eDeviceType)((CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE))->GetItemData(nItem);
@@ -744,7 +746,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 
 	/*if (m_nDeviceType == X8)
-		GetInstance()->Send(GetMac);*/
+	GetInstance()->Send(GetMac);*/
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -1606,7 +1608,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
 		}
-		
+
 		break;	
 	case ROBOT_NODE_MODE:
 		{
@@ -1618,10 +1620,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			/*if (X8 ==report.reserved)
 			{
-				if (nStatus != NODE_USB)
-				{
-					GetInstance()->Send(EnterUsb);
-				}
+			if (nStatus != NODE_USB)
+			{
+			GetInstance()->Send(EnterUsb);
+			}
 			}//*/
 
 			CString str;
@@ -1769,16 +1771,16 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			switch(result)
 			{
 			case ADJUST_SUCCESSED:
-				str = _T("校准成功");
-				break;
+			str = _T("校准成功");
+			break;
 			case ADJUST_FAILED:
-				str = _T("校准失败");
-				break;
+			str = _T("校准失败");
+			break;
 			case ADJUST_TIMEOUT:
-				str = _T("校准超时");
-				break;
+			str = _T("校准超时");
+			break;
 			default:
-				break;
+			break;
 			}
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);//*/
 		}
@@ -1788,7 +1790,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFOF penInfof = {0};
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
 			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
-			
+
 			PEN_INFO penInfo = {0};
 			penInfo.nX = penInfof.nX;
 			penInfo.nY = penInfof.nY;
@@ -2349,7 +2351,7 @@ UINT CUSBHelperDlg::OnPowerBroadcast(UINT nPowerEvent, UINT nEventData)
 BOOL CUSBHelperDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	
+
 	//屏蔽ESC关闭窗体/
 	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_ESCAPE ) return TRUE;
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
@@ -2386,7 +2388,7 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 	default:
 		break;
 	}
-	
+
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -2395,4 +2397,11 @@ void CUSBHelperDlg::OnBnClickedButtonGetId()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(GetDeviceID);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButton3Reset2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(RESET_ALL);
 }

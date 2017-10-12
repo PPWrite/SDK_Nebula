@@ -137,4 +137,5 @@ public:
 
 	std::vector<DEVICE_MAC> m_vecMac;
 	afx_msg void OnBnClickedButtonGetId();
+	afx_msg void OnBnClickedButton3Reset2();
 };
