@@ -13,17 +13,17 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20171012")
+#define _VERSION  _T("°æ±¾ºÅ:20171013")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
-#define _CY
+//#define _CY
 
 //#define TEST_COUNT
 //#define TEST_T7E
@@ -1082,8 +1082,8 @@ void CUSBHelperDlg::OnBnClickedButton3Set()
 	GetDlgItem(IDC_EDIT_CLASS)->GetWindowText(strClass);
 	CString strDevice;
 	GetDlgItem(IDC_EDIT_DEV)->GetWindowText(strDevice);
-	BOOL bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A) ? TRUE : FALSE;
-	CSettingDlg dlg(strCustom,strClass,strDevice,bNode);
+	BOOL bGateway = (m_nDeviceType == Gateway) ? TRUE : FALSE;
+	CSettingDlg dlg(strCustom,strClass,strDevice,bGateway);
 	if (IDOK == dlg.DoModal())
 	{
 		dlg.GetSettingInfo(strCustom,strClass,strDevice);
