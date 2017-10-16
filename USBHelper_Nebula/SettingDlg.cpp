@@ -11,12 +11,12 @@
 
 IMPLEMENT_DYNAMIC(CSettingDlg, CDialog)
 
-CSettingDlg::CSettingDlg(const CString &strCustom,const CString &strClass,const CString &strDevice,BOOL bNode /*=false*/,CWnd* pParent /*=NULL*/)
+CSettingDlg::CSettingDlg(const CString &strCustom,const CString &strClass,const CString &strDevice,BOOL bGateway /*=false*/,CWnd* pParent /*=NULL*/)
 	: CDialog(CSettingDlg::IDD, pParent)
 	, m_strCustom(strCustom)
 	, m_strClass(strClass)
 	, m_strDevice(strDevice)
-	, m_bNode(bNode)
+	, m_bGateway(bGateway)
 {
 
 }
@@ -45,7 +45,15 @@ BOOL CSettingDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 
-	if (m_bNode)
+	if (m_bGateway)
+	{
+		GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(m_strCustom);
+		GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(m_strClass);
+
+		GetDlgItem(IDC_STATIC_DEVICE)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_DEVICE)->ShowWindow(SW_HIDE);
+	}
+	else
 	{
 		GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(m_strCustom);
 		GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(m_strClass);
@@ -53,14 +61,6 @@ BOOL CSettingDlg::OnInitDialog()
 
 		GetDlgItem(IDC_EDIT_DEVICE)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_STATIC_DEVICE)->ShowWindow(SW_SHOW);
-	}
-	else
-	{
-		GetDlgItem(IDC_EDIT_CUSTOM)->SetWindowText(m_strCustom);
-		GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(m_strClass);
-
-		GetDlgItem(IDC_STATIC_DEVICE)->ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_EDIT_DEVICE)->ShowWindow(SW_HIDE);
 	}
 	
 

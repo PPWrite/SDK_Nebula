@@ -13,16 +13,22 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20170812")
+#define _VERSION  _T("版本号:20171016")
 
 #define RESET_NODE 0x2a
+#define RESET_ALL  0x29
 
 //#define _GATEWAY
 //#define _NODE
 //#define _DONGLE
 #define _P1
 
+//#define _CY
+
 //#define TEST_COUNT
+//#define TEST_T7E
+
+//#define USE_POWERBROADCAST
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -192,6 +198,12 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SYNC_OPEN, &CUSBHelperDlg::OnBnClickedButtonSyncOpen)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET, &CUSBHelperDlg::OnBnClickedButton3Reset)
 	ON_BN_CLICKED(IDC_BUTTON_ADJUST, &CUSBHelperDlg::OnBnClickedButtonAdjust)
+#ifdef USE_POWER
+	ON_WM_POWERBROADCAST()
+#endif
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_GET_ID, &CUSBHelperDlg::OnBnClickedButtonGetId)
+	ON_BN_CLICKED(IDC_BUTTON3_RESET2, &CUSBHelperDlg::OnBnClickedButton3Reset2)
 END_MESSAGE_MAP()
 
 
@@ -248,6 +260,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_PROGRESS2)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	SetWindowText(_T("GATEWAY"));
 
 	DeleteDir(GetDataFloder());
@@ -283,6 +296,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
 #endif
 #ifdef _DONGLE
@@ -355,9 +370,16 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 
 	SetWindowText(_T("P1"));
 #endif
+
+#ifdef _CY
+	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
+#endif
+
 	InitListCtrl();
 
 	resetUI();
@@ -457,6 +479,7 @@ void CUSBHelperDlg::InitListCtrl()
 	pListView->InsertColumn(0, _T("设备名称"), LVCFMT_LEFT, 180);
 	pListView->InsertColumn(1, _T("VID"), LVCFMT_LEFT, 80);
 	pListView->InsertColumn(2, _T("PID"), LVCFMT_LEFT, 80);
+	pListView->InsertColumn(3, _T(""), LVCFMT_LEFT, 10);
 	pListView->SetExtendedStyle (LVS_EX_FULLROWSELECT |LVS_EX_GRIDLINES );//设置扩展
 
 	pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
@@ -506,16 +529,21 @@ void CUSBHelperDlg::AddList()
 	int nCount = GetInstance()->GetDeviceCount();
 	for (int i=0;i<nCount;i++)
 	{
-		USB_INFO usbInfo;
+		USB_INFO usbInfo = {0};
 		if (GetInstance()->GetDeviceInfo(i,usbInfo))
 		{
+			DEVICE_INFO deviceInfo = {0};
+			GetInstance()->GetDeviceInfo(i,deviceInfo);
+
 			int nIndex = pListView->GetItemCount();
-			pListView->InsertItem(i,MultiCharToWideChar(usbInfo.szDevName).c_str());
+			pListView->InsertItem(nIndex,MultiCharToWideChar(usbInfo.szDevName).c_str());
 			CString str;
 			str.Format(_T("%d"),usbInfo.nVendorNum);
 			pListView->SetItemText(nIndex,1,str);
 			str.Format(_T("%d"),usbInfo.nProductNum);
 			pListView->SetItemText(nIndex,2,str);
+			pListView->SetItemData(nIndex,deviceInfo.type);
+			pListView->SetItemText(nIndex,3,MultiCharToWideChar(usbInfo.szDevPath).c_str());
 		}
 	}
 
@@ -523,7 +551,34 @@ void CUSBHelperDlg::AddList()
 	{
 		pListView->SetItemState(0,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 	}
+
+#ifdef TEST_T7E
+	openT7E();
+#endif
 }
+
+void CUSBHelperDlg::openT7E()
+{
+	CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE);
+	int nCount = pListView->GetItemCount();
+	for (int i=0;i<nCount;i++)
+	{
+		CString strName = pListView->GetItemText(i, 0);
+		if (strName == "T7E BOOT")
+		{
+			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+			OnBnClickedButton3Open();
+
+			if (m_nDeviceType == T7E_TS)
+			{
+				SetTimer(1,1000,NULL);
+			}
+
+			return;
+		}
+	}
+}
+
 // 打开设备
 void CUSBHelperDlg::OnBnClickedButton3Open()
 {
@@ -533,15 +588,17 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	GetDlgItemText(IDC_BUTTON3_OPEN,csBtnTitle);
 	if (csBtnTitle.Compare(_T("关闭设备")) == 0)
 	{
+#ifndef _CY
 		if (Dongle == m_nDeviceType)
 		{
 			GetInstance()->Send(DongleDisconnect);
-			Sleep(100);
+			Sleep(300);
 		}
+#endif
 		/*else if (X8 == m_nDeviceType)
 		{
-			GetInstance()->Send(ExitUsb);
-			Sleep(100);
+		GetInstance()->Send(ExitUsb);
+		Sleep(100);
 		}//*/
 		GetInstance()->ConnectDispose();
 		resetDevice();
@@ -567,50 +624,62 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	int nVid = atoi(WideStrToMultiStr(strVid.GetBuffer()));
 	int nPid = atoi(WideStrToMultiStr(strPid.GetBuffer()));
 
-	if (nPid == GATEWAY_PID)
+	/*if (nPid == GATEWAY_PID)
 	{
-		m_nDeviceType = Gateway;
+	m_nDeviceType = Gateway;
 	}
 	else if (nPid == T8A_PID )
 	{
-		m_nDeviceType = T8A;
+	m_nDeviceType = T8A;
 	}
 	else if (nPid == T9A_PID )
 	{
-		m_nDeviceType = T9A;
+	m_nDeviceType = T9A;
 	}
 	else if (nPid == DONGLE_PID)
 	{
-		m_nDeviceType = Dongle;
+	m_nDeviceType = Dongle;
 	}
 	else if (nPid == P1_PID)
 	{
-		m_nDeviceType = RobotPen_P1;
+	m_nDeviceType = RobotPen_P1;
 	}
 	else if(nPid == X8_PID)
 	{
-		m_nDeviceType = X8;
+	m_nDeviceType = X8;
 	}
 	else if(nPid == T7PL_PID)
 	{
-		m_nDeviceType = T7PL;
+	m_nDeviceType = T7PL;
 	}
 	else if(nPid == T7E_TS_PID)
 	{
-		m_nDeviceType = T7E_TS;
+	m_nDeviceType = T7E_TS;
 	}
 	else if (nPid == T9_J0_PID)
 	{
-		m_nDeviceType = T9_J0;
+	m_nDeviceType = T9_J0;
 	}
+	else if (nPid == J0_A4_P_PID)
+	{
+	m_nDeviceType = J0_A4_P;
+	}//*/
+
+	m_nDeviceType = (eDeviceType)((CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE))->GetItemData(nItem);
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
-
 
 	int nRes = GetInstance()->ConnectOpen();
 	ASSERT(nRes == 0);
 	if(nRes == 0)
 		GetDlgItem(IDC_BUTTON3_OPEN)->SetWindowText(_T("关闭设备"));
+
+	if (nRes != 0)
+	{
+		CString str;
+		str.Format(_T("打开失败,错误码:%d"),nRes);
+		AfxMessageBox(str);
+	}
 
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
@@ -632,7 +701,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P || m_nDeviceType == T9E || m_nDeviceType == J0_T9)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -670,12 +739,14 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
-
 	if (m_nDeviceType != Gateway)
-		OnBnClickedButtonStatus();
+	{
+		//OnBnClickedButtonStatus();
+		SetTimer(0,500,NULL);
+	}
 
 	/*if (m_nDeviceType == X8)
-		GetInstance()->Send(GetMac);*/
+	GetInstance()->Send(GetMac);*/
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -735,6 +806,15 @@ void CUSBHelperDlg::resetDevice()
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		unsigned char *pMac = (unsigned char*)pListView->GetItemData(i);
+		if (pMac)
+		{
+			delete pMac;
+			pMac = NULL;
+		}
+	}//*/
 	pListView->DeleteAllItems();
 
 	m_nLastStatus = -1;
@@ -786,6 +866,7 @@ void CUSBHelperDlg::ProcessMassData()
 					else
 						this->parseRobotReport(report);
 				}
+				Sleep(1);
 			}
 			break;
 		case 1:
@@ -1001,8 +1082,8 @@ void CUSBHelperDlg::OnBnClickedButton3Set()
 	GetDlgItem(IDC_EDIT_CLASS)->GetWindowText(strClass);
 	CString strDevice;
 	GetDlgItem(IDC_EDIT_DEV)->GetWindowText(strDevice);
-	BOOL bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A) ? TRUE : FALSE;
-	CSettingDlg dlg(strCustom,strClass,strDevice,bNode);
+	BOOL bGateway = (m_nDeviceType == Gateway) ? TRUE : FALSE;
+	CSettingDlg dlg(strCustom,strClass,strDevice,bGateway);
 	if (IDOK == dlg.DoModal())
 	{
 		dlg.GetSettingInfo(strCustom,strClass,strDevice);
@@ -1033,6 +1114,9 @@ void CUSBHelperDlg::OnBnClickedButton3Update()
 			str += strSlave;
 		}
 		m_pDlg->SetVersion(str);
+#ifdef TEST_T7E
+		m_pDlg->AutoSetPath();
+#endif
 		m_pDlg->CenterWindow(this);
 		m_pDlg->ShowWindow(SW_SHOWDEFAULT);
 	}
@@ -1124,6 +1208,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				}
 				else if (m_nDongleUpdateType == DONGLE_BLE)
 				{
+					GetInstance()->Send(DongleVersion);
 				}
 				else
 				{
@@ -1523,7 +1608,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
 		}
-		
+
 		break;	
 	case ROBOT_NODE_MODE:
 		{
@@ -1535,10 +1620,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			/*if (X8 ==report.reserved)
 			{
-				if (nStatus != NODE_USB)
-				{
-					GetInstance()->Send(EnterUsb);
-				}
+			if (nStatus != NODE_USB)
+			{
+			GetInstance()->Send(EnterUsb);
+			}
 			}//*/
 
 			CString str;
@@ -1686,16 +1771,16 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			switch(result)
 			{
 			case ADJUST_SUCCESSED:
-				str = _T("校准成功");
-				break;
+			str = _T("校准成功");
+			break;
 			case ADJUST_FAILED:
-				str = _T("校准失败");
-				break;
+			str = _T("校准失败");
+			break;
 			case ADJUST_TIMEOUT:
-				str = _T("校准超时");
-				break;
+			str = _T("校准超时");
+			break;
 			default:
-				break;
+			break;
 			}
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);//*/
 		}
@@ -1705,7 +1790,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFOF penInfof = {0};
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
 			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
-			
+
 			PEN_INFO penInfo = {0};
 			penInfo.nX = penInfof.nX;
 			penInfo.nY = penInfof.nY;
@@ -1736,9 +1821,18 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				switch(nStatus)
 				{
 				case BLE_STANDBY:
-					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+					{
+						GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_STANDBY"));
+						GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(_T(""));
+						GetDlgItem(IDC_STATIC_VERSION_SLAVE)->SetWindowText(_T(""));
+						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(_T(""));
+						GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T(""));
+						GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(TRUE);
+						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(TRUE);
+					}
 					break;
 				case BLE_SCANNING:			//正在扫描	
+					GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(FALSE);
 					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("BLE_SCANNING"));
 					break;	
 				case BLE_CONNECTING:		//连接中
@@ -1754,6 +1848,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						CString strName = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 1);
 
 						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(strName);
+
+						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(FALSE);
 					}
 					break;
 				case BLE_ACTIVE_DISCONNECT://正在断开链接
@@ -1799,14 +1895,15 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			ST_BLE_DEVICE device = {0};
 			memcpy(&device,report.payload,sizeof(device));
 
-			const unsigned char* pDevName  = device.device_name;
+			/*const unsigned char* pDevName  = device.device_name;
 
 			unsigned char szMac[25] = {0};
 			sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",device.addr[0],device.addr[1],device.addr[2],device.addr[3],device.addr[4],device.addr[5]);
 
 			std::string strName = (char*)pDevName;
 			std::string strMac = (char*)szMac;
-			AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());
+			AddSlaveList(device.num,MultiCharToWideChar(strName).c_str(),MultiCharToWideChar(strMac).c_str());//*/
+			AddSlaveList(device.num,device.device_name,device.addr);
 		}
 		break;
 	case ROBOT_ORIGINAL_PACKET:
@@ -2022,6 +2119,33 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			m_list[0]->AddData(penInfo);
 		}
 		break;
+	case ROBOT_DONGLE_BIND:
+		{
+			CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_SLAVE);
+			POSITION pos = pListView->GetFirstSelectedItemPosition();
+			int nItem = pListView->GetNextSelectedItem(pos);
+			CString strNum = pListView->GetItemText(nItem, 0);
+			int nNum = atoi(WideStrToMultiStr(strNum.GetBuffer()));
+			GetInstance()->ConnectSlave(nNum);
+		}
+		break;
+	case ROBOT_GET_DEVICE_ID:
+		{
+			__int64 id;
+			memcpy(&id,report.payload,5);
+			CString str;
+			str.Format(_T("%I64d"),id);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_VIRTUAL_KEY_PRESS:
+		{
+			uint8_t nKey = report.payload[0];
+			CString str;
+			str.Format(_T("%d"),nKey);
+			GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
+		}
+		break;
 	default:
 		break;
 	}
@@ -2033,6 +2157,15 @@ void CUSBHelperDlg::OnBnClickedButtonScan()
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		unsigned char *pMac = (unsigned char*)pListView->GetItemData(i);
+		if (pMac)
+		{
+			delete pMac;
+			pMac = NULL;
+		}
+	}//*/
 	pListView->DeleteAllItems();
 
 	GetInstance()->Send(DongleScanStart);
@@ -2047,19 +2180,23 @@ void CUSBHelperDlg::OnBnClickedButtonScanStop()
 void CUSBHelperDlg::OnBnClickedButtonConnect()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	POSITION pos = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetFirstSelectedItemPosition();
+	CListCtrl *pListView = (CListCtrl*)GetDlgItem(IDC_LIST_SLAVE);
+	POSITION pos = pListView->GetFirstSelectedItemPosition();
 	if (pos == nullptr)
 	{
 		MessageBox(_T("请先选中设备!"), _T("提示"), IDOK);
 		return;
 	}
 
-	int nItem = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetNextSelectedItem(pos);
-	CString strNum = ((CListCtrl*)GetDlgItem(IDC_LIST_SLAVE))->GetItemText(nItem, 0);
-
+	int nItem = pListView->GetNextSelectedItem(pos);
+	CString strNum = pListView->GetItemText(nItem, 0);
+#ifdef _CY
+	unsigned char *pMac = (unsigned char*)pListView->GetItemData(nItem);
+	GetInstance()->Bind(pMac);
+#else
 	int nNum = atoi(WideStrToMultiStr(strNum.GetBuffer()));
-
 	GetInstance()->ConnectSlave(nNum);
+#endif
 }
 
 void CUSBHelperDlg::OnBnClickedButtonDisconnect()
@@ -2068,8 +2205,14 @@ void CUSBHelperDlg::OnBnClickedButtonDisconnect()
 	GetInstance()->Send(DongleDisconnect);
 }
 
-void CUSBHelperDlg::AddSlaveList(int nNum,const CString &strName,const CString &strMac)
+void CUSBHelperDlg::AddSlaveList(int nNum,unsigned char *name,unsigned char *mac)
 {
+	char szMac[25] = {0};
+	sprintf((char*)szMac,"%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+
+	std::string strName = (char*)name;
+	std::string strMac = (char*)szMac;
+
 	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
 	if (NULL == pListView)
 		return;
@@ -2085,11 +2228,36 @@ void CUSBHelperDlg::AddSlaveList(int nNum,const CString &strName,const CString &
 		}
 	}
 
+	CString strName_ = MultiCharToWideChar(strName).c_str();
+	CString strMac_ = MultiCharToWideChar(strMac).c_str();
+
+	if (SalveExist(strName_,strMac_))
+		return;
+
 	CString strID;
 	strID.Format(_T("%d"),nNum);
 	pListView->InsertItem(nIndex,strID);
-	pListView->SetItemText(nIndex,1,strName);
-	pListView->SetItemText(nIndex,2,strMac);
+	pListView->SetItemText(nIndex,1,strName_);
+	pListView->SetItemText(nIndex,2,strMac_);
+
+	unsigned char *pMac = new unsigned char[6];
+	memcpy(pMac,mac,6);
+	pListView->SetItemData(nIndex,(DWORD)pMac);
+}
+
+bool CUSBHelperDlg::SalveExist(CString name,CString mac)
+{
+	CListCtrl* pListView = static_cast<CListCtrl*>(GetDlgItem(IDC_LIST_SLAVE));
+
+	for (int i=0;i<pListView->GetItemCount();i++)
+	{
+		CString strName = pListView->GetItemText(i,1);
+		CString strMac = pListView->GetItemText(i,2);
+		if (name == strName && mac == strMac)
+			return true;
+	}
+
+	return false;
 }
 
 void CUSBHelperDlg::OnBnClickedButtonSetName()
@@ -2171,4 +2339,69 @@ void CUSBHelperDlg::DeleteDir(CString str)
 		DeleteFile(strdel); //删除文件
 	}
 	finder.Close();
+}
+
+UINT CUSBHelperDlg::OnPowerBroadcast(UINT nPowerEvent, UINT nEventData)
+{
+	OnBnClickedButtonStatus();
+	return CDialogEx::OnPowerBroadcast(nPowerEvent, nEventData);
+}
+
+
+BOOL CUSBHelperDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+
+	//屏蔽ESC关闭窗体/
+	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_ESCAPE ) return TRUE;
+	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
+	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN && pMsg->wParam) return TRUE;
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	switch(nIDEvent)
+	{
+	case 0:
+		{
+			/*	CString str;
+			GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
+			if (!str.IsEmpty())
+			{
+			KillTimer(1);
+			break;
+			}*/
+			KillTimer(0);
+			OnBnClickedButtonStatus();
+		}
+		break;
+	case 1:
+		{
+			KillTimer(1);
+			this->SendMessage(WM_UPDATE,1,START_UPADTE_DONGLE);
+		}
+		break;
+	default:
+		break;
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonGetId()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(GetDeviceID);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButton3Reset2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(RESET_ALL);
 }

@@ -8,7 +8,7 @@ class CSettingDlg : public CDialog
 	DECLARE_DYNAMIC(CSettingDlg)
 
 public:
-	CSettingDlg(const CString &strCustom,const CString &strClass,const CString &strDevice,BOOL bNode = false,CWnd* pParent = NULL);   // 标准构造函数
+	CSettingDlg(const CString &strCustom,const CString &strClass,const CString &strDevice,BOOL bGateway = false,CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CSettingDlg();
 
 // 对话框数据
@@ -24,7 +24,7 @@ private:
 	CString m_strCustom;
 	CString m_strClass;
 	CString m_strDevice;
-	BOOL m_bNode;
+	BOOL m_bGateway;
 public:
 	afx_msg void OnBnClickedOk();
 	void GetSettingInfo(CString &strCustom,CString &strClass,CString &strDevice);

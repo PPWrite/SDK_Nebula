@@ -1,7 +1,10 @@
 #pragma once
-#include <stdint.h>
 
-#define FILEVERSION "1.1.1.2"
+#define FILEVERSION "1.1.2.4"
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 
 #define NUM 60
 
@@ -17,6 +20,8 @@ enum eDevicePid
 	T7PL_PID	=   0x600e,
 	T7E_TS_PID	=	0x600f,
 	T9_J0_PID	=	0x6012,
+	J0_A4_P_PID	=	0x6013,
+	T9E_PID		=	0x6014,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -42,6 +47,10 @@ enum eDeviceType
 	T7_TS,
 	T7_XGL,
 	T9_J0,
+	J0_A4_P,
+	T9E,
+	J0_T9,
+	T7_CY,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -206,6 +215,7 @@ enum eRobotCmd
 	ROBOT_GATEWAY_VERSION,						//设备版本号
 	ROBOT_ONLINE_STATUS,						//在线状态
 	ROBOT_DEVICE_CHANGE,						//设备改变
+	ROBOT_DEVICE_CHANGED,						//设备改变2
 	ROBOT_NODE_INFO,							//设备信息
 	ROBOT_NODE_ERROR,							//node错误
 	ROBOT_ORIGINAL_PACKET,						//原始笔记数据包
@@ -232,6 +242,9 @@ enum eRobotCmd
 	ROBOT_ENTER_ADJUST_MODE,					//进入模组校准模式
 	ROBOT_MODULE_ADJUST_RESULT,					//模组校准结果
 	ROBOT_GET_X8_MAC,							//获取mac地址
+	ROBOT_DONGLE_BIND,							//绑定
+	ROBOT_GET_DEVICE_ID,						//获取设备唯一ID
+	ROBOT_VIRTUAL_KEY_PRESS,					//虚拟按键按下
 };
 // 笔数据信息
 typedef struct pen_info
@@ -275,6 +288,13 @@ typedef struct usb_info
 	unsigned short nVendorNum;    
 	unsigned short nProductNum;         
 }USB_INFO;
+
+//设备信息
+typedef struct device_info
+{
+	char szDevName[260];
+	eDeviceType type;
+}DEVICE_INFO;
 
 enum eKeyPress
 {

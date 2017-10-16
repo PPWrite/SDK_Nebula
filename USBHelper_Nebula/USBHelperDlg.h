@@ -20,6 +20,11 @@ typedef struct sync_info
 	std::vector<PEN_INFO> vecPenInfo;
 }SYNC_INFO;
 
+typedef struct device_mac
+{
+	unsigned char mac[6];
+}DEVICE_MAC;
+
 // CUSBHelperDlg ¶Ô»°¿ò
 class CUSBHelperDlg : public CDialogEx
 {
@@ -95,7 +100,9 @@ public:
 	void InitListCtrl();
 	void AddList();
 	void GetTime();
-	void AddSlaveList(int nNum,const CString &strName,const CString &strMac);
+	void AddSlaveList(int nNum,unsigned char *name,unsigned char *mac);
+	void openT7E();
+	bool SalveExist(CString name,CString mac);
 protected:
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
@@ -124,4 +131,11 @@ public:
 	static void DeleteDir(CString str);
 
 	int m_nCurNoteNum;
+	afx_msg UINT OnPowerBroadcast(UINT nPowerEvent, UINT nEventData);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+	std::vector<DEVICE_MAC> m_vecMac;
+	afx_msg void OnBnClickedButtonGetId();
+	afx_msg void OnBnClickedButton3Reset2();
 };
