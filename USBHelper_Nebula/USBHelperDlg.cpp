@@ -22,9 +22,9 @@
 #define WRITE_MODE 0x72
 
 //#define _GATEWAY
-#define _NODE
+//#define _NODE
 //#define _DONGLE
-//#define _P1
+#define _P1
 
 //#define _CY
 
