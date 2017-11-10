@@ -13,10 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171016")
+#define _VERSION  _T("版本号:20171110")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
+
+#define MOUSE_MODE 0x71
+#define WRITE_MODE 0x72
 
 //#define _GATEWAY
 #define _NODE
@@ -144,6 +147,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nIndexCount(0)
 	, m_nSlaveType(0)
 	, m_nCurNoteNum(0)
+	, m_bMouse(true)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -739,7 +743,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
-	if (m_nDeviceType != Gateway)
+	if (m_nDeviceType != Gateway && m_nDeviceType != T7PL)
 	{
 		//OnBnClickedButtonStatus();
 		SetTimer(0,500,NULL);
@@ -747,6 +751,12 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	/*if (m_nDeviceType == X8)
 	GetInstance()->Send(GetMac);*/
+
+	if(m_nDeviceType == T7PL)
+	{
+		GetDlgItem(IDC_BUTTON_STATUS)->SetWindowText(_T("切换"));
+		GetInstance()->Send(GetConfig);
+	}
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -966,7 +976,20 @@ void CUSBHelperDlg::OnBnClickedButton3MsOff()
 void CUSBHelperDlg::OnBnClickedButtonStatus()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	m_bMouse = !m_bMouse;
+	if (m_bMouse)
+	{
+		GetInstance()->Send(WRITE_MODE);
+		Sleep(100);
+		GetInstance()->Send(GetNodeInfo);
+	}
+	else
+		GetInstance()->Send(MOUSE_MODE);
+#ifdef _CY
+	GetInstance()->Send(DongleVersion);
+#else
 	GetInstance()->Send(GetConfig);
+#endif
 }
 
 void CUSBHelperDlg::resetUI()

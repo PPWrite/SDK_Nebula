@@ -90,6 +90,7 @@ private:
 	//dongle…˝º∂¿‡–Õ
 	int m_nDongleUpdateType;
 	int m_nSlaveType;
+	bool m_bMouse;
 public:
 	afx_msg void OnBnClickedButton3Update();
 	afx_msg LRESULT OnUpdate(WPARAM wParam, LPARAM lParam);
