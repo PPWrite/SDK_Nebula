@@ -13,17 +13,14 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171110")
+#define _VERSION  _T("版本号:20171117")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define MOUSE_MODE 0x71
-#define WRITE_MODE 0x72
-
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 //#define _CY
@@ -147,7 +144,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nIndexCount(0)
 	, m_nSlaveType(0)
 	, m_nCurNoteNum(0)
-	, m_bMouse(true)
+	, m_bMouse(false)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -754,9 +751,13 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if(m_nDeviceType == T7PL)
 	{
-		GetDlgItem(IDC_BUTTON_STATUS)->SetWindowText(_T("切换"));
+		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
+		GetInstance()->Send(SearchMode);
+		Sleep(100);
 		GetInstance()->Send(GetConfig);
 	}
+
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -976,15 +977,11 @@ void CUSBHelperDlg::OnBnClickedButton3MsOff()
 void CUSBHelperDlg::OnBnClickedButtonStatus()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_bMouse = !m_bMouse;
-	if (m_bMouse)
-	{
-		GetInstance()->Send(WRITE_MODE);
-		Sleep(100);
-		GetInstance()->Send(GetNodeInfo);
-	}
-	else
-		GetInstance()->Send(MOUSE_MODE);
+
+	/*CString str;
+	str.Format(_T("w:%d-h:%d"),GetInstance()->Width(),GetInstance()->Height());
+	AfxMessageBox(str);*/
+
 #ifdef _CY
 	GetInstance()->Send(DongleVersion);
 #else
@@ -1297,15 +1294,22 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	int nCount = GetPrivateProfileInt(_T("General"),_T("ShowNum"),60,GetAppPath() + _T("\\USBHelper.ini"));
-	if(nCount > m_list.size())
-		return;
-	for(int i=0;i<nCount;i++)
+	if(m_nDeviceType == T7PL)
 	{
-		CDrawDlg *pDlg = m_list[i];
-		if (NULL != pDlg)
+		GetInstance()->Send(SwitchMode);
+	}
+	else
+	{
+		int nCount = GetPrivateProfileInt(_T("General"),_T("ShowNum"),60,GetAppPath() + _T("\\USBHelper.ini"));
+		if(nCount > m_list.size())
+			return;
+		for(int i=0;i<nCount;i++)
 		{
-			pDlg->ResetWindow();
+			CDrawDlg *pDlg = m_list[i];
+			if (NULL != pDlg)
+			{
+				pDlg->ResetWindow();
+			}
 		}
 	}
 }
@@ -1824,6 +1828,17 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				penInfo.nPress = 0;
 
 			m_list[0]->AddData(penInfo);
+		}
+		break;
+	case ROBOT_SEARCH_MODE:
+		{
+			uint8_t mode = report.payload[0];
+			if (mode)
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Hand"));
+			else
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
+
+			GetInstance()->Send(GetNodeInfo);
 		}
 		break;
 	default:						

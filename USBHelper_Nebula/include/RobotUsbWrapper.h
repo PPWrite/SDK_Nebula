@@ -30,6 +30,8 @@ enum eRbtType
 	GetNodeInfo,
 	ModuleVersion,
 	GetDeviceID,
+	SearchMode,
+	SwitchMode,
 };
 
 //回调函数
@@ -189,6 +191,10 @@ public:
 	//模组校准结果事件
 	virtual void onAjdustResult(int result) {
 		(void)result;
+	}
+	//模式状态
+	virtual void onDeviceMode(eDeviceMode mode) {
+		(void)mode;
 	}
 
 
