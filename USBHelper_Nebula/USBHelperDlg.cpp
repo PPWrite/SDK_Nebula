@@ -19,8 +19,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 //#define _CY
@@ -740,7 +740,16 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
-	if (m_nDeviceType != Gateway && m_nDeviceType != T7PL)
+	
+	if(m_nDeviceType == T7PL)
+	{
+		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
+		Sleep(100);
+		GetInstance()->Send(SearchMode);
+	}
+
+	if (m_nDeviceType != Gateway)
 	{
 		//OnBnClickedButtonStatus();
 		SetTimer(0,500,NULL);
@@ -748,15 +757,6 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	/*if (m_nDeviceType == X8)
 	GetInstance()->Send(GetMac);*/
-
-	if(m_nDeviceType == T7PL)
-	{
-		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
-		GetInstance()->Send(SearchMode);
-		Sleep(100);
-		GetInstance()->Send(GetConfig);
-	}
 
 }
 
@@ -1297,6 +1297,7 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 	if(m_nDeviceType == T7PL)
 	{
 		GetInstance()->Send(SwitchMode);
+		Sleep(100);
 	}
 	else
 	{
@@ -2350,6 +2351,7 @@ void CUSBHelperDlg::OnBnClickedButton3Reset()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(RESET_NODE);
+	//GetInstance()->SetPage(255);
 }
 
 
