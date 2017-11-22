@@ -34,9 +34,9 @@ namespace RobotPenTestDll
 
         //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
         //private demoEnum demo_type = demoEnum.NODE_DEMO;
-        //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
-        private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
+        //private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
