@@ -11,6 +11,7 @@
 enum eRbtType
 {
 	VoteBegin = 0,
+	VoteMulti,
 	VoteEnd,
 	WriteBegin,
 	WriteEnd,
@@ -30,6 +31,8 @@ enum eRbtType
 	GetNodeInfo,
 	ModuleVersion,
 	GetDeviceID,
+	SearchMode,
+	SwitchMode,
 };
 
 //回调函数
@@ -190,6 +193,10 @@ public:
 	virtual void onAjdustResult(int result) {
 		(void)result;
 	}
+	//模式状态
+	virtual void onDeviceMode(eDeviceMode mode) {
+		(void)mode;
+	}
 
 
 	//笔记优化输出
@@ -259,6 +266,8 @@ public:
 	virtual void SetPressStatus(bool bPress) = 0;
 	//是否开启笔记优化
 	virtual void SetOptimizeStatus(bool bOptimize) = 0;
+	//设置页码
+	virtual void SetPage(int nPage) = 0;
 };
 
 //初始化 回调
@@ -313,6 +322,8 @@ extern "C" DECLDIR void In(const PEN_INFO &penInfo);
 extern "C" DECLDIR void SetPressStatus(bool bPress);
 //是否开启笔记优化
 extern "C" DECLDIR void SetOptimizeStatus(bool bOptimize);
+//设置页码
+extern "C" DECLDIR void SetPage(int nPage);
 extern "C" 
 {
 	//获取实例 

@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171016")
+#define _VERSION  _T("版本号:20171117")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -144,6 +144,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nIndexCount(0)
 	, m_nSlaveType(0)
 	, m_nCurNoteNum(0)
+	, m_bMouse(false)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -739,6 +740,15 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
+	
+	if(m_nDeviceType == T7PL)
+	{
+		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
+		Sleep(100);
+		GetInstance()->Send(SearchMode);
+	}
+
 	if (m_nDeviceType != Gateway)
 	{
 		//OnBnClickedButtonStatus();
@@ -747,6 +757,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	/*if (m_nDeviceType == X8)
 	GetInstance()->Send(GetMac);*/
+
 }
 
 void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
@@ -966,7 +977,16 @@ void CUSBHelperDlg::OnBnClickedButton3MsOff()
 void CUSBHelperDlg::OnBnClickedButtonStatus()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+	/*CString str;
+	str.Format(_T("w:%d-h:%d"),GetInstance()->Width(),GetInstance()->Height());
+	AfxMessageBox(str);*/
+
+#ifdef _CY
+	GetInstance()->Send(DongleVersion);
+#else
 	GetInstance()->Send(GetConfig);
+#endif
 }
 
 void CUSBHelperDlg::resetUI()
@@ -1274,15 +1294,23 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	int nCount = GetPrivateProfileInt(_T("General"),_T("ShowNum"),60,GetAppPath() + _T("\\USBHelper.ini"));
-	if(nCount > m_list.size())
-		return;
-	for(int i=0;i<nCount;i++)
+	if(m_nDeviceType == T7PL)
 	{
-		CDrawDlg *pDlg = m_list[i];
-		if (NULL != pDlg)
+		GetInstance()->Send(SwitchMode);
+		Sleep(100);
+	}
+	else
+	{
+		int nCount = GetPrivateProfileInt(_T("General"),_T("ShowNum"),60,GetAppPath() + _T("\\USBHelper.ini"));
+		if(nCount > m_list.size())
+			return;
+		for(int i=0;i<nCount;i++)
 		{
-			pDlg->ResetWindow();
+			CDrawDlg *pDlg = m_list[i];
+			if (NULL != pDlg)
+			{
+				pDlg->ResetWindow();
+			}
 		}
 	}
 }
@@ -1803,6 +1831,17 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			m_list[0]->AddData(penInfo);
 		}
 		break;
+	case ROBOT_SEARCH_MODE:
+		{
+			uint8_t mode = report.payload[0];
+			if (mode)
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Hand"));
+			else
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
+
+			GetInstance()->Send(GetNodeInfo);
+		}
+		break;
 	default:						
 		break;
 	}
@@ -2312,6 +2351,7 @@ void CUSBHelperDlg::OnBnClickedButton3Reset()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(RESET_NODE);
+	//GetInstance()->SetPage(255);
 }
 
 

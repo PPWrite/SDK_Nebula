@@ -685,7 +685,7 @@ void CWBDlg::SetPage(const PAGE_INFO &pageInfo)
 	SetCanvasPage(pageInfo);
 #else
 	CString str;
-	str.Format(_T("第%d页"),pageInfo.page_num);
+	str.Format(_T("第%d本,第%d页"),pageInfo.page_num,pageInfo.note_num);
 
 	GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(str);
 #endif

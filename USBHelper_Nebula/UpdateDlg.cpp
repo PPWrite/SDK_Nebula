@@ -61,7 +61,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL)
+		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == T9E)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
 		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
@@ -239,7 +239,8 @@ BOOL CUpdateDlg::OnInitDialog()
 	pCombobox->InsertString(1,_T("MCU"));
 	pCombobox->InsertString(2,_T("SLAVE"));
 	pCombobox->InsertString(3,_T("模组"));
-	pCombobox->SetCurSel(2);
+	pCombobox->InsertString(4,_T("All"));
+	pCombobox->SetCurSel(1);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
@@ -404,6 +405,16 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
 
+		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
+	}
+	if (nIndex == 4)
+	{
+		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_SHOW);
+
+		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
 	}

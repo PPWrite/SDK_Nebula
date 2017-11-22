@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.2.4"
+#define FILEVERSION "1.1.2.8"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -22,6 +22,7 @@ enum eDevicePid
 	T9_J0_PID	=	0x6012,
 	J0_A4_P_PID	=	0x6013,
 	T9E_PID		=	0x6014,
+	J0_T9_PID	=	0x6015,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -51,6 +52,8 @@ enum eDeviceType
 	T9E,
 	J0_T9,
 	T7_CY,
+	S7_JD = 26,
+	T7A = 28,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -245,6 +248,8 @@ enum eRobotCmd
 	ROBOT_DONGLE_BIND,							//绑定
 	ROBOT_GET_DEVICE_ID,						//获取设备唯一ID
 	ROBOT_VIRTUAL_KEY_PRESS,					//虚拟按键按下
+	////////////////////////////////////////////////////////////
+	ROBOT_SEARCH_MODE,							//查询模式
 };
 // 笔数据信息
 typedef struct pen_info
@@ -363,6 +368,12 @@ enum eAdujstResult
 	ADJUST_SUCCESSED = 0,
 	ADJUST_FAILED,
 	ADJUST_TIMEOUT,
+};
+
+enum eDeviceMode
+{
+	DEVICE_MOUSE = 0,
+	DEVICE_HAND,
 };
 
 #define WIDTH_T7P	22015
