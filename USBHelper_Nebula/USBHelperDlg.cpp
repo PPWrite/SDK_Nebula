@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171117")
+#define _VERSION  _T("版本号:20171204")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-//#define _GATEWAY
-#define _NODE
+#define _GATEWAY
+//#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -702,7 +702,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P || m_nDeviceType == T9E || m_nDeviceType == J0_T9)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P || m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -977,6 +977,9 @@ void CUSBHelperDlg::OnBnClickedButton3MsOff()
 void CUSBHelperDlg::OnBnClickedButtonStatus()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+	/*GetInstance()->Send(VotePoll);
+	return;*/
 
 	/*CString str;
 	str.Format(_T("w:%d-h:%d"),GetInstance()->Width(),GetInstance()->Height());
