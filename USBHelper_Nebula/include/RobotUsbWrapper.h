@@ -12,6 +12,7 @@ enum eRbtType
 {
 	VoteBegin = 0,
 	VoteMulti,
+	VotePoll,
 	VoteEnd,
 	WriteBegin,
 	WriteEnd,
