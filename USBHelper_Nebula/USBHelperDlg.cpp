@@ -18,9 +18,9 @@
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define _GATEWAY
+//#define _GATEWAY
 //#define _NODE
-//#define _DONGLE
+#define _DONGLE
 //#define _P1
 
 //#define _CY
@@ -395,6 +395,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	AfxBeginThread(ThreadProc,this);
 
 	GetInstance()->ConnectInitialize(Gateway,getUsbData,this);//*/
+
+	//GetInstance()->ConnectInitialize(Gateway,this);
 
 	//#ifdef _NODE
 
@@ -979,11 +981,11 @@ void CUSBHelperDlg::OnBnClickedButtonStatus()
 	// TODO: 在此添加控件通知处理程序代码
 
 	/*GetInstance()->Send(VotePoll);
-	return;*/
+	return;/*/
 
 	/*CString str;
 	str.Format(_T("w:%d-h:%d"),GetInstance()->Width(),GetInstance()->Height());
-	AfxMessageBox(str);*/
+	AfxMessageBox(str);//*/
 
 #ifdef _CY
 	GetInstance()->Send(DongleVersion);
@@ -2114,9 +2116,10 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		{
 			PAGE_INFO pageInfo = {0};
 			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
-			CString str;
-			str.Format(_T("第%d页"),pageInfo.page_num);
-			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+
+			CDrawDlg *pDlg = m_list[0];
+			if (NULL != pDlg)
+				pDlg->SetPage(pageInfo);
 		}
 		break;
 	case ROBOT_ENTER_ADJUST_MODE:
