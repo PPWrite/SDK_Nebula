@@ -269,6 +269,10 @@ public:
 	virtual void SetOptimizeStatus(bool bOptimize) = 0;
 	//设置页码
 	virtual void SetPage(int nPage) = 0;
+	//设置拖尾阈值，设置的越小，拖尾越长(0~1) 默认0.4
+	virtual void SetPointDelay(float delay) = 0;
+	//设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
+	virtual void SetPointDamping(float damping) = 0;
 };
 
 //初始化 回调
@@ -325,6 +329,11 @@ extern "C" DECLDIR void SetPressStatus(bool bPress);
 extern "C" DECLDIR void SetOptimizeStatus(bool bOptimize);
 //设置页码
 extern "C" DECLDIR void SetPage(int nPage);
+//设置拖尾阈值，设置的越小，拖尾越长(0~1) 默认0.4
+extern "C" DECLDIR void SetPointDelay(float delay);
+//设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
+extern "C" DECLDIR void SetPointDamping(float damping);
+
 extern "C" 
 {
 	//获取实例 
