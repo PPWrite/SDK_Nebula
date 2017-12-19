@@ -20,13 +20,10 @@
 
 //#define _GATEWAY
 //#define _NODE
-<<<<<<< HEAD
 //#define _DONGLE
 #define _P1
-=======
-#define _DONGLE
-//#define _P1
->>>>>>> 9d64d059edf2b416ca9c5d9a14fd5d11eb3e6757
+
+
 
 //#define _CY
 
