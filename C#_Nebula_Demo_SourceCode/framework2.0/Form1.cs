@@ -34,9 +34,9 @@ namespace RobotPenTestDll
 
         //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
         //private demoEnum demo_type = demoEnum.NODE_DEMO;
-        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
-        //private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
+        private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
@@ -378,7 +378,8 @@ namespace RobotPenTestDll
             {
                 date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
                 robotpenController.GetInstance().initDeletgate(ref date);
-                robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
+                //robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
+                robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnOptimizePointDataEvt);
             }
             else
             {
@@ -906,14 +907,14 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.Show();
                     nodeCanvasWindow.Text = strIndex;
                     nodeCanvasWindow.canvastype = ctype;
-                    if (!bScreen)
-                    {
-                        nodeCanvasWindow.Size = new Size(426, 625);
-                    }
-                    else
-                    {
-                        nodeCanvasWindow.Size = new Size(625, 480);
-                    }
+//                     if (!bScreen)
+//                     {
+//                         nodeCanvasWindow.Size = new Size(426, 625);
+//                     }
+//                     else
+//                     {
+//                         nodeCanvasWindow.Size = new Size(625, 480);
+//                     }
                 }
                 else
                 {
@@ -1529,9 +1530,11 @@ namespace RobotPenTestDll
             }
 
             // 是否开启笔记优化
-            //robotpenController.GetInstance().setPenWidthF((float)1.2);
-            //robotpenController.GetInstance().setTrailsIsOptimize(true);
-            //robotpenController.GetInstance().setPressStatus(false);
+            robotpenController.GetInstance().setPenWidthF((float)1.5);
+            robotpenController.GetInstance().setTrailsIsOptimize(true);
+            robotpenController.GetInstance().setPressStatus(true);
+            robotpenController.GetInstance().setPointDelay((float)0.1);
+            //robotpenController.GetInstance().setPointDamping((float)0.018);
 
 
             string strPID = this.listView1.SelectedItems[0].SubItems[2].Text;

@@ -18,10 +18,10 @@
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define _GATEWAY
+//#define _GATEWAY
 //#define _NODE
 //#define _DONGLE
-//#define _P1
+#define _P1
 
 //#define _CY
 

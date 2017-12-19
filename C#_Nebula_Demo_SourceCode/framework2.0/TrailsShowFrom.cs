@@ -245,6 +245,7 @@ namespace RobotPenTestDll
                 return;
 
             //Console.WriteLine("origin status={0} x={1} y={2} penWidth={3}", nPenStatus, x, y, fPenSize);
+            //Console.WriteLine("origin status={0} x={1} y={2} penWidth={3}", nPenStatus, x, y, fPenWidth);
             PointF pointf;
             /*if (canvastype == canvasType.T7E_TS)
             {
@@ -478,6 +479,25 @@ namespace RobotPenTestDll
             float fy = (p1.Y + p2.Y)/2;
             p3.X = fx;
             p3.Y = fy;
+        }
+
+        private void TrailsShowFrom_Load(object sender, EventArgs e)
+        {
+            double dwhRatio = (double)m_nDeviceW / m_nDeviceH;
+            int nFixedHeight = 960;
+            int nWidth = 0;
+            if (bScreenO)   // 横屏
+            {
+                nWidth = (int)(dwhRatio * nFixedHeight);
+            }
+            else
+            {
+                // 竖屏
+                nWidth = (int)(nFixedHeight / dwhRatio);
+            }
+
+            this.Height = nFixedHeight;
+            this.Width = nWidth;
         }
     }
 }
