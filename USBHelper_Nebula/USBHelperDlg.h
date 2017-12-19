@@ -8,6 +8,7 @@
 #include "DrawDlg.h"
 #include <queue>
 #include "UpdateDlg.h"
+#include "RbtEventHandler.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ typedef struct device_mac
 }DEVICE_MAC;
 
 // CUSBHelperDlg 对话框
-class CUSBHelperDlg : public CDialogEx
+class CUSBHelperDlg : public CDialogEx , CRbtEventHandler
 {
 	// 构造
 public:

@@ -24,6 +24,16 @@ void CRbtEventHandler::onDeviceChanged(eDeviceStatus status,int pid)
 		::PostMessage(m_hMainWnd, WM_RBTEVENT, ROBOT_DEVICE_CHANGE, (LPARAM)&status);
 	}
 }
+//设备插拔事件
+void CRbtEventHandler::onDeviceChanged(eDeviceStatus status,eDeviceType type)
+{
+	if(m_hMainWnd != NULL)
+	{
+		//::PostMessage(m_hMainWnd, WM_MSGID(ROBOT_DEVICE_CHANGE), (WPARAM)status, 0);
+		::PostMessage(m_hMainWnd, WM_RBTEVENT, ROBOT_DEVICE_CHANGE, (LPARAM)&status);
+	}
+}
+
 //网关状态事件
 void CRbtEventHandler::onGatewayStatus(eGatewayStatus status)	
 {

@@ -155,6 +155,22 @@ typedef struct st_note_header_info
 
 } ST_NOTE_HEADER_INFO;
 
+//页码信息
+typedef struct page_info
+{
+	uint8_t page_num : 8;
+	uint8_t note_num : 6;
+	bool operator==(page_info &pageInfo) const
+	{
+		if (pageInfo.page_num == this->page_num
+			&& pageInfo.note_num == this->note_num)
+		{
+			return true;
+		}
+		return false;
+	}
+}PAGE_INFO;
+
 #pragma pack()
 
 enum eNebulaError
@@ -277,22 +293,6 @@ typedef struct pen_infof
 	float fWidth;			// 笔宽度
 	float fSpeed;			// 速度
 }PEN_INFOF;  
-
-//页码信息
-typedef struct page_info
-{
-	uint8_t page_num : 8;
-	uint8_t note_num : 6;
-	bool operator==(page_info &pageInfo) const
-	{
-		if (pageInfo.page_num == this->page_num
-			&& pageInfo.note_num == this->note_num)
-		{
-			return true;
-		}
-		return false;
-	}
-}PAGE_INFO;
 
 //设备信息
 typedef struct usb_info
