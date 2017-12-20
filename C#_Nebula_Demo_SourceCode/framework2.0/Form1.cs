@@ -62,7 +62,8 @@ namespace RobotPenTestDll
             {
                 eDeviceTy = eDeviceType.T7E_TS;
             }
-            init();
+
+            initEvt();
             this.comboBox2.SelectedIndex = 0;
 
         }
@@ -78,14 +79,16 @@ namespace RobotPenTestDll
                     ushort npid = 0;
                     ushort nvid = 0;
                     string strDeviceName = string.Empty;
-
-                    if (robotpenController.GetInstance()._GetAvailableDevice(i, ref npid, ref nvid, ref strDeviceName))
+                    eDeviceType dtype = eDeviceType.Unknow;
+                    if (robotpenController.GetInstance()._GetAvailableDevice(i, ref npid, ref nvid, ref strDeviceName, ref dtype))
                     {
                         this.listView1.Items.Add(strDeviceName);
                         string strVID = Convert.ToString(nvid);
                         this.listView1.Items[i].SubItems.Add(strVID);
                         string strPID = Convert.ToString(npid);
                         this.listView1.Items[i].SubItems.Add(strPID);
+                        string strDType = Convert.ToString((int)dtype);
+                        this.listView1.Items[i].SubItems.Add(strDType);
                     }
                 }
                 this.listView1.EndUpdate();
@@ -255,7 +258,6 @@ namespace RobotPenTestDll
                 this.Size = new System.Drawing.Size(800, 300);
             }
 
-
             // 判断画布是否横竖屏
             string strPath = System.Windows.Forms.Application.StartupPath;
             strPath += "\\demo.ini";
@@ -278,6 +280,76 @@ namespace RobotPenTestDll
 
             this.comboBox1.Text = bScreen ? "横屏" : "竖屏";
             this.set_button.Enabled = false;
+        }
+
+
+        // T8A 按键按下
+        void Form1_keyPressEvt(eKeyPress Value)
+        {
+            //
+            switch (Value)
+            {
+                case eKeyPress.CLICK:
+                    {
+                        CallDelegate("CLICK");
+                    }break;
+                case eKeyPress.DBCLICK:
+                    {
+                        CallDelegate("DBCLICK");
+                    }break;
+                case eKeyPress.PAGEUP:
+                    {
+                        CallDelegate("PAGEUP");
+                    }break;
+                case eKeyPress.PAGEDOWN:
+                    {
+                        CallDelegate("PAGEDOWN");
+                    }break;
+                case eKeyPress.CREATEPAGE:
+                    {
+                        CallDelegate("CREATEPAGE");
+                    }break;
+            }
+        }
+
+        private ushort m_nPageNumber = 0;
+        private ushort m_nNoteNumber = 0;
+
+        Dictionary<int, KeyValuePair<int, int>> noteAndPageNumberCache = new Dictionary<int, KeyValuePair<int, int>>();
+
+        // T9页码识别事件
+        void Form1_showPageEvt(byte deviceIndex, byte pageNumber, byte noteNumber)
+        {
+            if (demo_type == demoEnum.GATEWAY_DEMO)
+            {
+                if (canvasWindow[deviceIndex] != null)
+                {
+                    canvasWindow[deviceIndex].noteNumber = noteNumber;
+                    canvasWindow[deviceIndex].pageNumber = pageNumber;
+                    canvasWindow[deviceIndex].updatePageInfo();
+                }
+
+                if (noteAndPageNumberCache.ContainsKey(deviceIndex))
+                {
+                    noteAndPageNumberCache[deviceIndex] = new KeyValuePair<int, int>(pageNumber, noteNumber);
+                }
+                else
+                {
+                    noteAndPageNumberCache.Add(deviceIndex, new KeyValuePair<int, int>(pageNumber, noteNumber));
+                }
+            }
+            else
+            {
+                m_nPageNumber = pageNumber;
+                m_nNoteNumber = noteNumber;
+
+                if (nodeCanvasWindow != null)
+                {
+                    nodeCanvasWindow.noteNumber = m_nNoteNumber;
+                    nodeCanvasWindow.pageNumber = m_nPageNumber;
+                    nodeCanvasWindow.updatePageInfo();
+                }
+            }
         }
 
         // 设备插拔消息
@@ -364,7 +436,7 @@ namespace RobotPenTestDll
             this.status_button_query.Hide();
             this.status_label_title.Hide();
             this.version_label_show.Hide();
-            this.status_label.Hide();
+            //this.status_label.Hide();
 
             this.custom_label.Hide();
             this.custom_textBox.Hide();
@@ -374,18 +446,17 @@ namespace RobotPenTestDll
             this.msClear_button.Hide();
             this.device_textBox.Hide();
 
-            if ( demo_type == demoEnum.T7E_TS_DEMO)
-            {
-                date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
-                robotpenController.GetInstance().initDeletgate(ref date);
-                //robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
-                robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnOptimizePointDataEvt);
-            }
-            else
+            if ( demo_type == demoEnum.P1_DEMO)
             {
                 robotpenController.GetInstance().returnP1PointDataEvt += new robotpenController.returnP1PointData(Form1_returnP1PointDataEvt);
                 robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnP1OptimizePointDataEvt);
             }
+            
+            // 所有设备均消费此事件
+            date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
+            robotpenController.GetInstance().initDeletgate(ref date);
+            //robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
+            robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnOptimizePointDataEvt);
         }
 
         // 收到设备优化点数据
@@ -835,6 +906,13 @@ namespace RobotPenTestDll
                     {
                         canvasWindow[nIndex - 1].Size = new Size(625, 480);
                     }
+
+                    // 获取页码信息
+                    if (noteAndPageNumberCache.ContainsKey(nIndex - 1))
+                    {
+                        canvasWindow[nIndex - 1].pageNumber = noteAndPageNumberCache[nIndex - 1].Key;
+                        canvasWindow[nIndex - 1].noteNumber = noteAndPageNumberCache[nIndex - 1].Value;
+                    }
                 }
                 else
                 {
@@ -853,6 +931,8 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.Show();
                     nodeCanvasWindow.Text = strIndex;
                     nodeCanvasWindow.canvastype = canvasType.NODE;
+                    nodeCanvasWindow.pageNumber = m_nPageNumber;
+                    nodeCanvasWindow.noteNumber = m_nNoteNumber;
                     if (!bScreen)
                     {
                         nodeCanvasWindow.Size = new Size(426, 625);
@@ -888,6 +968,8 @@ namespace RobotPenTestDll
                     {
                         nodeCanvasWindow.Size = new Size(625, 480);
                     }
+                    nodeCanvasWindow.pageNumber = m_nPageNumber;
+                    nodeCanvasWindow.noteNumber = m_nNoteNumber;
                 }
                 else
                 {
@@ -907,6 +989,8 @@ namespace RobotPenTestDll
                     nodeCanvasWindow.Show();
                     nodeCanvasWindow.Text = strIndex;
                     nodeCanvasWindow.canvastype = ctype;
+                    nodeCanvasWindow.pageNumber = m_nPageNumber;
+                    nodeCanvasWindow.noteNumber = m_nNoteNumber;
 //                     if (!bScreen)
 //                     {
 //                         nodeCanvasWindow.Size = new Size(426, 625);
@@ -927,7 +1011,7 @@ namespace RobotPenTestDll
 
         private RobotpenGateway.robotpenController.returnPointData date = null;//new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
 
-        public void init()
+        public void initEvt()
         {
             robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
             if (demo_type == demoEnum.GATEWAY_DEMO)
@@ -946,6 +1030,9 @@ namespace RobotPenTestDll
                 robotpenController.GetInstance().gatewatVersionEvt += Form1_gatewatVersionEvt;
                 date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
                 robotpenController.GetInstance().initDeletgate(ref date);
+
+                robotpenController.GetInstance().multiVoteResultEvt += new robotpenController.multiVoteResult(Form1_multiVoteResultEvt);
+                robotpenController.GetInstance().voteAnswerResultEvt += new robotpenController.voteAnswerResult(Form1_voteAnswerResultEvt);
             }
             else if (demo_type == demoEnum.NODE_DEMO)
             {
@@ -958,6 +1045,33 @@ namespace RobotPenTestDll
             }
             //robotpenController.GetInstance().gateWayStatusEvt += Form1_gateWayStatusEvt;
 
+            //////////////////////////////////////////////////////////////////////////
+            // 所有设备均注册该页码显示消息 目前只有T9设备才会有页码识别功能, 客户代码可以根据设备来判断是否消费该事件
+            robotpenController.GetInstance().showPageEvt += new robotpenController.ShowPage(Form1_showPageEvt);
+            // T8A 按键消息 为了适应其他demo也能响应， 所以任何demo都消费此事件， 客户代码可根据设备类型判断是否消费此事件
+            robotpenController.GetInstance().keyPressEvt += new robotpenController.KeyPress(Form1_keyPressEvt);
+            //////////////////////////////////////////////////////////////////////////
+
+        }
+
+        // 抢答结果事件
+        void Form1_voteAnswerResultEvt(byte deviceIndex, byte result)
+        {
+            if (deviceIndex >= subNodeWindow.Length || subNodeWindow[deviceIndex] == null)
+                return;
+
+            string str = Convert.ToChar(result).ToString();
+            subNodeWindow[deviceIndex].setVoteMode(str);
+        }
+
+        // 多选结果
+        void Form1_multiVoteResultEvt(multi_vote_result res)
+        {
+            if (subNodeWindow[res.deviceIndex] == null)
+                return;
+
+            string str = System.Text.Encoding.ASCII.GetString(res.res, 0, res.res.Length);
+            subNodeWindow[res.deviceIndex].setVoteMode(str);
         }
 
         private void Form1_setDeviceNetNumEvt(bool bres, byte b1, byte b2, byte b3)
@@ -1505,6 +1619,10 @@ namespace RobotPenTestDll
             }
             else if (this.comboBox2.SelectedIndex == 1)
             {
+                robotpenController.GetInstance()._Send(cmdId.VoteMulti);
+            }else if (this.comboBox2.SelectedIndex == 2)
+            {
+                robotpenController.GetInstance()._Send(cmdId.VoteAnswer);
             }
         }
 
@@ -1530,15 +1648,17 @@ namespace RobotPenTestDll
             }
 
             // 是否开启笔记优化
-            robotpenController.GetInstance().setPenWidthF((float)1.5);
-            robotpenController.GetInstance().setTrailsIsOptimize(true);
-            robotpenController.GetInstance().setPressStatus(true);
-            robotpenController.GetInstance().setPointDelay((float)0.1);
+            //robotpenController.GetInstance().setPenWidthF((float)1.5);
+            //robotpenController.GetInstance().setTrailsIsOptimize(true);
+            //robotpenController.GetInstance().setPressStatus(true);
+            //robotpenController.GetInstance().setPointDelay((float)0.1);
             //robotpenController.GetInstance().setPointDamping((float)0.018);
 
 
             string strPID = this.listView1.SelectedItems[0].SubItems[2].Text;
             UInt16 nPid = Convert.ToUInt16(strPID);
+            string strDeviceType = this.listView1.SelectedItems[0].SubItems[3].Text;
+            eDeviceType deviceType = (eDeviceType)Convert.ToInt32(strDeviceType);
 
             if (nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.GATEWAY_PID))
             {
@@ -1548,13 +1668,15 @@ namespace RobotPenTestDll
                     return;
                 }
 
-                robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
+                //robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
             }
-            else if (nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T8A_PID) || nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T9A_PID))
-            {
-                eDeviceTy = eDeviceType.T8A;   // node节点
-                robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
-            }
+//             else if (nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T8A_PID) || nPid == Convert.ToUInt16(RobotpenGateway.DEIVE_PID.T9A_PID))
+//             {
+//                 eDeviceTy = eDeviceType.T8A;   // node节点
+//                 robotpenController.GetInstance()._ConnectInitialize(eDeviceTy, IntPtr.Zero);
+//             }
+
+            robotpenController.GetInstance()._ConnectInitialize(deviceType, IntPtr.Zero);
 
             if (this.open_button.Text == "打开设备")
             {

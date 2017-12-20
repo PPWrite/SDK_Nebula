@@ -30,6 +30,8 @@ namespace RobotPenTestDll
     {
         private int m_nDeviceW;
         private int m_nDeviceH;
+        private int m_nPageNumber = 0;
+        private int m_nNoteNumber = 0;
 
         public TrailsShowFrom(canvasType canvasty)
         {
@@ -63,6 +65,13 @@ namespace RobotPenTestDll
         }
 
         public bool bOptimize { get; set; }
+        public int pageNumber { get { return m_nPageNumber; } set { m_nPageNumber = value; } }
+        public int noteNumber { get { return m_nNoteNumber; } set { m_nNoteNumber = value; } }
+
+        public void updatePageInfo()
+        {
+            this.Invalidate(false);
+        }
 
         // 绘制线条
         private void TrailsShowFrom_Paint(object sender, PaintEventArgs e)
@@ -71,6 +80,9 @@ namespace RobotPenTestDll
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+            string strPage = "本子:" + Convert.ToString(m_nNoteNumber) + ", 第" + Convert.ToString(m_nPageNumber) + "页";
+            e.Graphics.DrawString(strPage, new Font(new FontFamily("microsoft yahei"), 12), Brushes.Green, new PointF(0,0));
 
             if (bOptimize)
             {
