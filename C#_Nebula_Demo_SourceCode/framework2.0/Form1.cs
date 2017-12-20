@@ -455,8 +455,9 @@ namespace RobotPenTestDll
             // 所有设备均消费此事件
             date = new RobotpenGateway.robotpenController.returnPointData(Form1_bigDataReportEvt1);
             robotpenController.GetInstance().initDeletgate(ref date);
-            //robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
-            robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnOptimizePointDataEvt);
+            robotpenController.GetInstance().returnOptimizePointDataEvt += new robotpenController.returnOptimizePointData(Form1_returnOptimizePointDataEvt);
+
+            //robotpenController.GetInstance().returnP1OptimizePointDataEvt += new robotpenController.returnP1OptimizePointData(Form1_returnOptimizePointDataEvt);
         }
 
         // 收到设备优化点数据
@@ -1648,11 +1649,11 @@ namespace RobotPenTestDll
             }
 
             // 是否开启笔记优化
-            //robotpenController.GetInstance().setPenWidthF((float)1.5);
-            //robotpenController.GetInstance().setTrailsIsOptimize(true);
-            //robotpenController.GetInstance().setPressStatus(true);
-            //robotpenController.GetInstance().setPointDelay((float)0.1);
-            //robotpenController.GetInstance().setPointDamping((float)0.018);
+            /*robotpenController.GetInstance().setPenWidthF((float)1.5);
+            robotpenController.GetInstance().setTrailsIsOptimize(true);
+            robotpenController.GetInstance().setPressStatus(true);
+            robotpenController.GetInstance().setPointDelay((float)0.1);
+            robotpenController.GetInstance().setPointDamping((float)0.018);*/
 
 
             string strPID = this.listView1.SelectedItems[0].SubItems[2].Text;
