@@ -13,15 +13,15 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20171204")
+#define _VERSION  _T("版本号:20171229")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
+#define _NODE
 //#define _DONGLE
-#define _P1
+//#define _P1
 
 
 
@@ -629,47 +629,6 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	int nVid = atoi(WideStrToMultiStr(strVid.GetBuffer()));
 	int nPid = atoi(WideStrToMultiStr(strPid.GetBuffer()));
 
-	/*if (nPid == GATEWAY_PID)
-	{
-	m_nDeviceType = Gateway;
-	}
-	else if (nPid == T8A_PID )
-	{
-	m_nDeviceType = T8A;
-	}
-	else if (nPid == T9A_PID )
-	{
-	m_nDeviceType = T9A;
-	}
-	else if (nPid == DONGLE_PID)
-	{
-	m_nDeviceType = Dongle;
-	}
-	else if (nPid == P1_PID)
-	{
-	m_nDeviceType = RobotPen_P1;
-	}
-	else if(nPid == X8_PID)
-	{
-	m_nDeviceType = X8;
-	}
-	else if(nPid == T7PL_PID)
-	{
-	m_nDeviceType = T7PL;
-	}
-	else if(nPid == T7E_TS_PID)
-	{
-	m_nDeviceType = T7E_TS;
-	}
-	else if (nPid == T9_J0_PID)
-	{
-	m_nDeviceType = T9_J0;
-	}
-	else if (nPid == J0_A4_P_PID)
-	{
-	m_nDeviceType = J0_A4_P;
-	}//*/
-
 	m_nDeviceType = (eDeviceType)((CListCtrl*)GetDlgItem(IDC_LIST_USB_DEVICE))->GetItemData(nItem);
 
 	GetInstance()->ConnectInitialize(m_nDeviceType,getUsbData,this);
@@ -706,12 +665,14 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("发起投票"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束投票"));
 	}
-	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P || m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD)
+	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
+		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
+		|| m_nDeviceType == T8C)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -1697,6 +1658,29 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			if (m_nDeviceType == T7B_HF)
+			{
+				switch(penInfo.nStatus)
+				{
+				case PEN_LEAVE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PEN_LEAVE"));
+					break;
+				case PEN_WRITE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PEN_WRITE"));
+					break;
+				case PEN_SUSPEND:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PEN_SUSPEND"));
+					break;
+				case PEN_SIDE_SUSPEND:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PEN_SIDE_SUSPEND"));
+					break;
+				case PEN_SIDE_WRITE:
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PEN_SIDE_WRITE"));
+					break;
+				default:
+					break;
+				}
+			}
 
 			m_list[0]->AddData(penInfo);
 		}

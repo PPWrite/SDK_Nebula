@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.3.2"
+#define FILEVERSION "1.1.3.5"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -26,6 +26,8 @@ enum eDevicePid
 	T8B_PID		=	0x601e,
 	T9B_YD_PID	=	0x601f,
 	T7B_HF_PID	=	0x6020,
+	X8E_A5_PID	=	0x6021,
+	T8C_PID		=	0x6023,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -65,6 +67,9 @@ enum eDeviceType
 	T8B,
 	T9B_YD,
 	T7B_HF,
+	X8E_A5,
+	T9W,
+	T8C,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -385,6 +390,16 @@ enum eDeviceMode
 {
 	DEVICE_MOUSE = 0,
 	DEVICE_HAND,
+};
+
+//±Ê×´Ì¬
+enum ePenStatus
+{
+	PEN_LEAVE			= 0x00,		//Àë¿ª
+	PEN_SUSPEND			= 0x10,		//Ðü¿Õ
+	PEN_WRITE			= 0x11,		//ÊéÐ´
+	PEN_SIDE_SUSPEND	= 0x20,		//²à¼ü°´Ñ¹Ðü¿Õ
+	PEN_SIDE_WRITE		= 0x21,		//²à¼ü°´Ñ¹ÊéÐ´
 };
 
 #define WIDTH_T7P	22015
