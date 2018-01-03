@@ -193,6 +193,7 @@ void CUpdateDlg::SetVersion(const CString &strVersion)
 	}
 	else
 	{
+		m_strVersion = strVersion;
 		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
 		m_version = CString2Version(strVersion);
 	}
@@ -243,6 +244,8 @@ BOOL CUpdateDlg::OnInitDialog()
 	pCombobox->InsertString(3,_T("模组"));
 	pCombobox->InsertString(4,_T("All"));
 	pCombobox->SetCurSel(1);
+
+	OnCbnSelchangeComboType();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
@@ -400,33 +403,33 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 		m_version = CString2Version(strVersion);
 	}
 
-	if (nIndex == 0 || nIndex == 2)
+	if (nIndex == 0 || nIndex == 2) //ble or slave
 	{
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
-
-		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
-	}
-	if (nIndex == 4)
-	{
-		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_SHOW);
 
 		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
 	}
-	else
+	else if (nIndex == 4)
 	{
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
-		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
 
+		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_SHOW);
+	}
+	else if (nIndex == 1 || nIndex == 3) //mcu or 模组
+	{
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_MCU)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_BROWER)->ShowWindow(SW_SHOW);
+
+		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_HIDE);
 	}
@@ -434,6 +437,13 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 	if (nIndex == 3)
 	{
 		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T("0.0.0.0"));
+	}
+	else
+	{
+		if (Dongle == m_nDeviceType)
+			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(m_strDongleVersion);
+		else
+			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(m_strVersion);
 	}
 }
 

@@ -79,6 +79,8 @@ typedef struct node_status
 	uint8_t	 device_status;
 	uint8_t  battery_level;
 	uint8_t  note_num;
+	uint8_t  note_percent;
+
 }NODE_STATUS;
 //报告
 typedef struct robot_report
@@ -86,6 +88,7 @@ typedef struct robot_report
 	uint8_t cmd_id;
 	uint8_t reserved;
 	uint8_t payload[60];
+
 }ROBOT_REPORT;
 //版本
 typedef struct st_version
@@ -94,6 +97,7 @@ typedef struct st_version
 	uint8_t version2;
 	uint8_t version3;
 	uint8_t version4;
+
 }ST_VERSION;
 //设备信息
 typedef struct st_device_info

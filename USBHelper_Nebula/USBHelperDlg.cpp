@@ -13,14 +13,14 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20171229")
+#define _VERSION  _T("°æ±¾ºÅ:20180103")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
 #define _NODE
-//#define _DONGLE
+//#define _DONGLE*
 //#define _P1
 
 
