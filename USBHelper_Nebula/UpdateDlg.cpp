@@ -186,17 +186,9 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 
 void CUpdateDlg::SetVersion(const CString &strVersion)
 {
-	if (m_nDeviceType == Dongle)
-	{
-		m_strDongleVersion = strVersion;
-		OnCbnSelchangeComboType();
-	}
-	else
-	{
-		m_strVersion = strVersion;
-		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
-		m_version = CString2Version(strVersion);
-	}
+	m_strVersion = strVersion;
+	GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
+	m_version = CString2Version(strVersion);
 }
 
 void CUpdateDlg::OnNcDestroy()
@@ -383,26 +375,6 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 	// TODO: 在此添加控件通知处理程序代码
 	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
 
-	if (Dongle == m_nDeviceType)
-	{
-		CStringArray sArray;
-		SplitFields(m_strDongleVersion,sArray,_T("_"));
-		if (sArray.GetCount() != 2)
-		{
-			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(_T(""));
-			return;
-		}
-
-		CString strVersion = _T("");
-		if (nIndex == 0 || nIndex == 1)
-			strVersion = sArray[0];
-		else
-			strVersion = sArray[1];
-
-		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(strVersion);
-		m_version = CString2Version(strVersion);
-	}
-
 	if (nIndex == 0 || nIndex == 2) //ble or slave
 	{
 		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
@@ -440,10 +412,7 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 	}
 	else
 	{
-		if (Dongle == m_nDeviceType)
-			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(m_strDongleVersion);
-		else
-			GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(m_strVersion);
+		GetDlgItem(IDC_EDIT_VERSION)->SetWindowText(m_strVersion);
 	}
 }
 

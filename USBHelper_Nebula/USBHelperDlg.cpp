@@ -19,8 +19,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE*
+//#define _NODE
+#define _DONGLE
 //#define _P1
 
 
@@ -147,6 +147,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nSlaveType(0)
 	, m_nCurNoteNum(0)
 	, m_bMouse(false)
+	, m_bConnect(FALSE)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -705,7 +706,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_CLASS)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
-	
+
 	if(m_nDeviceType == T7PL)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
@@ -1094,14 +1095,14 @@ void CUSBHelperDlg::OnBnClickedButton3Update()
 		GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 		m_pDlg->ResetUI();
 		m_pDlg->SetUpgradeType(m_nDeviceType);
-		if (m_nDeviceType == Dongle)
+		if (m_nDeviceType == Dongle && m_bConnect)
 		{
 			CString strSlave;
 			GetDlgItem(IDC_STATIC_VERSION_SLAVE)->GetWindowText(strSlave);
-			str += _T("_");
-			str += strSlave;
+			m_pDlg->SetVersion(strSlave);
 		}
-		m_pDlg->SetVersion(str);
+		else
+			m_pDlg->SetVersion(str);
 #ifdef TEST_T7E
 		m_pDlg->AutoSetPath();
 #endif
@@ -1126,13 +1127,23 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 			switch(m_nDongleUpdateType)
 			{
 			case DONGLE_BLE:
-				GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),Dongle);
+				{
+					if (!m_bConnect)
+						GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),Dongle);
+				}
 				break;
 			case DONGLE_MCU:
-				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",Dongle);
+				{
+					if (!m_bConnect)
+						GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",Dongle);
+				}
 				break;
 			case SLAVE_MCU:
-				GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),(eDeviceType)m_nSlaveType);
+				{
+
+					if (m_bConnect)
+						GetInstance()->Update("",WideStrToMultiStr(m_strFileBle.GetBuffer()),(eDeviceType)m_nSlaveType);
+				}
 				break;
 			case MODULE_MCU:
 				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"",(eDeviceType)m_nSlaveType);
@@ -1859,6 +1870,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(_T(""));
 						GetDlgItem(IDC_BUTTON_SCAN)->EnableWindow(TRUE);
 						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(TRUE);
+						m_bConnect = FALSE;
 					}
 					break;
 				case BLE_SCANNING:			//正在扫描	
@@ -1880,6 +1892,8 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 						GetDlgItem(IDC_EDIT_SLAVE_NAME)->SetWindowText(strName);
 
 						GetDlgItem(IDC_BUTTON_CONNECT)->EnableWindow(FALSE);
+
+						m_bConnect = TRUE;
 					}
 					break;
 				case BLE_ACTIVE_DISCONNECT://正在断开链接

@@ -54,7 +54,6 @@ public:
 	ST_VERSION m_version;
 private:
 	int m_nDeviceType;
-	CString m_strDongleVersion;
 	CString m_strVersion;
 public:
 	afx_msg void OnCbnSelchangeComboType();
