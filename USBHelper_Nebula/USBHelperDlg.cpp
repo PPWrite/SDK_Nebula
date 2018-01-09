@@ -19,8 +19,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 
 
@@ -1209,7 +1209,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				{
 					GetInstance()->Send(DongleVersion);
 				}
-				else
+				else if (m_nDeviceType == T7PL)
 				{
 					resetDevice();
 					AddList();

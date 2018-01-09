@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.3.5"
+#define FILEVERSION "1.1.3.7"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

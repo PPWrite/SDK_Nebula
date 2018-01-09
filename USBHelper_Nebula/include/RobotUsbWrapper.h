@@ -2,9 +2,9 @@
 #include <windows.h>
 
 #if defined(DLL_EXPORT)
-#define DECLDIR __declspec(dllexport) 
+#define ROBOT_API __declspec(dllexport) 
 #else 
-#define DECLDIR __declspec(dllimport) 
+#define ROBOT_API __declspec(dllimport) 
 #include "common.h"
 #endif
 
@@ -273,71 +273,79 @@ public:
 	virtual void SetPointDelay(float delay) = 0;
 	//设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
 	virtual void SetPointDamping(float damping) = 0;
+	//设置密码
+	virtual void SetPassword(unsigned char *pwd) = 0;
+	//获取当前设备类型
+	virtual eDeviceType GetDeviceType(bool bSlave = false) = 0;
 };
 
 //初始化 回调
-extern "C" DECLDIR void  ConnectInitialize(eDeviceType nDeviceType, IN UsbDataCallback_t pCallback, void *pContext);
+extern "C" ROBOT_API void  ConnectInitialize(eDeviceType nDeviceType, IN UsbDataCallback_t pCallback, void *pContext);
 //初始化 事件
-extern "C" DECLDIR void  ConnectInitialize2(eDeviceType nDeviceType, IN IRobotEventHandler *pEventHander);
+extern "C" ROBOT_API void  ConnectInitialize2(eDeviceType nDeviceType, IN IRobotEventHandler *pEventHander);
 //开启设备连接，成功后将自动开启数据接收
-extern "C" DECLDIR int   ConnectOpen();
+extern "C" ROBOT_API int   ConnectOpen();
 //关闭设备连接，成功后将自动关闭数据接收
-extern "C" DECLDIR void  ConnectDispose();
+extern "C" ROBOT_API void  ConnectDispose();
 //判断设备是否处于连接状态
-extern "C" DECLDIR bool  IsConnected();
+extern "C" ROBOT_API bool  IsConnected();
 //发送命令
-extern "C" DECLDIR void  Send(int nCmd);
+extern "C" ROBOT_API void  Send(int nCmd);
 //升级
-extern "C" DECLDIR void  Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow);
+extern "C" ROBOT_API void  Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow);
 //设置
-extern "C" DECLDIR void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
+extern "C" ROBOT_API void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
 //获取可用设备总数
-extern "C" DECLDIR int GetDeviceCount();
+extern "C" ROBOT_API int GetDeviceCount();
 //获取可用设备
-extern "C" DECLDIR bool GetDeviceInfo(int index,USB_INFO &usbInfo);
+extern "C" ROBOT_API bool GetDeviceInfo(int index,USB_INFO &usbInfo);
 //获取可用设备
-extern "C" DECLDIR bool GetDeviceInfo2(int index,DEVICE_INFO &devInfo);
+extern "C" ROBOT_API bool GetDeviceInfo2(int index,DEVICE_INFO &devInfo);
 //根据PID和VID打开设备
-extern "C" DECLDIR int  Open(int nVid,int nPid,bool bAll = true);
+extern "C" ROBOT_API int  Open(int nVid,int nPid,bool bAll = true);
 //连接蓝牙设备
-extern "C" DECLDIR void ConnectSlave(int nID);
+extern "C" ROBOT_API void ConnectSlave(int nID);
 //设置蓝牙名称
-extern "C" DECLDIR void SetSlaveName(const char *name);
+extern "C" ROBOT_API void SetSlaveName(const char *name);
 //设置画布大小
-extern "C" DECLDIR void SetCanvasSize(int nWidth,int nHeight);
+extern "C" ROBOT_API void SetCanvasSize(int nWidth,int nHeight);
 //设置设备类型
-extern "C" DECLDIR void SetDeviceType(eDeviceType nDeviceType);
+extern "C" ROBOT_API void SetDeviceType(eDeviceType nDeviceType);
 //设置中心偏移
-extern "C" DECLDIR void SetOffset(int nOffsetX,int nOffsetY);
+extern "C" ROBOT_API void SetOffset(int nOffsetX,int nOffsetY);
 //设置竖屏
-extern "C" DECLDIR void SetIsHorizontal(bool bHorizontal);
+extern "C" ROBOT_API void SetIsHorizontal(bool bHorizontal);
 //获取设备宽
-extern "C" DECLDIR int Width();
+extern "C" ROBOT_API int Width();
 //获取设备高
-extern "C" DECLDIR int Height();
+extern "C" ROBOT_API int Height();
 //旋转角度
-extern "C" DECLDIR void Rotate(int nAngle);
+extern "C" ROBOT_API void Rotate(int nAngle);
 //过滤坐标
-extern "C" DECLDIR void SetPenWidth(float nPenWidth);
+extern "C" ROBOT_API void SetPenWidth(float nPenWidth);
 //开始投票
-extern "C" DECLDIR void VoteMulit(bool bMulit);
+extern "C" ROBOT_API void VoteMulit(bool bMulit);
 //笔记优化
-extern "C" DECLDIR void In(const PEN_INFO &penInfo);
+extern "C" ROBOT_API void In(const PEN_INFO &penInfo);
 //是否开启压感
-extern "C" DECLDIR void SetPressStatus(bool bPress);
+extern "C" ROBOT_API void SetPressStatus(bool bPress);
 //是否开启笔记优化
-extern "C" DECLDIR void SetOptimizeStatus(bool bOptimize);
+extern "C" ROBOT_API void SetOptimizeStatus(bool bOptimize);
 //设置页码
-extern "C" DECLDIR void SetPage(int nPage);
+extern "C" ROBOT_API void SetPage(int nPage);
 //设置拖尾阈值，设置的越小，拖尾越长(0~1) 默认0.4
-extern "C" DECLDIR void SetPointDelay(float delay);
+extern "C" ROBOT_API void SetPointDelay(float delay);
 //设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
-extern "C" DECLDIR void SetPointDamping(float damping);
+extern "C" ROBOT_API void SetPointDamping(float damping);
+//设置密码
+extern "C" ROBOT_API void SetPassword(unsigned char *pwd);
+//获取当前设备类型
+extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
 
 extern "C" 
 {
 	//获取实例 
-	DECLDIR RobotPenController* GetInstance();
+	ROBOT_API RobotPenController* GetInstance();
 	//销毁实例
-	DECLDIR void DestroyInstance();
+	ROBOT_API void DestroyInstance();
 };
