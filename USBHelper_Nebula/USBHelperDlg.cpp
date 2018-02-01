@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180103")
+#define _VERSION  _T("版本号:20180130")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-//#define _GATEWAY
-#define _NODE
+#define _GATEWAY
+//#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -30,7 +30,7 @@
 //#define TEST_COUNT
 //#define TEST_T7E
 
-//#define USE_POWERBROADCAST
+#define USE_POWER
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -208,6 +208,9 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_GET_ID, &CUSBHelperDlg::OnBnClickedButtonGetId)
 	ON_BN_CLICKED(IDC_BUTTON3_RESET2, &CUSBHelperDlg::OnBnClickedButton3Reset2)
+	ON_BN_CLICKED(IDC_BUTTON_SET, &CUSBHelperDlg::OnBnClickedButtonSet)
+	ON_BN_CLICKED(IDC_BUTTON_SET2, &CUSBHelperDlg::OnBnClickedButtonSet2)
+	ON_BN_CLICKED(IDC_BUTTON_SET3, &CUSBHelperDlg::OnBnClickedButtonSet3)
 END_MESSAGE_MAP()
 
 
@@ -303,6 +306,15 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
+	GetDlgItem(IDC_STATIC_SSID)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_STATIC_PWD)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_STATIC_STUID)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_SSID)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_CPWD)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_SID)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET2)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET3)->ShowWindow(SW_SHOW);
 #endif
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -1215,6 +1227,18 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 					AddList();
 				}
 			}
+		}
+		break;
+	case ROBOT_SET_PASSWORD:
+	case ROBOT_SET_CLASS_SSID:
+	case ROBOT_SET_CLASS_PWD:
+	case ROBOT_SET_STUDENT_ID:
+		{
+			if (wParam == 0)
+				AfxMessageBox(_T("设置成功！"));
+			else
+				AfxMessageBox(_T("设置失败！"));
+
 		}
 		break;
 	case ROBOT_SET_DEVICE_NUM:
@@ -2191,6 +2215,11 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
 		}
 		break;
+	case ROBOT_SET_PASSWORD:
+	case ROBOT_SET_CLASS_SSID:
+	case ROBOT_SET_CLASS_PWD:
+	case ROBOT_SET_STUDENT_ID:
+		m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
 	default:
 		break;
 	}
@@ -2389,7 +2418,9 @@ void CUSBHelperDlg::DeleteDir(CString str)
 
 UINT CUSBHelperDlg::OnPowerBroadcast(UINT nPowerEvent, UINT nEventData)
 {
-	OnBnClickedButtonStatus();
+	//OnBnClickedButtonStatus();
+	OnBnClickedButton3Open();
+
 	return CDialogEx::OnPowerBroadcast(nPowerEvent, nEventData);
 }
 
@@ -2414,13 +2445,13 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 	case 0:
 		{
-			/*	CString str;
+			/*CString str;
 			GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 			if (!str.IsEmpty())
 			{
-			KillTimer(1);
-			break;
-			}*/
+				KillTimer(0);
+				break;
+			}//*/
 			KillTimer(0);
 			OnBnClickedButtonStatus();
 		}
@@ -2450,4 +2481,44 @@ void CUSBHelperDlg::OnBnClickedButton3Reset2()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(RESET_ALL);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSet()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_EDIT_SSID)->GetWindowText(str);
+	char *buffer = WideStrToMultiStr(str.GetBuffer());
+	GetInstance()->SetClassSSID((unsigned char*)buffer,strlen(buffer));
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSet2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_EDIT_CPWD)->GetWindowText(str);
+	char *buffer = WideStrToMultiStr(str.GetBuffer());
+	GetInstance()->SetClassPwd((unsigned char*)buffer,strlen(buffer));
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSet3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	/*unsigned char buffer[6] = {0};
+	CString str;
+	GetDlgItem(IDC_EDIT_SID)->GetWindowText(str);
+	int len = str.GetLength();
+	int index = 0;
+	for (int i=0;i<len;i+=2)
+	{
+		CString strNum = str.Mid(i,2);
+		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
+	}//*/
+	CString str;
+	GetDlgItem(IDC_EDIT_SID)->GetWindowText(str);
+	char *buffer = WideStrToMultiStr(str.GetBuffer());
+	GetInstance()->SetStudentID((unsigned char*)buffer,strlen(buffer));
 }

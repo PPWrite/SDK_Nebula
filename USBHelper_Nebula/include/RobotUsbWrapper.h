@@ -199,7 +199,26 @@ public:
 		(void)mode;
 	}
 
-
+	//设置班级SSID
+	virtual void onSetClassSSID(int result,unsigned char *ssid) {
+		(void)result;
+		(void)ssid;
+	}
+	//设置班级密码
+	virtual void onSetClassPwd(int result,unsigned char *pwd) {
+		(void)result;
+		(void)pwd;
+	}
+	//设置学生ID
+	virtual void onSetStudentID(int result,unsigned char *id) {
+		(void)result;
+		(void)id;
+	}
+	//设置密码
+	virtual void onSetPwd(int result,unsigned char *pwd) {
+		(void)result;
+		(void)pwd;
+	}
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,float speed,int status){
 		(void)x;
@@ -273,10 +292,16 @@ public:
 	virtual void SetPointDelay(float delay) = 0;
 	//设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
 	virtual void SetPointDamping(float damping) = 0;
-	//设置密码
-	virtual void SetPassword(unsigned char *pwd) = 0;
 	//获取当前设备类型
 	virtual eDeviceType GetDeviceType(bool bSlave = false) = 0;
+	//设置班级SSID
+	virtual void SetClassSSID(unsigned char *ssid,int len) = 0;
+	//设置班级密码
+	virtual void SetClassPwd(unsigned char *pwd,int len) = 0;
+	//设置学生ID
+	virtual void SetStudentID(unsigned char *id,int len) = 0;
+	//设置密码
+	virtual void SetPwd(unsigned char *pwd) = 0;
 };
 
 //初始化 回调
@@ -337,8 +362,14 @@ extern "C" ROBOT_API void SetPage(int nPage);
 extern "C" ROBOT_API void SetPointDelay(float delay);
 //设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
 extern "C" ROBOT_API void SetPointDamping(float damping);
+//设置班级SSID
+extern "C" ROBOT_API void SetClassSSID(unsigned char *ssid,int len);
+//设置班级密码
+extern "C" ROBOT_API void SetClassPwd(unsigned char *pwd,int len);
+//设置学生ID
+extern "C" ROBOT_API void SetStudentID(unsigned char *id,int len);
 //设置密码
-extern "C" ROBOT_API void SetPassword(unsigned char *pwd);
+extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
 //获取当前设备类型
 extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
 

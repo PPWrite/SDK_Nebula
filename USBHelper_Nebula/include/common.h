@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.3.7"
+#define FILEVERSION "1.1.4.0"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -169,8 +169,8 @@ typedef struct st_note_header_info
 //页码信息
 typedef struct page_info
 {
-	uint8_t note_num : 6;
 	uint8_t page_num : 8;
+	uint8_t note_num : 6;
 	bool operator==(page_info &pageInfo) const
 	{
 		if (pageInfo.page_num == this->page_num
@@ -269,6 +269,10 @@ enum eRobotCmd
 	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
 	ROBOT_VOTE_ANSWER,							//抢答模式
 	ROBOT_OPTIMIZE_PACKET,						//优化笔记
+	ROBOT_SET_PASSWORD,							//设置密码
+	ROBOT_SET_CLASS_SSID,						//设置班级ssid
+	ROBOT_SET_CLASS_PWD,						//设置班级password
+	ROBOT_SET_STUDENT_ID,						//设置学生id
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本
@@ -294,6 +298,17 @@ typedef struct pen_info
 	uint16_t nX;			// 笔x轴坐标
 	uint16_t nY;			// 笔y轴坐标
 	uint16_t nPress;		// 笔压力
+	bool operator==(pen_info &penInfo) const
+	{
+		if (penInfo.nX == this->nX
+			&& penInfo.nY == this->nY
+			&& penInfo.nPress == this->nPress
+			&& penInfo.nStatus == this->nStatus)
+		{
+			return true;
+		}
+		return false;
+	}
 }PEN_INFO;  
 // 优化笔数据信息
 typedef struct pen_infof
