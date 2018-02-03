@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.0"
+#define FILEVERSION "1.1.4.1"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -273,6 +273,8 @@ enum eRobotCmd
 	ROBOT_SET_CLASS_SSID,						//设置班级ssid
 	ROBOT_SET_CLASS_PWD,						//设置班级password
 	ROBOT_SET_STUDENT_ID,						//设置学生id
+	ROBOT_UPDATE_SEARCH,						//升级查询
+	ROBOT_UPDATE_WIFI,							//升级wifi
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本

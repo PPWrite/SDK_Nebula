@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180130")
+#define _VERSION  _T("版本号:20180202")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
 
@@ -211,6 +211,9 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET, &CUSBHelperDlg::OnBnClickedButtonSet)
 	ON_BN_CLICKED(IDC_BUTTON_SET2, &CUSBHelperDlg::OnBnClickedButtonSet2)
 	ON_BN_CLICKED(IDC_BUTTON_SET3, &CUSBHelperDlg::OnBnClickedButtonSet3)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CUSBHelperDlg::OnBnClickedButtonSearch)
+	ON_BN_CLICKED(IDC_BUTTON_UPDATE, &CUSBHelperDlg::OnBnClickedButtonUpdate)
+	ON_BN_CLICKED(IDC_BUTTON_SET4, &CUSBHelperDlg::OnBnClickedButtonSet4)
 END_MESSAGE_MAP()
 
 
@@ -315,6 +318,17 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SET)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET2)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET3)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_STATIC_LOCAL)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_LOCAL)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_STATIC_REMOTE)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_REMOTE)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SEARCH)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_UPDATE)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_STATIC_MQTT)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_MQTT)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET4)->ShowWindow(SW_SHOW);
 #endif
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
@@ -1233,6 +1247,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 	case ROBOT_SET_CLASS_SSID:
 	case ROBOT_SET_CLASS_PWD:
 	case ROBOT_SET_STUDENT_ID:
+	case ROBOT_UPDATE_WIFI:
 		{
 			if (wParam == 0)
 				AfxMessageBox(_T("设置成功！"));
@@ -1619,6 +1634,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
 			str.Format(_T("%d"),info.device_num);
 			GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
+
+			str.Format(_T("%02X%02X%02X%02X%02X%02X"),info.mac[0],info.mac[1],info.mac[2],info.mac[3],info.mac[4],info.mac[5]);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;			
 	case ROBOT_ONLINE_STATUS://在线状态
@@ -1866,6 +1884,28 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
 
 			GetInstance()->Send(GetNodeInfo);
+		}
+		break;
+	case ROBOT_SET_PASSWORD:
+	case ROBOT_SET_CLASS_SSID:
+	case ROBOT_SET_CLASS_PWD:
+	case ROBOT_SET_STUDENT_ID:
+	case ROBOT_UPDATE_WIFI:
+		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
+		break;
+	case ROBOT_UPDATE_SEARCH:
+		{
+			int len = report.payload[0];
+			int len2 = report.payload[1];
+			char sz_ver[60] = {0};
+			char sz_ver2[60] = {0};
+			memcpy(sz_ver,report.payload+2,len);
+			memcpy(sz_ver2,report.payload+2+len,len2);
+
+			CString strVer(sz_ver);
+			CString strVer2(sz_ver2);
+			GetDlgItem(IDC_EDIT_LOCAL)->SetWindowText(strVer);
+			GetDlgItem(IDC_EDIT_REMOTE)->SetWindowText(strVer2);
 		}
 		break;
 	default:						
@@ -2215,11 +2255,6 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
 		}
 		break;
-	case ROBOT_SET_PASSWORD:
-	case ROBOT_SET_CLASS_SSID:
-	case ROBOT_SET_CLASS_PWD:
-	case ROBOT_SET_STUDENT_ID:
-		m_pDlg->PostMessage(WM_PROCESS,report.payload[0],report.cmd_id);
 	default:
 		break;
 	}
@@ -2521,4 +2556,35 @@ void CUSBHelperDlg::OnBnClickedButtonSet3()
 	GetDlgItem(IDC_EDIT_SID)->GetWindowText(str);
 	char *buffer = WideStrToMultiStr(str.GetBuffer());
 	GetInstance()->SetStudentID((unsigned char*)buffer,strlen(buffer));
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSearch()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(UpdateSearch);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonUpdate()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(UpdateWifi);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSet4()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	unsigned char buffer[20] = {0};
+	CString str;
+	GetDlgItem(IDC_EDIT_MQTT)->GetWindowText(str);
+	int len = str.GetLength();
+	int index = 0;
+	for (int i=0;i<len;i+=2)
+	{
+		CString strNum = str.Mid(i,2);
+		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
+	}
+	GetInstance()->SetPwd(buffer);
 }

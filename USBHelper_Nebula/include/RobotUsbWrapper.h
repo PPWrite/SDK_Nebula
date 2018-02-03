@@ -34,6 +34,8 @@ enum eRbtType
 	GetDeviceID,
 	SearchMode,
 	SwitchMode,
+	UpdateSearch,
+	UpdateWifi,
 };
 
 //»Øµ÷º¯Êý
