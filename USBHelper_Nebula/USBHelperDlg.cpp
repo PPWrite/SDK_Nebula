@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20180202")
+#define _VERSION  _T("°æ±¾ºÅ:20180207")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -22,6 +22,7 @@
 #define _NODE
 //#define _DONGLE
 //#define _P1
+//#define _WIFI
 
 
 
@@ -309,6 +310,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
+#endif
+
+#ifdef _WIFI
 	GetDlgItem(IDC_STATIC_SSID)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_STATIC_PWD)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_STATIC_STUID)->ShowWindow(SW_SHOW);
@@ -330,6 +334,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT_MQTT)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET4)->ShowWindow(SW_SHOW);
 #endif
+	
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
 
