@@ -142,4 +142,10 @@ public:
 	afx_msg void OnBnClickedButton3Reset2();
 
 	BOOL m_bConnect;
+	afx_msg void OnBnClickedButtonSet();
+	afx_msg void OnBnClickedButtonSet2();
+	afx_msg void OnBnClickedButtonSet3();
+	afx_msg void OnBnClickedButtonSearch();
+	afx_msg void OnBnClickedButtonUpdate();
+	afx_msg void OnBnClickedButtonSet4();
 };
