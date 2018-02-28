@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180207")
+#define _VERSION  _T("版本号:20180225")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -445,8 +445,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	/*GetInstance()->SetPenWidth(2);
 	GetInstance()->SetCanvasSize(960,669);//*/
 
-	//优化笔记设置
-	/*GetInstance()->SetPenWidth(1.2);
+	//==========================优化笔记设置======================
+	GetInstance()->SetPenWidth(1.2);
 	GetInstance()->SetOptimizeStatus(true);
 	GetInstance()->SetPressStatus(false);//*/
 
@@ -606,7 +606,7 @@ void CUSBHelperDlg::openT7E()
 			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 			OnBnClickedButton3Open();
 
-			if (m_nDeviceType == T7E_TS)
+			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH)
 			{
 				SetTimer(1,1000,NULL);
 			}
@@ -1641,7 +1641,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
 
 			str.Format(_T("%02X%02X%02X%02X%02X%02X"),info.mac[0],info.mac[1],info.mac[2],info.mac[3],info.mac[4],info.mac[5]);
-			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+			//GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;			
 	case ROBOT_ONLINE_STATUS://在线状态
@@ -1866,13 +1866,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		{
 			PEN_INFOF penInfof = {0};
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
-			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
+			TRACE(_T("Robot X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
 
 			PEN_INFO penInfo = {0};
 			penInfo.nX = penInfof.nX;
 			penInfo.nY = penInfof.nY;
 			penInfo.nStatus = penInfof.nStatus;
-			if (penInfof.nStatus == 17)
+			if (penInfof.fWidth > 0)
 				penInfo.nPress = 1;
 			else
 				penInfo.nPress = 0;

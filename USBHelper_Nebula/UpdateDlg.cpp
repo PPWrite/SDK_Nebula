@@ -61,7 +61,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL 
+		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL
 			|| m_nDeviceType == T9E || m_nDeviceType == T8B || m_nDeviceType == T9B_YD 
 			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
