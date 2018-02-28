@@ -19,10 +19,14 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-#define _NODE
+//#define _NODE
 //#define _DONGLE
+<<<<<<< HEAD
+#define _P1
+=======
 //#define _P1
 //#define _WIFI
+>>>>>>> b8a8a15c0ae5f53982ba173c24134f38c4ec5526
 
 
 
