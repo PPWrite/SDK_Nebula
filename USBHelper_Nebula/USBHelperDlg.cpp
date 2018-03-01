@@ -21,14 +21,8 @@
 //#define _GATEWAY
 //#define _NODE
 //#define _DONGLE
-<<<<<<< HEAD
-#define _P1
-=======
 //#define _P1
 //#define _WIFI
->>>>>>> b8a8a15c0ae5f53982ba173c24134f38c4ec5526
-
-
 
 //#define _CY
 
@@ -451,8 +445,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	//==========================优化笔记设置======================
 	GetInstance()->SetPenWidth(1.2);
-	GetInstance()->SetOptimizeStatus(true);
-	GetInstance()->SetPressStatus(false);//*/
+	GetInstance()->SetPressStatus(false);
+	GetInstance()->SetOptimizeStatus(true);//*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -937,7 +931,7 @@ void CUSBHelperDlg::OnBnClickedButtonVote()
 		((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
 		for(int i=0;i<MAX_NOTE;i++)
 		{
-			vecPenInfo[i].clear();
+			//vecPenInfo[i].clear();
 		}
 		GetInstance()->Send(SyncBegin);
 	}
@@ -1824,7 +1818,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			//T9A
 			if (m_nCurNoteNum < MAX_NOTE)
 			{
-				vecPenInfo[m_nCurNoteNum].push_back(penInfo);
+				//vecPenInfo[m_nCurNoteNum].push_back(penInfo);
 			}
 
 			//m_list[0]->AddData(penInfo);
