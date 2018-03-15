@@ -117,7 +117,7 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	Init_Param param;
 	param.ctx = this;
-	param.port = 6002;
+	param.port = 6001;
 	param.pIp = NULL;
 	param.listenCount = 50;
 

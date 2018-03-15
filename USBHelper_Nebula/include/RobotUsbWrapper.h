@@ -221,6 +221,11 @@ public:
 		(void)result;
 		(void)pwd;
 	}
+	//设置密码
+	virtual void onSetSecret(int result,unsigned char *secret) {
+		(void)result;
+		(void)secret;
+	}
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,float speed,int status){
 		(void)x;
@@ -304,6 +309,8 @@ public:
 	virtual void SetStudentID(unsigned char *id,int len) = 0;
 	//设置密码
 	virtual void SetPwd(unsigned char *pwd) = 0;
+	//设置Secret
+	virtual void SetSecret(unsigned char *sercet) = 0;
 };
 
 //初始化 回调
@@ -372,6 +379,8 @@ extern "C" ROBOT_API void SetClassPwd(unsigned char *pwd,int len);
 extern "C" ROBOT_API void SetStudentID(unsigned char *id,int len);
 //设置密码
 extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
+//设置Secret
+extern "C" ROBOT_API void SetSecret(unsigned char *sercet);
 //获取当前设备类型
 extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
 

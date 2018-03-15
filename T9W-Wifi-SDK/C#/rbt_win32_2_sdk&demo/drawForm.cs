@@ -29,6 +29,7 @@ namespace rbt_win32_2_demo
         private int m_nPenStatus = 0;
         private double m_nCompress = 0;
         public bool bScreenO { get; set; }
+        private int m_nState = 270;
 
         public drawForm()
         {
@@ -136,7 +137,21 @@ namespace rbt_win32_2_demo
             {
                 pointf = new PointF(x, y);
             }*/
-            pointf = new PointF(x, y);
+            if (m_nState == 90)
+            {
+                pointf = new PointF(m_nDeviceH - y, x);
+            }
+            else if (m_nState == 180)
+            {
+                pointf = new PointF(m_nDeviceW - x, m_nDeviceH - y);
+            }
+            else if (m_nState == 270)
+            {
+                pointf = new PointF(y, m_nDeviceW - x);
+            }
+            else
+                pointf = new PointF(x, y);
+
             if (!pointIsInvalid(nPenStatus, ref pointf))
                 return;
 

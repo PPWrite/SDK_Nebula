@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.2"
+#define FILEVERSION "1.1.4.3"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -27,6 +27,7 @@ enum eDevicePid
 	T9B_YD_PID	=	0x601f,
 	T7B_HF_PID	=	0x6020,
 	X8E_A5_PID	=	0x6021,
+	T9W_PID		=	0x6022,
 	T8C_PID		=	0x6023,
 	T7E_PID		=	0x6025,
 	T7E_HFHH_PID=	0x6026,
@@ -278,6 +279,7 @@ enum eRobotCmd
 	ROBOT_SET_CLASS_SSID,						//设置班级ssid
 	ROBOT_SET_CLASS_PWD,						//设置班级password
 	ROBOT_SET_STUDENT_ID,						//设置学生id
+	ROBOT_SET_SECRET,							//设置Secret
 	ROBOT_UPDATE_SEARCH,						//升级查询
 	ROBOT_UPDATE_WIFI,							//升级wifi
 	//////////////////////////Dongle/////////////////////////////
