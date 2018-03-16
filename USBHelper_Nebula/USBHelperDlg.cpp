@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180312")
+#define _VERSION  _T("版本号:20180316")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -28,6 +28,8 @@
 
 //#define TEST_COUNT
 //#define TEST_T7E
+
+#define USE_OPTIMIZE
 
 #define USE_POWER
 
@@ -449,9 +451,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	//==========================优化笔记设置======================
-	/*GetInstance()->SetPenWidth(1.2);
+#ifdef USE_OPTIMIZE
+	GetInstance()->SetPenWidth(2);
 	GetInstance()->SetPressStatus(false);
-	GetInstance()->SetOptimizeStatus(true);//*/
+	GetInstance()->SetOptimizeStatus(true);
+#endif
+	//==========================优化笔记设置======================
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -707,7 +712,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -741,7 +746,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if(m_nDeviceType == T7PL)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -1321,7 +1326,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == T7PL)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);

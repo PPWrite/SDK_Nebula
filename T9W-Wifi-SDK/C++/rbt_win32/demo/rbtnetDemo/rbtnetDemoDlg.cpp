@@ -8,11 +8,63 @@
 #include "afxdialogex.h"
 #include "rbt_win.h"
 #include "DrawDlg.h"
+#include "ConfigDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+PCHAR w2m(PWCHAR WideStr)
+{
+	ULONG nBytes;
+	PCHAR MultiStr;
+
+	// Get the length of the converted string
+	//
+	nBytes = WideCharToMultiByte(
+		CP_ACP,
+		0,
+		WideStr,
+		-1,
+		NULL,
+		0,
+		NULL,
+		NULL);
+
+	if (nBytes == 0)
+	{
+		return NULL;
+	}
+
+	// Allocate space to hold the converted string
+	//
+	MultiStr = (PCHAR)malloc(nBytes);
+
+	if (MultiStr == NULL)
+	{
+		return NULL;
+	}
+
+	// Convert the string
+	//
+	nBytes = WideCharToMultiByte(
+		CP_ACP,
+		0,
+		WideStr,
+		-1,
+		MultiStr,
+		nBytes,
+		NULL,
+		NULL);
+
+	if (nBytes == 0)
+	{
+		free(MultiStr);
+		return NULL;
+	}
+
+	return MultiStr;
+}
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -53,6 +105,10 @@ END_MESSAGE_MAP()
 
 CrbtnetDemoDlg::CrbtnetDemoDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_RBTNETDEMO_DIALOG, pParent)
+	, m_strSSID("")
+	, m_strPwd("")
+	, m_strStu("")
+	, m_strSource("")
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -80,6 +136,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
 	ON_BN_CLICKED(IDC_BUTTON1, &CrbtnetDemoDlg::OnBnClickedButton1)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
 END_MESSAGE_MAP()
 
 
@@ -580,4 +637,16 @@ void CrbtnetDemoDlg::OnClose()
 	rbt_win_stop();
 	rbt_win_uninit();
 	CDialogEx::OnClose();
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonConfig()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CConfigDlg dlg(m_strSSID, m_strPwd, m_strStu, m_strSource);
+	if (dlg.DoModal() == IDOK)
+	{
+		dlg.getConfig(m_strSSID, m_strPwd, m_strStu, m_strSource);
+		rbt_win_config(w2m(m_strSSID.GetBuffer(0)), w2m(m_strPwd.GetBuffer(0)), w2m(m_strStu.GetBuffer(0)), w2m(m_strSource.GetBuffer(0)));
+	}
 }

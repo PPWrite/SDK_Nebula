@@ -73,4 +73,7 @@ private:
 	std::queue<_Mass_Data> m_queueData;
 	bool m_bRun;
 	HANDLE m_hEvent[2];
+	CString m_strSSID, m_strPwd, m_strStu, m_strSource;
+public:
+	afx_msg void OnBnClickedButtonConfig();
 };

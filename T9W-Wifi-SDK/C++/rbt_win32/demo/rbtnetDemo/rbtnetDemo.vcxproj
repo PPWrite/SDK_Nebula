@@ -193,6 +193,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfigDlg.h" />
     <ClInclude Include="DrawDlg.h" />
     <ClInclude Include="rbtnetDemo.h" />
     <ClInclude Include="rbtnetDemoDlg.h" />
@@ -201,6 +202,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigDlg.cpp" />
     <ClCompile Include="DrawDlg.cpp" />
     <ClCompile Include="rbtnetDemo.cpp" />
     <ClCompile Include="rbtnetDemoDlg.cpp" />
