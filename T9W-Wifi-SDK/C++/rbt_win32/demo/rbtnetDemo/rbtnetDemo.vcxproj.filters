@@ -39,6 +39,9 @@
     <ClInclude Include="ConfigDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="StuDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rbtnetDemo.cpp">
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ConfigDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StuDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

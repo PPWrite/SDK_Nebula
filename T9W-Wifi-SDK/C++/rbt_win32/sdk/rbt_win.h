@@ -15,7 +15,8 @@ extern "C" {
 	bool rbt_win_send_stopanswer();
 	bool rbt_win_start();
 	void rbt_win_stop();
-	int rbt_win_config(const char *ssid,const char *pwd,const char *stu,const char *source);
+	void rbt_win_config_stu(const char *mac, const char *stu);
+	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *stu, const char *source);
 
 #ifdef __cplusplus
 }

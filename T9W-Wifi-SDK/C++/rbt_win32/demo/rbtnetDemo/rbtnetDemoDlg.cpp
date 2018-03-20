@@ -9,6 +9,7 @@
 #include "rbt_win.h"
 #include "DrawDlg.h"
 #include "ConfigDlg.h"
+#include "StuDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,12 +74,12 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
-// 对话框数据
+	// 对话框数据
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 // 实现
@@ -137,6 +138,8 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CrbtnetDemoDlg::OnBnClickedButton1)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
+	ON_NOTIFY(NM_RCLICK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMRClickListConnect)
+	ON_COMMAND(ID_SETTING_STU, &CrbtnetDemoDlg::OnSettingStu)
 END_MESSAGE_MAP()
 
 
@@ -252,7 +255,7 @@ HRESULT CrbtnetDemoDlg::rcvAccept(WPARAM wParam, LPARAM lParam)
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1) {
-		pListCtrl->SetItemText(nRowIndex, 3, _T("在线"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("在线"));
 	}
 	else {
 		int nItemTotal = pListCtrl->GetItemCount();
@@ -282,12 +285,12 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1) {
-		pListCtrl->SetItemText(nRowIndex, 1, _T("在线"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("在线"));
 	}
 	else {
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, A2T(p));
-		pListCtrl->SetItemText(nItemTotal, 1, _T("在线"));
+		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
 		m_device2draw[p] = new CDrawDlg();
 		m_device2draw[p]->Create(IDD_DRAWDLG);
 		m_device2draw[p]->ShowWindow(FALSE);
@@ -324,16 +327,16 @@ void CrbtnetDemoDlg::initListControl()
 	dwStyle |= LVS_EX_GRIDLINES;
 	pListCtl->SetExtendedStyle(dwStyle);
 	pListCtl->InsertColumn(0, _T("设备MAC地址"), LVCFMT_LEFT, 120);
-	//pListCtl->InsertColumn(1, _T("设备MAC地址"), LVCFMT_LEFT, 120);
-	pListCtl->InsertColumn(1, _T("状态"), LVCFMT_LEFT, 60);
-	pListCtl->InsertColumn(2, _T("选择题通知"), LVCFMT_LEFT, 100);
-	pListCtl->InsertColumn(3, _T("按键通知"), LVCFMT_LEFT, 100);
-	pListCtl->InsertColumn(4, _T("页码通知"), LVCFMT_LEFT, 150);
+	pListCtl->InsertColumn(1, _T("学号"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(2, _T("状态"), LVCFMT_LEFT, 60);
+	pListCtl->InsertColumn(3, _T("选择题通知"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(4, _T("按键通知"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(5, _T("页码通知"), LVCFMT_LEFT, 150);
 }
 
 void CrbtnetDemoDlg::initCbFunction()
 {
-	rbt_win_set_accept_cb([] (rbt_win_context* ctx, const char* pIp){
+	rbt_win_set_accept_cb([](rbt_win_context* ctx, const char* pIp) {
 		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
 		return;
 		::PostMessage(pThis->m_hWnd, WM_RCV_ACCEPT, 0, (LPARAM)pIp);
@@ -347,6 +350,16 @@ void CrbtnetDemoDlg::initCbFunction()
 	rbt_win_set_devicemac_cb([](rbt_win_context* ctx, const char* pMac) {
 		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
 		::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)pMac);
+	});
+
+	rbt_win_set_devicename_cb([](rbt_win_context* ctx, const char* pMac, const char* pName) {
+		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
+		pThis->recvName(pMac, pName);
+	});
+
+	rbt_win_set_devicenameresult_cb([](rbt_win_context* ctx, const char* pMac, int res, const char* pName) {
+		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
+		pThis->recvNameResult(pMac, res, pName);
 	});
 
 	rbt_win_set_origindata_cb([](rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up) {
@@ -466,10 +479,10 @@ void CrbtnetDemoDlg::ProcessMassData()
 }
 
 
-void CrbtnetDemoDlg::recvOriginData(const char* pMac, 
-	unsigned short us, 
-	unsigned short ux, 
-	unsigned short uy, 
+void CrbtnetDemoDlg::recvOriginData(const char* pMac,
+	unsigned short us,
+	unsigned short ux,
+	unsigned short uy,
 	unsigned short up)
 {
 	CDrawDlg *pDlg = m_device2draw[pMac];
@@ -505,7 +518,7 @@ void CrbtnetDemoDlg::deviceDisconnect(const char* pMac)
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1) {
-		pListCtrl->SetItemText(nRowIndex, 1, _T("离线"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("离线"));
 	}
 }
 
@@ -556,7 +569,7 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 		default:
 			break;
 		}
-		pListCtrl->SetItemText(nRowIndex, 3, csValue);
+		pListCtrl->SetItemText(nRowIndex, 4, csValue);
 	}
 }
 
@@ -603,7 +616,7 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, unsigned char* pRe
 				break;
 			}
 		}
-		pListCtrl->SetItemText(nRowIndex, 2, csValue);
+		pListCtrl->SetItemText(nRowIndex, 3, csValue);
 	}
 }
 
@@ -622,7 +635,36 @@ void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPage
 
 	CString csValue;
 	csValue.Format(_T("总页数:%d 当前页:%d"), nNoteId, nPageId);
-	pListCtrl->SetItemText(nRowIndex, 4, csValue);
+	pListCtrl->SetItemText(nRowIndex, 5, csValue);
+}
+
+void CrbtnetDemoDlg::recvName(const char* pMac, const char* pName)
+{
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = A2T(pMac);
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex == -1) {
+		return;
+	}
+
+	pListCtrl->SetItemText(nRowIndex, 1, A2T(pName));
+}
+
+void CrbtnetDemoDlg::recvNameResult(const char* pMac, int res, const char* pName)
+{
+	if (res == 0)
+	{
+		recvName(pMac, pName);
+		AfxMessageBox(_T("设置成功"));
+	}
+	else
+	{
+		AfxMessageBox(_T("设置失败"));
+	}
 }
 
 void CrbtnetDemoDlg::OnClose()
@@ -647,6 +689,45 @@ void CrbtnetDemoDlg::OnBnClickedButtonConfig()
 	if (dlg.DoModal() == IDOK)
 	{
 		dlg.getConfig(m_strSSID, m_strPwd, m_strStu, m_strSource);
-		rbt_win_config(w2m(m_strSSID.GetBuffer(0)), w2m(m_strPwd.GetBuffer(0)), w2m(m_strStu.GetBuffer(0)), w2m(m_strSource.GetBuffer(0)));
+		rbt_win_config_wifi(w2m(m_strSSID.GetBuffer(0)), w2m(m_strPwd.GetBuffer(0)), w2m(m_strStu.GetBuffer(0)), w2m(m_strSource.GetBuffer(0)));
+	}
+}
+
+
+void CrbtnetDemoDlg::OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+	if (pNMItemActivate->iItem != -1)
+	{
+		DWORD dwPos = GetMessagePos();
+		CPoint point(LOWORD(dwPos), HIWORD(dwPos));
+
+		CMenu menu;
+		menu.LoadMenu(IDR_MENU1);
+		CMenu* popup = menu.GetSubMenu(0);
+		if (popup != NULL)
+			popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+	}
+	*pResult = 0;
+}
+
+
+void CrbtnetDemoDlg::OnSettingStu()
+{
+	// TODO: 在此添加命令处理程序代码
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	POSITION pos = pListCtrl->GetFirstSelectedItemPosition();
+	if (pos == NULL)
+		return;
+	int nItem = pListCtrl->GetNextSelectedItem(pos);
+
+	CString strMac = pListCtrl->GetItemText(nItem, 0);
+	CString strStu = pListCtrl->GetItemText(nItem, 1);
+	CStuDlg dlg(strStu);
+	if (dlg.DoModal() == IDOK)
+	{
+		strStu = dlg.getStu();
+		rbt_win_config_stu(w2m(strMac.GetBuffer(0)), w2m(strStu.GetBuffer(0)));
 	}
 }

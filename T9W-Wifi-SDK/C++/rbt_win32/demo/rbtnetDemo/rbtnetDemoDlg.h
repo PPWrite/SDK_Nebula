@@ -62,7 +62,8 @@ public:
 	void recvKeyPress(const char* pMac, void* keyValue);
 	void recvDeviceAnswerResult(const char* pMac, unsigned char* pResult, int nSize);
 	void recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId);
-
+	void recvName(const char* pMac, const char* pName);
+	void recvNameResult(const char* pMac, int res, const char* pName);
 private:
 	void initListControl();
 	void initCbFunction();
@@ -76,4 +77,6 @@ private:
 	CString m_strSSID, m_strPwd, m_strStu, m_strSource;
 public:
 	afx_msg void OnBnClickedButtonConfig();
+	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSettingStu();
 };
