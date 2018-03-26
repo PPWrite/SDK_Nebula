@@ -140,6 +140,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMRClickListConnect)
 	ON_COMMAND(ID_SETTING_STU, &CrbtnetDemoDlg::OnSettingStu)
+	ON_BN_CLICKED(IDC_BUTTON_SWITCH, &CrbtnetDemoDlg::OnBnClickedButtonSwitch)
 END_MESSAGE_MAP()
 
 
@@ -730,4 +731,14 @@ void CrbtnetDemoDlg::OnSettingStu()
 		strStu = dlg.getStu();
 		rbt_win_config_stu(w2m(strMac.GetBuffer(0)), w2m(strStu.GetBuffer(0)));
 	}
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString strIP;
+	GetDlgItem(IDC_EDIT_IP)->GetWindowText(strIP);
+
+	rbt_win_switch_net(w2m(strIP.GetBuffer(0)), 6001, false, true, "");
 }

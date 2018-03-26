@@ -79,4 +79,5 @@ public:
 	afx_msg void OnBnClickedButtonConfig();
 	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSettingStu();
+	afx_msg void OnBnClickedButtonSwitch();
 };
