@@ -24,16 +24,16 @@ enum keyPressEnum
 	K_SURE = 0x15,
 };
 
-typedef void onAccept(rbt_win_context* context, const char* pClientIpAddress );
-typedef void onErrorPacket(rbt_win_context* context);
-typedef void onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
-typedef void onDeviceMac(rbt_win_context* context, const char* pMac);
-typedef void onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
-typedef void onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
-typedef void onDeviceDisConnect(rbt_win_context* context, const char* pMac);
-typedef void onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
-typedef void onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize);
-typedef void onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+typedef void CALLBACK onAccept(rbt_win_context* context, const char* pClientIpAddress );
+typedef void CALLBACK onErrorPacket(rbt_win_context* context);
+typedef void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
+typedef void CALLBACK onDeviceMac(rbt_win_context* context, const char* pMac);
+typedef void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
+typedef void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
+typedef void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
+typedef void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
+typedef void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize);
+typedef void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 
 void rbt_win_set_accept_cb( onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);

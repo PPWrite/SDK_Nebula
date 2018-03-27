@@ -6,7 +6,6 @@
 #include "rbtnetDemo.h"
 #include "rbtnetDemoDlg.h"
 #include "afxdialogex.h"
-#include "rbt_win.h"
 #include "DrawDlg.h"
 #include "ConfigDlg.h"
 #include "StuDlg.h"
@@ -337,7 +336,25 @@ void CrbtnetDemoDlg::initListControl()
 
 void CrbtnetDemoDlg::initCbFunction()
 {
-	rbt_win_set_accept_cb([](rbt_win_context* ctx, const char* pIp) {
+	rbt_win_set_accept_cb(onAccept);
+
+	rbt_win_set_devivedisconnect_cb(onDeviceDisConnect);
+
+	rbt_win_set_devicemac_cb(onDeviceMac);
+
+	rbt_win_set_devicename_cb(onDeviceName);
+
+	rbt_win_set_devicenameresult_cb(onDeviceNameResult);
+
+	rbt_win_set_origindata_cb(onOriginData);
+
+	rbt_win_set_devicekeypress_cb(onDeviceKeyPress);
+
+	rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult);
+
+	rbt_win_set_deviceshowpage_cb(onDeviceShowPage);//*/
+
+	/*rbt_win_set_accept_cb([](rbt_win_context* ctx, const char* pIp) {
 		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
 		return;
 		::PostMessage(pThis->m_hWnd, WM_RCV_ACCEPT, 0, (LPARAM)pIp);
@@ -381,7 +398,58 @@ void CrbtnetDemoDlg::initCbFunction()
 	rbt_win_set_deviceshowpage_cb([](rbt_win_context* context, const char* pMac, int nNoteId, int nPageId) {
 		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 		pThis->recvDeviceShowpage(pMac, nNoteId, nPageId);
-	});
+	});//*/
+}
+
+void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	return;
+	::PostMessage(pThis->m_hWnd, WM_RCV_ACCEPT, 0, (LPARAM)pClientIpAddress);
+}
+void CrbtnetDemoDlg::onErrorPacket(rbt_win_context* context)
+{
+
+}
+void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
+	pThis->recvOriginData(pMac, us, ux, uy, up);
+}
+void CrbtnetDemoDlg::onDeviceMac(rbt_win_context* context, const char* pMac)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)pMac);
+}
+void CrbtnetDemoDlg::onDeviceName(rbt_win_context* context, const char* pMac, const char* pName)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvName(pMac, pName);
+}
+void CrbtnetDemoDlg::onDeviceNameResult(rbt_win_context* context, const char* pMac, int res, const char* pName)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvNameResult(pMac, res, pName);
+}
+void CrbtnetDemoDlg::onDeviceDisConnect(rbt_win_context* context, const char* pMac)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->deviceDisconnect(pMac);
+}
+void CrbtnetDemoDlg::onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvKeyPress(pMac, &keyValue);
+}
+void CrbtnetDemoDlg::onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvDeviceAnswerResult(pMac, pResult, nSize);
+}
+void CrbtnetDemoDlg::onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvDeviceShowpage(pMac, nNoteId, nPageId);
 }
 
 void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)

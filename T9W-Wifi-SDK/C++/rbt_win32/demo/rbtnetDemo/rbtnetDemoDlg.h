@@ -5,6 +5,7 @@
 #pragma once
 #include <map>
 #include <queue>
+#include "rbt_win.h"
 class CDrawDlg;
 
 #define WM_RCV_ACCEPT (WM_USER + 100)
@@ -80,4 +81,15 @@ public:
 	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSettingStu();
 	afx_msg void OnBnClickedButtonSwitch();
+
+	static void CALLBACK onAccept(rbt_win_context* context, const char* pClientIpAddress);
+	static void CALLBACK onErrorPacket(rbt_win_context* context);
+	static void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
+	static void CALLBACK onDeviceMac(rbt_win_context* context, const char* pMac);
+	static void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
+	static void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac, int res, const char* pName);
+	static void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
+	static void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
+	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize);
+	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 };
