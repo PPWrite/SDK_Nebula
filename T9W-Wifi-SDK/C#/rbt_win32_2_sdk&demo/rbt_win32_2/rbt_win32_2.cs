@@ -29,13 +29,13 @@ namespace rbt_win32_2
         internal static extern void rbt_win_stop();   // 停止监听
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_config_stu(ref string strDeviceMac, ref string strDeviceStu);
+        internal static extern void rbt_win_config_stu(string strDeviceMac, string strDeviceStu);
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int rbt_win_config_wifi(ref string strDeviceSSID, ref string strDevicePwd, ref string strDeviceStu, ref string strDeviceSrc);
+        internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceStu, string strDeviceSrc);
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int rbt_win_config_net(ref string strIP, int nPort, bool bMQTT, bool bTCP, ref string strDeviceSrc);
+        internal static extern int rbt_win_config_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
@@ -268,25 +268,25 @@ namespace rbt_win32_2
         /// <summary>
         /// 设置学号
         /// </summary>
-        public void configStu(ref string strDeviceMac, ref string strDeviceStu)
+        public void configStu(string strDeviceMac, string strDeviceStu)
         {
-            rbt_win_config_stu(ref strDeviceMac, ref strDeviceStu);
+            rbt_win_config_stu(strDeviceMac, strDeviceStu);
         }
 
         /// <summary>
         /// 切换网络
         /// </summary>
-        public int configWifi(ref string strDeviceSSID, ref string strDevicePwd, ref string strDeviceStu, ref string strDeviceSrc)
+        public int configWifi(string strDeviceSSID, string strDevicePwd, string strDeviceStu, string strDeviceSrc)
         {
-            return rbt_win_config_wifi(ref strDeviceSSID, ref strDevicePwd, ref strDeviceStu, ref strDeviceSrc);
+            return rbt_win_config_wifi(strDeviceSSID, strDevicePwd, strDeviceStu, strDeviceSrc);
         }
 
         /// <summary>
         /// 配网
         /// </summary>
-        public int configNet(ref string strIP, int nPort, bool bMQTT, bool bTCP, ref string strDeviceSrc)
+        public int configNet(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
         {
-            return rbt_win_config_net(ref strIP, nPort, bMQTT, bTCP, ref strDeviceSrc);
+            return rbt_win_config_net(strIP, nPort, bMQTT, bTCP, strDeviceSrc);
         }
     }
 }

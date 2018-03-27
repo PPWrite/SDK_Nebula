@@ -503,18 +503,17 @@ namespace rbt_win32_2_demo
         {
             string strStu = "111";
             string strMac = "1b2200000006";
-            rbtnet_.configStu(ref strMac, ref strStu);
-            /*string strSSID = "";
+            /*  rbtnet_.configStu(strMac, strStu);//*/
+            string strSSID = "";
             string strPWD = "";
             string strSrc = "";
-            rbtnet_.configWifi(ref strSSID, ref strPWD, ref strStu, ref strSrc);//*/
+            rbtnet_.configWifi(strSSID, strPWD, strStu, strSrc);//*/
         }
 
         private void button_switch_Click(object sender, EventArgs e)
         {
             string strIP = textBox1.Text;
-            string strSrc = "";
-            rbtnet_.configNet(ref strIP, 6001, false, true, ref strSrc);
+            rbtnet_.configNet(strIP, 6001, false, true, "");
         }
     }
 }
