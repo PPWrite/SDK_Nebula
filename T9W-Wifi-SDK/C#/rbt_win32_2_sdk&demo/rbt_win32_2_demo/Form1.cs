@@ -157,10 +157,9 @@ namespace rbt_win32_2_demo
         private void button_answer_Click(object sender, EventArgs e)
         {
             if (this.button_answer.Text == "开始答题") {
-                int nt = 3;
-                string strttype = "123";
-
-                if (rbtnet_.sendStartAnswer(nt, ref strttype))
+                //1 判断，2 单选，3 多选，4 填空，5 问答；0xFF 无效题目
+                int type = 5;
+                if (rbtnet_.sendStartAnswer(type))
                 {
                     this.button_answer.Text = "结束答题";
                 }
