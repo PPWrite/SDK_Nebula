@@ -41,26 +41,28 @@ namespace rbt_win32_2_demo
             * 所有事件响应接口都是在内部SDK线程中上报出来
             */
             rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
+            rbtnet_.deviceNameEvt_ += Rbtnet__deviceNameEvt_;
             rbtnet_.deviceDisconnectEvt_ += Rbtnet__deviceDisconnectEvt_;
             rbtnet_.deviceOriginDataEvt_ += Rbtnet__deviceOriginDataEvt_;
             rbtnet_.deviceShowPageEvt_ += Rbtnet__deviceShowPageEvt_;
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
-            rbtnet_.deviceNameEvt_ += Rbtnet__deviceNameEvt_1;
         }
 
-        private void Rbtnet__deviceNameEvt_1(IntPtr ctx, string strDeviceMac, string strDeviceName)
+        private void Rbtnet__deviceNameEvt_(IntPtr ctx, string strDeviceMac, string strDeviceName)
         {
             Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
-        }
 
+        }
         // 
         private void Rbtnet__deviceAnswerResultEvt_(IntPtr ctx, IntPtr strDeviceMac, IntPtr result, int nResultSize)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             string sResult = Marshal.PtrToStringAnsi(result);
-
-            updateDeviceMacListView_AnswerResult(sMac, sResult);
+            byte[] byteRes = new byte[nResultSize];
+            Marshal.Copy(result, byteRes, 0, nResultSize);
+            Console.WriteLine("Rbtnet__deviceAnswerResultEvt_:{0}-{1}", sMac, sResult);
+            updateDeviceMacListView_AnswerResult(sMac, byteRes);
         }
 
         private void Rbtnet__deviceKeyPressEvt_(IntPtr ctx, IntPtr strDeviceMac, int keyValue)
@@ -156,17 +158,29 @@ namespace rbt_win32_2_demo
         /// <param name="e"></param>
         private void button_answer_Click(object sender, EventArgs e)
         {
-            if (this.button_answer.Text == "开始答题") {
-                //1 判断，2 单选，3 多选，4 填空，5 问答；0xFF 无效题目
-                int type = 5;
-                if (rbtnet_.sendStartAnswer(type))
+            if (this.button_answer.Text == "开始答题")
+            {
+                int totalTopic = 3;
+                byte []topicType = new byte[totalTopic];
+                topicType[0] = 1;
+                topicType[1] = 2;
+                topicType[2] = 3;
+                IntPtr ptr = Marshal.AllocHGlobal(totalTopic);
+                Marshal.Copy(topicType, 0, ptr, totalTopic);
+
+                if (rbtnet_.sendStartAnswer(totalTopic,ptr))
                 {
                     this.button_answer.Text = "结束答题";
                 }
-                else {
+                else
+                {
                     MessageBox.Show("发送开始答题失败");
                 }
-            } else {
+
+                Marshal.FreeHGlobal(ptr);
+            }
+            else
+            {
                 rbtnet_.sendStopAnswer();
                 this.button_answer.Text = "开始答题";
             }
@@ -391,8 +405,8 @@ namespace rbt_win32_2_demo
         /// </summary>
         /// <param name="strMac"></param>
         /// <param name="keyValue"></param>
-        private delegate void updateDeviceMac_AnswerResult(string strMac, string strResult);
-        public void updateDeviceMacListView_AnswerResult(string strMac, string strResult)
+        private delegate void updateDeviceMac_AnswerResult(string strMac, byte[] strResult);
+        public void updateDeviceMacListView_AnswerResult(string strMac, byte[] strResult)
         {
             if (this.listView1.InvokeRequired)
             {
@@ -437,7 +451,7 @@ namespace rbt_win32_2_demo
                                 strKeyValue += "C";
                                 break;
                             case keyPressEnum.K_D:
-                                strKeyValue = "D";
+                                strKeyValue += "D";
                                 break;
                             case keyPressEnum.K_E:
                                 strKeyValue += "E";
@@ -500,13 +514,12 @@ namespace rbt_win32_2_demo
 
         private void button_test_Click(object sender, EventArgs e)
         {
-            string strStu = "111";
-            string strMac = "1b2200000006";
-            /*  rbtnet_.configStu(strMac, strStu);//*/
-            string strSSID = "";
-            string strPWD = "";
-            string strSrc = "";
-            rbtnet_.configWifi(strSSID, strPWD, strStu, strSrc);//*/
+            string strStu = "222";
+            string strMac = "1b2200000050";
+            //rbtnet_.configStu(strMac, strStu);//*/
+            string strSSID = "C_68E";
+            string strPWD = "test1234";
+            rbtnet_.configWifi(strSSID, strPWD, "", "");//*/
         }
 
         private void button_switch_Click(object sender, EventArgs e)

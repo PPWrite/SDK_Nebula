@@ -17,7 +17,7 @@ namespace rbt_win32_2
         internal static extern void rbt_win_uninit();     // 反初始化
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_startanswer(int type);     // 发送开始答题命令
+        internal static extern bool rbt_win_send_startanswer(int totalTopic, IntPtr pTopicType);     // 发送开始答题命令
 
         [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_send_stopanswer();   // 结束答题命令
@@ -254,8 +254,8 @@ namespace rbt_win32_2
         /// <param name="nTotalTopic"></param>
         /// <param name="strTopicType"></param>
         /// <returns></returns>
-        public bool sendStartAnswer(int type) {
-            return rbt_win_send_startanswer(type);
+        public bool sendStartAnswer(int totalTopic, IntPtr pTopicType) {
+            return rbt_win_send_startanswer(totalTopic, pTopicType);
         }
 
         /// <summary>

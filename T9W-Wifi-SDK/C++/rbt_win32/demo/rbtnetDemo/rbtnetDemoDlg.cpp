@@ -480,8 +480,9 @@ void CrbtnetDemoDlg::OnBnClickedButton1()
 	CString csBtnText;
 	GetDlgItemText(IDC_BUTTON1, csBtnText);
 	if (csBtnText == _T("开始答题")) {
-		//1 判断，2 单选，3 多选，4 填空，5 问答；0xFF 无效题目
-		bool bSendRes = rbt_win_send_startanswer(5);
+		int totalTopic = 3;
+		char pTopicType[3] = { 1,2,3 };
+		bool bSendRes = rbt_win_send_startanswer(totalTopic, pTopicType);
 		if (!bSendRes) {
 			MessageBox(_T("开启答题失败"));
 			return;
