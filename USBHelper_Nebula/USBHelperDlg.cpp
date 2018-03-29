@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180316")
+#define _VERSION  _T("版本号:20180329")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-//#define _GATEWAY
-#define _NODE
+#define _GATEWAY
+//#define _NODE
 //#define _DONGLE
 //#define _P1
 //#define _WIFI
@@ -29,7 +29,7 @@
 //#define TEST_COUNT
 //#define TEST_T7E
 
-#define USE_OPTIMIZE
+//#define USE_OPTIMIZE
 
 #define USE_POWER
 
@@ -614,7 +614,7 @@ void CUSBHelperDlg::openT7E()
 			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 			OnBnClickedButton3Open();
 
-			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH)
+			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3)
 			{
 				SetTimer(1,1000,NULL);
 			}
@@ -712,7 +712,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -754,7 +754,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(SearchMode);
 	}
 
-	if (m_nDeviceType != Gateway)
+	if (m_nDeviceType == Gateway)
+	{
+		GetInstance()->Send(GetMassMac);
+	}
+	else
 	{
 		//OnBnClickedButtonStatus();
 		SetTimer(0,500,NULL);
@@ -1542,6 +1546,16 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 #endif
 			if (pDlg)
 				pDlg->AddData(penInfo);
+		}
+		break;
+	case ROBOT_MASS_MAC:
+		{
+			CString str;
+			str.Format(_T("index:%d "),report.reserved);
+			TRACE(str);
+			str.Format(_T("%02X%02X%02X%02X%02X%02X"),report.payload[0],report.payload[1],report.payload[2],report.payload[3],report.payload[4],report.payload[5]);
+			TRACE(str);
+			TRACE("\r\n");
 		}
 		break;
 	case  ROBOT_SHOW_PAGE:

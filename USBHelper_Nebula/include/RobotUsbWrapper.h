@@ -36,6 +36,7 @@ enum eRbtType
 	SwitchMode,
 	UpdateSearch,
 	UpdateWifi,
+	GetMassMac,
 };
 
 //回调函数
@@ -152,6 +153,11 @@ public:
 	}
 	//x8 mac事件
 	virtual void onX8Mac(uint8_t *mac){
+		(void)mac;
+	}
+	//2.4g mac事件
+	virtual void onMassMac(int index,uint8_t *mac){
+		(void)index;
 		(void)mac;
 	}
 	//////////////////////////////dongle//////////////////////

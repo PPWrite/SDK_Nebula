@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.3"
+#define FILEVERSION "1.1.4.4"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -31,6 +31,7 @@ enum eDevicePid
 	T8C_PID		=	0x6023,
 	T7E_PID		=	0x6025,
 	T7E_HFHH_PID=	0x6026,
+	P1_CX_M3_PID=   0x6028,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -76,6 +77,8 @@ enum eDeviceType
 	S7_SD,
 	T7E,
 	T7E_HFHH,
+	S7_JD_M3,
+	P1_CX_M3,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -282,6 +285,7 @@ enum eRobotCmd
 	ROBOT_SET_SECRET,							//设置Secret
 	ROBOT_UPDATE_SEARCH,						//升级查询
 	ROBOT_UPDATE_WIFI,							//升级wifi
+	ROBOT_MASS_MAC,								//上报mac地址
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本
