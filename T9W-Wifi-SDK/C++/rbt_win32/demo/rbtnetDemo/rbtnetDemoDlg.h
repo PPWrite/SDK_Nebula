@@ -44,7 +44,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 
 	afx_msg HRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT rcvMac(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -63,6 +62,7 @@ public:
 	void recvKeyPress(const char* pMac, void* keyValue);
 	void recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize);
 	void recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId);
+	void recvMac(const char* pMac);
 	void recvName(const char* pMac, const char* pName);
 	void recvNameResult(const char* pMac, int res, const char* pName);
 private:
