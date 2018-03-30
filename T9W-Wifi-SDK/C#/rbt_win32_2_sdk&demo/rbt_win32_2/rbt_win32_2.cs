@@ -198,13 +198,13 @@ namespace rbt_win32_2
         /// <param name="strDeviceMac"></param>
         /// <param name="result"></param>
         /// <param name="nResultSize"></param>
-        private static void deviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, IntPtr result, int nResultSize) {
+        private static void deviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize) {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
             if (rbtNetThis != null && rbtNetThis.deviceAnswerResultEvt_ != null)
             {
-                rbtNetThis.deviceAnswerResultEvt_(ctx, strDeviceMac, result, nResultSize);
+                rbtNetThis.deviceAnswerResultEvt_(ctx, strDeviceMac, resID, result, nResultSize);
             }
         }
 

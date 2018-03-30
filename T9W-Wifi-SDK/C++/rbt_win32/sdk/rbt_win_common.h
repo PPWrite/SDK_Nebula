@@ -32,7 +32,7 @@ typedef void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, c
 typedef void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
 typedef void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
 typedef void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
-typedef void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize);
+typedef void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
 typedef void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 
 void rbt_win_set_accept_cb( onAccept* arg);

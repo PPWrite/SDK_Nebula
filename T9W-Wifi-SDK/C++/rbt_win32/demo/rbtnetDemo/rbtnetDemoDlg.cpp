@@ -9,6 +9,8 @@
 #include "DrawDlg.h"
 #include "ConfigDlg.h"
 #include "StuDlg.h"
+#include <Iphlpapi.h>
+#pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -187,6 +189,8 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 
 	m_bRun = true;
 	AfxBeginThread(ThreadProc, this);
+
+	GetLocalAddress();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -441,10 +445,10 @@ void CrbtnetDemoDlg::onDeviceKeyPress(rbt_win_context* context, const char* pMac
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	pThis->recvKeyPress(pMac, &keyValue);
 }
-void CrbtnetDemoDlg::onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize)
+void CrbtnetDemoDlg::onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize)
 {
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
-	pThis->recvDeviceAnswerResult(pMac, pResult, nSize);
+	pThis->recvDeviceAnswerResult(pMac, resID, pResult, nSize);
 }
 void CrbtnetDemoDlg::onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId)
 {
@@ -643,7 +647,7 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 	}
 }
 
-void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, unsigned char* pResult, int nSize)
+void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize)
 {
 	LVFINDINFO info;
 	info.flags = LVFI_PARTIAL | LVFI_STRING;
@@ -653,41 +657,44 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, unsigned char* pRe
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nRowIndex = pListCtrl->FindItem(&info);
 	CString csValue;
-	if (nRowIndex != -1) {
-		for (int i = 0; i < nSize; ++i) {
-			int nResult = (int)*(pResult + i);
-			switch (nResult)
-			{
-			case 0x06:
-				csValue.Format(_T("%sA"), csValue);
-				break;
-			case 0x07:
-				csValue.Format(_T("%sB"), csValue);
-				break;
-			case 0x08:
-				csValue.Format(_T("%sC"), csValue);
-				break;
-			case 0x09:
-				csValue.Format(_T("%sD"), csValue);
-				break;
-			case 0x10:
-				csValue.Format(_T("%sE"), csValue);
-				break;
-			case 0x11:
-				csValue.Format(_T("%sF"), csValue);
-				break;
-			case 0x12:
-				csValue.Format(_T("%s正确"), csValue);
-				break;
-			case 0x13:
-				csValue.Format(_T("%s错误"), csValue);
-				break;
-			default:
-				break;
-			}
+	csValue.Format(_T("%d："), resID);
+	if (nRowIndex < 0)
+		return;
+
+	for (int i = 0; i < nSize; ++i)
+	{
+		int nResult = (int)*(pResult + i);
+		switch (nResult)
+		{
+		case 0x06:
+			csValue.Format(_T("%sA"), csValue);
+			break;
+		case 0x07:
+			csValue.Format(_T("%sB"), csValue);
+			break;
+		case 0x08:
+			csValue.Format(_T("%sC"), csValue);
+			break;
+		case 0x09:
+			csValue.Format(_T("%sD"), csValue);
+			break;
+		case 0x10:
+			csValue.Format(_T("%sE"), csValue);
+			break;
+		case 0x11:
+			csValue.Format(_T("%sF"), csValue);
+			break;
+		case 0x12:
+			csValue.Format(_T("%s正确"), csValue);
+			break;
+		case 0x13:
+			csValue.Format(_T("%s错误"), csValue);
+			break;
+		default:
+			break;
 		}
-		pListCtrl->SetItemText(nRowIndex, 3, csValue);
 	}
+	pListCtrl->SetItemText(nRowIndex, 3, csValue);
 }
 
 void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId)
@@ -798,6 +805,11 @@ void CrbtnetDemoDlg::OnSettingStu()
 	if (dlg.DoModal() == IDOK)
 	{
 		strStu = dlg.getStu();
+		if (strStu.GetLength() > 6)
+		{
+			AfxMessageBox(_T("0-6 bytes！"));
+			return;
+		}
 		rbt_win_config_stu(w2m(strMac.GetBuffer(0)), w2m(strStu.GetBuffer(0)));
 	}
 }
@@ -807,7 +819,66 @@ void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CString strIP;
-	GetDlgItem(IDC_EDIT_IP)->GetWindowText(strIP);
+	GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
 
 	rbt_win_config_net(w2m(strIP.GetBuffer(0)), 6001, false, true, "");
+}
+
+bool CrbtnetDemoDlg::GetLocalAddress()
+{
+	CComboBox *pComboBox = ((CComboBox*)GetDlgItem(IDC_COMBO_IP));
+	if (pComboBox == NULL)
+		return false;
+	pComboBox->ResetContent();
+	std::string strAddress;
+	int nCardNo = 1;
+	//PIP_ADAPTER_INFO结构体指针存储本机网卡信息
+	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();
+	//得到结构体大小,用于GetAdaptersInfo参数
+	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
+	//调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量;其中stSize参数既是一个输入量也是一个输出量
+	int nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);
+	//记录网卡数量
+	int netCardNum = 0;
+	//记录每张网卡上的IP地址数量
+	int IPnumPerNetCard = 0;
+	if (ERROR_BUFFER_OVERFLOW == nRel)
+	{
+		//如果函数返回的是ERROR_BUFFER_OVERFLOW
+		//则说明GetAdaptersInfo参数传递的内存空间不够,同时其传出stSize,表示需要的空间大小
+		//这也是说明为什么stSize既是一个输入量也是一个输出量
+		//释放原来的内存空间
+		delete pIpAdapterInfo;
+		//重新申请内存空间用来存储所有网卡信息
+		pIpAdapterInfo = (PIP_ADAPTER_INFO)new BYTE[stSize];
+		//再次调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量
+		nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);
+	}
+	if (ERROR_SUCCESS == nRel)
+	{
+		//输出网卡信息
+		//可能有多网卡,因此通过循环去判断
+		while (pIpAdapterInfo)
+		{
+			//可能网卡有多IP,因此通过循环去判断
+			IP_ADDR_STRING *pIpAddrString = &(pIpAdapterInfo->IpAddressList);
+			strAddress = pIpAddrString->IpAddress.String;
+			// 需要注意的是有时可能获取的IP地址是0.0.0.0，这时需要过滤掉
+			if (std::string("0.0.0.0") != strAddress)
+			{
+				USES_CONVERSION;
+				pComboBox->AddString(A2W(strAddress.c_str()));
+			}
+			pIpAdapterInfo = pIpAdapterInfo->Next;
+		}
+		if (pComboBox->GetCount() > 0)
+		{
+			pComboBox->SetCurSel(0);
+		}
+	}
+	//释放内存空间
+	if (pIpAdapterInfo)
+	{
+		delete pIpAdapterInfo;
+	}
 }

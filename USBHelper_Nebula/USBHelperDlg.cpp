@@ -18,11 +18,11 @@
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
-//#define _WIFI
+#define _WIFI
 
 //#define _CY
 
@@ -707,7 +707,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
-		|| m_nDeviceType == T8C || m_nDeviceType == T9W)
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));

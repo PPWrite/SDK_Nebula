@@ -55,14 +55,14 @@ namespace rbt_win32_2_demo
 
         }
         // 
-        private void Rbtnet__deviceAnswerResultEvt_(IntPtr ctx, IntPtr strDeviceMac, IntPtr result, int nResultSize)
+        private void Rbtnet__deviceAnswerResultEvt_(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             string sResult = Marshal.PtrToStringAnsi(result);
             byte[] byteRes = new byte[nResultSize];
             Marshal.Copy(result, byteRes, 0, nResultSize);
             Console.WriteLine("Rbtnet__deviceAnswerResultEvt_:{0}-{1}", sMac, sResult);
-            updateDeviceMacListView_AnswerResult(sMac, byteRes);
+            updateDeviceMacListView_AnswerResult(sMac, resID, byteRes);
         }
 
         private void Rbtnet__deviceKeyPressEvt_(IntPtr ctx, IntPtr strDeviceMac, int keyValue)
@@ -405,8 +405,8 @@ namespace rbt_win32_2_demo
         /// </summary>
         /// <param name="strMac"></param>
         /// <param name="keyValue"></param>
-        private delegate void updateDeviceMac_AnswerResult(string strMac, byte[] strResult);
-        public void updateDeviceMacListView_AnswerResult(string strMac, byte[] strResult)
+        private delegate void updateDeviceMac_AnswerResult(string strMac, int resID, byte[] strResult);
+        public void updateDeviceMacListView_AnswerResult(string strMac, int resID, byte[] strResult)
         {
             if (this.listView1.InvokeRequired)
             {
@@ -436,7 +436,8 @@ namespace rbt_win32_2_demo
 
                 if (nFindItem > -1)
                 {
-                    string strKeyValue = string.Empty;
+                    string strKeyValue = string.Format("{0}", resID);
+
                     foreach (var c in strResult) {
                         keyPressEnum keyValueE = (keyPressEnum)c;
                         switch (keyValueE)

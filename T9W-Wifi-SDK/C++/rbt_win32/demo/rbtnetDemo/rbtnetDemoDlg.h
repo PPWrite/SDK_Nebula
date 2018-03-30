@@ -61,7 +61,7 @@ public:
 		unsigned short up);
 	void deviceDisconnect(const char* pMac);
 	void recvKeyPress(const char* pMac, void* keyValue);
-	void recvDeviceAnswerResult(const char* pMac, unsigned char* pResult, int nSize);
+	void recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize);
 	void recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId);
 	void recvName(const char* pMac, const char* pName);
 	void recvNameResult(const char* pMac, int res, const char* pName);
@@ -90,6 +90,8 @@ public:
 	static void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac, int res, const char* pName);
 	static void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
 	static void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
-	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize);
+	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
 	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+
+	bool GetLocalAddress();
 };

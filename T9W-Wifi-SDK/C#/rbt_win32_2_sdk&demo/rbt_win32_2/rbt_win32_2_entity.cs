@@ -15,7 +15,7 @@ namespace rbt_win32_2
     // 
     public delegate void onDeviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId);
     //
-    public delegate void onDeviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, IntPtr result, int nResultSize);
+    public delegate void onDeviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize);
 
     public delegate void onDeviceName(IntPtr ctx, String strDeviceMac, String strDeviceName);
 
