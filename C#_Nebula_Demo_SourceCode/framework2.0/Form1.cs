@@ -32,11 +32,11 @@ namespace RobotPenTestDll
         // NODE单独窗口
         private UserControl1 nodeDataWindow = null;
 
-        //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
+        private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
         //private demoEnum demo_type = demoEnum.NODE_DEMO;
         //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
-        private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
+        //private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
 
         public Form1()
@@ -1034,6 +1034,7 @@ namespace RobotPenTestDll
 
                 robotpenController.GetInstance().multiVoteResultEvt += new robotpenController.multiVoteResult(Form1_multiVoteResultEvt);
                 robotpenController.GetInstance().voteAnswerResultEvt += new robotpenController.voteAnswerResult(Form1_voteAnswerResultEvt);
+                robotpenController.GetInstance().subDeviceMacEvt += new robotpenController.subDeviceMac(Form1_subDeviceMacEvt);
             }
             else if (demo_type == demoEnum.NODE_DEMO)
             {
@@ -1053,6 +1054,12 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().keyPressEvt += new robotpenController.KeyPress(Form1_keyPressEvt);
             //////////////////////////////////////////////////////////////////////////
 
+        }
+
+        void Form1_subDeviceMacEvt(int nIndex, string strMac)
+        {
+            //throw new NotImplementedException();
+            Console.WriteLine("recv device mac addr deviceIndex={0} macAddr={1}", nIndex, strMac);
         }
 
         // 抢答结果事件
