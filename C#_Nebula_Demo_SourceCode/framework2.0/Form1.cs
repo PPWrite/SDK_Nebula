@@ -1700,6 +1700,10 @@ namespace RobotPenTestDll
                 {
                     status_button_query_Click(null, null);
                 }
+                else
+                {
+                    robotpenController.GetInstance()._Send(cmdId.GetMassMac);
+                }
             }
             else
             {

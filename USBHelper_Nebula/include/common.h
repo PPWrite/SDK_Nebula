@@ -32,7 +32,6 @@ enum eDevicePid
 	T7E_PID		=	0x6025,
 	T7E_HFHH_PID=	0x6026,
 	P1_CX_M3_PID=   0x6028,
-	T9W_TY_PID	=	0x602a,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -80,8 +79,6 @@ enum eDeviceType
 	T7E_HFHH,
 	S7_JD_M3,
 	P1_CX_M3,
-	T9A_EN,
-	T9W_TY,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
