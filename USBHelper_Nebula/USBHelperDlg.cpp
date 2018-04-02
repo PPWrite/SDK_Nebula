@@ -18,24 +18,19 @@
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-//#define _GATEWAY
-#define _NODE
+#define _GATEWAY
+//#define _NODE
 //#define _DONGLE
 //#define _P1
-#define _WIFI
+//#define _WIFI
 
 //#define _CY
 
 //#define TEST_COUNT
-#define TEST_T7E
+//#define TEST_T7E
 
-<<<<<<< HEAD
 //#define USE_POWER
-=======
 //#define USE_OPTIMIZE
-
-#define USE_POWER
->>>>>>> 781ab64254bcd000a01393816fb1ad515423721c
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -455,16 +450,12 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	//==========================优化笔记设置======================
-<<<<<<< HEAD
 	/*GetInstance()->SetPenWidth(1.2);
-=======
 #ifdef USE_OPTIMIZE
 	GetInstance()->SetPenWidth(2);
->>>>>>> 781ab64254bcd000a01393816fb1ad515423721c
 	GetInstance()->SetPressStatus(false);
 	GetInstance()->SetOptimizeStatus(true);
-#endif
-	//==========================优化笔记设置======================
+#endif*/
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
