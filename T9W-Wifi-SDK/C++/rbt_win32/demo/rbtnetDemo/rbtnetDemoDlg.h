@@ -5,6 +5,7 @@
 #pragma once
 #include <map>
 #include <queue>
+#include "rbt_win.h"
 class CDrawDlg;
 
 #define WM_RCV_ACCEPT (WM_USER + 100)
@@ -43,7 +44,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 
 	afx_msg HRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT rcvMac(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -60,9 +60,11 @@ public:
 		unsigned short up);
 	void deviceDisconnect(const char* pMac);
 	void recvKeyPress(const char* pMac, void* keyValue);
-	void recvDeviceAnswerResult(const char* pMac, unsigned char* pResult, int nSize);
+	void recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize);
 	void recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId);
-
+	void recvMac(const char* pMac);
+	void recvName(const char* pMac, const char* pName);
+	void recvNameResult(const char* pMac, int res, const char* pName);
 private:
 	void initListControl();
 	void initCbFunction();
@@ -73,4 +75,23 @@ private:
 	std::queue<_Mass_Data> m_queueData;
 	bool m_bRun;
 	HANDLE m_hEvent[2];
+	CString m_strSSID, m_strPwd, m_strStu, m_strSource;
+public:
+	afx_msg void OnBnClickedButtonConfig();
+	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSettingStu();
+	afx_msg void OnBnClickedButtonSwitch();
+
+	static void CALLBACK onAccept(rbt_win_context* context, const char* pClientIpAddress);
+	static void CALLBACK onErrorPacket(rbt_win_context* context);
+	static void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
+	static void CALLBACK onDeviceMac(rbt_win_context* context, const char* pMac);
+	static void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
+	static void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac, int res, const char* pName);
+	static void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
+	static void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
+	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
+	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+
+	bool GetLocalAddress();
 };

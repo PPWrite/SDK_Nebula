@@ -14,13 +14,13 @@ IMPLEMENT_DYNAMIC(CDrawDlg, CDialog)
 CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_DRAWDLG, pParent),
 	m_nFlags(0)
-	,m_bDrawing(false)
-	,m_nPenStatus(0)
-	,m_bMouseDraw(false)
-	,m_lastPoint(0,0)
+	, m_bDrawing(false)
+	, m_nPenStatus(0)
+	, m_bMouseDraw(false)
+	, m_lastPoint(0, 0)
 {
 	m_nPenWidth = 2;
-	m_nState = 0;
+	m_nState = 270;
 	m_nWidth = 22600;
 	m_nHeight = 16650;
 }
@@ -101,6 +101,33 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	else
 		point.SetPoint(ux, uy);
 	//TRACE("X:%d,Y:%d,Press:%d\n",penInfo.nX,penInfo.nY, penInfo.nPress);
+	/*TRACE("%d\n", us);
+	switch (us)
+	{
+	case 0:
+		m_nFlags = 0;
+		endTrack(true);
+		break;
+	case 16:
+	case 17:
+	{
+		if (m_nFlags == 0)
+		{
+			m_nFlags = 1;
+			compressPoint(point);
+			onbegin(point);
+	}
+		else
+		{
+			compressPoint(point);
+			onDrawing(point);
+		}
+}
+	break;
+	default:
+		break;
+	}
+	return;//*/
 
 	if (up == 0 && m_nFlags == 1)// ±ÊÀë¿ª°å×Ó
 	{
@@ -358,8 +385,8 @@ void CDrawDlg::endTrack(bool bSave /*= true*/)
 #ifdef BEZIER
 		Invalidate();
 #endif
+		}
 	}
-}
 
 void CDrawDlg::compressPoint(CPoint& point)
 {

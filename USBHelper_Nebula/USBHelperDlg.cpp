@@ -13,23 +13,29 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180225")
+#define _VERSION  _T("版本号:20180329")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
+#define _NODE
 //#define _DONGLE
 //#define _P1
-//#define _WIFI
+#define _WIFI
 
 //#define _CY
 
 //#define TEST_COUNT
 #define TEST_T7E
 
+<<<<<<< HEAD
 //#define USE_POWER
+=======
+//#define USE_OPTIMIZE
+
+#define USE_POWER
+>>>>>>> 781ab64254bcd000a01393816fb1ad515423721c
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -213,6 +219,7 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CUSBHelperDlg::OnBnClickedButtonSearch)
 	ON_BN_CLICKED(IDC_BUTTON_UPDATE, &CUSBHelperDlg::OnBnClickedButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON_SET4, &CUSBHelperDlg::OnBnClickedButtonSet4)
+	ON_BN_CLICKED(IDC_BUTTON_SET5, &CUSBHelperDlg::OnBnClickedButtonSet5)
 END_MESSAGE_MAP()
 
 
@@ -331,6 +338,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_MQTT)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_EDIT_MQTT)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET4)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_STATIC_SECRET)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_SECRET)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET5)->ShowWindow(SW_SHOW);
 #endif
 	
 #ifdef _DONGLE
@@ -444,9 +455,16 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	//==========================优化笔记设置======================
+<<<<<<< HEAD
 	/*GetInstance()->SetPenWidth(1.2);
+=======
+#ifdef USE_OPTIMIZE
+	GetInstance()->SetPenWidth(2);
+>>>>>>> 781ab64254bcd000a01393816fb1ad515423721c
 	GetInstance()->SetPressStatus(false);
-	GetInstance()->SetOptimizeStatus(true);//*/
+	GetInstance()->SetOptimizeStatus(true);
+#endif
+	//==========================优化笔记设置======================
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -604,7 +622,7 @@ void CUSBHelperDlg::openT7E()
 			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 			OnBnClickedButton3Open();
 
-			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH)
+			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3)
 			{
 				SetTimer(1,1000,NULL);
 			}
@@ -697,12 +715,12 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
-		|| m_nDeviceType == T8C)
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -736,7 +754,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if(m_nDeviceType == T7PL)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -744,7 +762,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(SearchMode);
 	}
 
-	if (m_nDeviceType != Gateway)
+	if (m_nDeviceType == Gateway)
+	{
+		GetInstance()->Send(GetMassMac);
+	}
+	else
 	{
 		//OnBnClickedButtonStatus();
 		SetTimer(0,500,NULL);
@@ -1251,6 +1273,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 	case ROBOT_SET_CLASS_PWD:
 	case ROBOT_SET_STUDENT_ID:
 	case ROBOT_UPDATE_WIFI:
+	case ROBOT_SET_SECRET:
 		{
 			if (wParam == 0)
 				AfxMessageBox(_T("设置成功！"));
@@ -1315,7 +1338,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == T7PL)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
@@ -1533,6 +1556,16 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				pDlg->AddData(penInfo);
 		}
 		break;
+	case ROBOT_MASS_MAC:
+		{
+			CString str;
+			str.Format(_T("index:%d "),report.reserved);
+			TRACE(str);
+			str.Format(_T("%02X%02X%02X%02X%02X%02X"),report.payload[0],report.payload[1],report.payload[2],report.payload[3],report.payload[4],report.payload[5]);
+			TRACE(str);
+			TRACE("\r\n");
+		}
+		break;
 	case  ROBOT_SHOW_PAGE:
 		{
 			PAGE_INFO pageInfo = {0};
@@ -1637,9 +1670,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_EDIT_CLASS)->SetWindowText(str);
 			str.Format(_T("%d"),info.device_num);
 			GetDlgItem(IDC_EDIT_DEV)->SetWindowText(str);
-
+#ifdef _WIFI
 			str.Format(_T("%02X%02X%02X%02X%02X%02X"),info.mac[0],info.mac[1],info.mac[2],info.mac[3],info.mac[4],info.mac[5]);
-			//GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+#endif
 		}
 		break;			
 	case ROBOT_ONLINE_STATUS://在线状态
@@ -1714,7 +1748,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-			if (m_nDeviceType == T7B_HF)
+			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E)
 			{
 				switch(penInfo.nStatus)
 				{
@@ -1894,6 +1928,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	case ROBOT_SET_CLASS_PWD:
 	case ROBOT_SET_STUDENT_ID:
 	case ROBOT_UPDATE_WIFI:
+	case ROBOT_SET_SECRET:
 		this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
 		break;
 	case ROBOT_UPDATE_SEARCH:
@@ -2590,4 +2625,14 @@ void CUSBHelperDlg::OnBnClickedButtonSet4()
 		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
 	}
 	GetInstance()->SetPwd(buffer);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSet5()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_EDIT_SECRET)->GetWindowText(str);
+	char *buffer = WideStrToMultiStr(str.GetBuffer());
+	GetInstance()->SetSecret((unsigned char*)buffer);
 }

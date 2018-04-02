@@ -36,6 +36,7 @@ enum eRbtType
 	SwitchMode,
 	UpdateSearch,
 	UpdateWifi,
+	GetMassMac,
 };
 
 //回调函数
@@ -154,6 +155,11 @@ public:
 	virtual void onX8Mac(uint8_t *mac){
 		(void)mac;
 	}
+	//2.4g mac事件
+	virtual void onMassMac(int index,uint8_t *mac){
+		(void)index;
+		(void)mac;
+	}
 	//////////////////////////////dongle//////////////////////
 	//Dongle状态事件
 	virtual void onDongleStatus(eDongleStatus status,int mode) {
@@ -220,6 +226,11 @@ public:
 	virtual void onSetPwd(int result,unsigned char *pwd) {
 		(void)result;
 		(void)pwd;
+	}
+	//设置密码
+	virtual void onSetSecret(int result,unsigned char *secret) {
+		(void)result;
+		(void)secret;
 	}
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,float speed,int status){
@@ -304,6 +315,8 @@ public:
 	virtual void SetStudentID(unsigned char *id,int len) = 0;
 	//设置密码
 	virtual void SetPwd(unsigned char *pwd) = 0;
+	//设置Secret
+	virtual void SetSecret(unsigned char *sercet) = 0;
 };
 
 //初始化 回调
@@ -372,6 +385,8 @@ extern "C" ROBOT_API void SetClassPwd(unsigned char *pwd,int len);
 extern "C" ROBOT_API void SetStudentID(unsigned char *id,int len);
 //设置密码
 extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
+//设置Secret
+extern "C" ROBOT_API void SetSecret(unsigned char *sercet);
 //获取当前设备类型
 extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
 

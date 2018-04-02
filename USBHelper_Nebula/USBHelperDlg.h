@@ -148,4 +148,5 @@ public:
 	afx_msg void OnBnClickedButtonSearch();
 	afx_msg void OnBnClickedButtonUpdate();
 	afx_msg void OnBnClickedButtonSet4();
+	afx_msg void OnBnClickedButtonSet5();
 };

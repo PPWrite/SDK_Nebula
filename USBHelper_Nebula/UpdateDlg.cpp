@@ -63,7 +63,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 
 		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL
 			|| m_nDeviceType == T9E || m_nDeviceType == T8B || m_nDeviceType == T9B_YD 
-			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C)
+			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
 		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
@@ -84,7 +84,8 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 	if(dlg.DoModal() == IDOK)  
 	{
 		CString strFileName = dlg.GetFileName();
-		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD || m_nDeviceType == T8C)
+		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
+			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 		{
 			if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 			{
@@ -136,7 +137,8 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 	if(dlg.DoModal() == IDOK)  
 	{  
 		CString strFileName = dlg.GetFileName();
-		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD || m_nDeviceType == T8C)
+		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
+			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 		{
 			if(strFileName.MakeLower().Find(_T("ble")) < 0)
 			{
@@ -246,7 +248,8 @@ BOOL CUpdateDlg::OnInitDialog()
 void CUpdateDlg::OnBnClickedButton4Stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD || m_nDeviceType == T8C)
+	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
 	else if(m_nDeviceType == Gateway)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
@@ -342,7 +345,8 @@ bool CUpdateDlg::IsNeedUpdate(const ST_VERSION &versionWeb,const ST_VERSION &ver
 void CUpdateDlg::SetUpgradeType(int nDeviceType)
 {
 	m_nDeviceType = nDeviceType;
-	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD || m_nDeviceType == X8E_A5 || m_nDeviceType == T8C) ? TRUE : FALSE;
+	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
+		|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
@@ -433,7 +437,8 @@ void CUpdateDlg::AutoSetPath()
 		strFileName = ff.GetFileName();
 	}
 
-	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD || m_nDeviceType == T8C)
+	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 	{
 		if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 		{

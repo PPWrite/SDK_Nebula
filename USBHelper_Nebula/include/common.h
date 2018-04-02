@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.2"
+#define FILEVERSION "1.1.4.4"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -27,9 +27,12 @@ enum eDevicePid
 	T9B_YD_PID	=	0x601f,
 	T7B_HF_PID	=	0x6020,
 	X8E_A5_PID	=	0x6021,
+	T9W_PID		=	0x6022,
 	T8C_PID		=	0x6023,
 	T7E_PID		=	0x6025,
 	T7E_HFHH_PID=	0x6026,
+	P1_CX_M3_PID=   0x6028,
+	T9W_TY_PID	=	0x602a,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -75,6 +78,10 @@ enum eDeviceType
 	S7_SD,
 	T7E,
 	T7E_HFHH,
+	S7_JD_M3,
+	P1_CX_M3,
+	T9A_EN,
+	T9W_TY,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -278,8 +285,10 @@ enum eRobotCmd
 	ROBOT_SET_CLASS_SSID,						//设置班级ssid
 	ROBOT_SET_CLASS_PWD,						//设置班级password
 	ROBOT_SET_STUDENT_ID,						//设置学生id
+	ROBOT_SET_SECRET,							//设置Secret
 	ROBOT_UPDATE_SEARCH,						//升级查询
 	ROBOT_UPDATE_WIFI,							//升级wifi
+	ROBOT_MASS_MAC,								//上报mac地址
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本
