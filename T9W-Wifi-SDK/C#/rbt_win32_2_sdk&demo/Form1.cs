@@ -132,6 +132,7 @@ namespace rbt_win32_2_demo
         {
             if (this.button_start_stop.Text == "开始")
             {
+                GC.Collect();
                 bool bStartRes = rbtnet_.start();
                 if (!bStartRes) {
                     MessageBox.Show("启动失败");

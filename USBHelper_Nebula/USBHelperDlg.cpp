@@ -27,9 +27,9 @@
 //#define _CY
 
 //#define TEST_COUNT
-//#define TEST_T7E
+#define TEST_T7E
 
-#define USE_POWER
+//#define USE_POWER
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -444,7 +444,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	//==========================优化笔记设置======================
-	GetInstance()->SetPenWidth(1.2);
+	/*GetInstance()->SetPenWidth(1.2);
 	GetInstance()->SetPressStatus(false);
 	GetInstance()->SetOptimizeStatus(true);//*/
 
