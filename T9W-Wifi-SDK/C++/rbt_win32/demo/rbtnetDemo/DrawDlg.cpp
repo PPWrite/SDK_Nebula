@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include <algorithm>
 
+
 // CDrawDlg 对话框
 
 IMPLEMENT_DYNAMIC(CDrawDlg, CDialog)
@@ -83,9 +84,12 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 {
 	CPoint point(ux, uy);
 	//Clear(point);
-	/*CString str;
-	str.Format(_T("X:%d-Y:%d-Press:%d"),penInfo.nX,penInfo.nY,penInfo.nPress);
-	WriteLog(str);//*/
+	CString str;
+	str.Format(_T("X:%d-Y:%d-Press:%d-Status:%d"), ux, uy, up, us);
+	if (us == 0)
+		str += "===============================";
+	TRACE(str + "\r\n");
+	WriteLog(str);
 	if (m_nState == 90)
 	{
 		point.SetPoint(m_nHeight - uy, ux);
@@ -129,13 +133,29 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	}
 	return;//*/
 
-	if (up == 0 && m_nFlags == 1)// 笔离开板子
+	if (us == 17)
 	{
-#ifdef USE_FILE
-		if (m_pageInfo.page_num > 0)
-			SaveData(m_pageInfo, m_vecPenInfo);
-		m_vecPenInfo.clear();
-#endif
+		// 笔接触到板子
+		if (m_nFlags == 0)
+		{
+			m_nFlags = 1;
+			compressPoint(point);
+			onbegin(point);
+		}
+		else
+		{
+			compressPoint(point);
+			onDrawing(point);
+		}
+	}
+	else
+	{
+		endTrack(true);
+		m_nFlags = 0;
+	}
+
+	/*if (up == 0 && m_nFlags == 1)// 笔离开板子
+	{
 		endTrack(true);
 		m_nFlags = 0;
 	}
@@ -153,11 +173,12 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 			compressPoint(point);
 			onDrawing(point);
 		}
-	}
+	}//*/
 }
 
 void CDrawDlg::Clear()
 {
+	m_nFlags = 0;
 	m_currentItem.lstPoint.clear();
 	m_listItems.clear();
 	Invalidate();

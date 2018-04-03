@@ -1550,7 +1550,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	case ROBOT_MASS_MAC:
 		{
 			CString str;
-			str.Format(_T("index:%d "),report.reserved);
+			str.Format(_T("index:%d "),report.reserved+1);
 			TRACE(str);
 			str.Format(_T("%02X%02X%02X%02X%02X%02X"),report.payload[0],report.payload[1],report.payload[2],report.payload[3],report.payload[4],report.payload[5]);
 			TRACE(str);
@@ -2051,6 +2051,10 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+
+			/*CString str;
+			str.Format(_T("Ñ¹¸Ð£º%d"),penInfo.nPress);
+			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);//*/
 
 			m_list[0]->AddData(penInfo);
 		}

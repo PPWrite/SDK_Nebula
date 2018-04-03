@@ -26,7 +26,7 @@
 #include <vector>
 #include <Dbt.h>
 #include <stdint.h>
-
+#include "Functions.h"
 
 #include <gdiplus.h>
 using namespace Gdiplus;

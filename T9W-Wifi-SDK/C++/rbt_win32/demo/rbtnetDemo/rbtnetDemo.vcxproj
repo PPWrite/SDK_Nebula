@@ -195,6 +195,7 @@
   <ItemGroup>
     <ClInclude Include="ConfigDlg.h" />
     <ClInclude Include="DrawDlg.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="rbtnetDemo.h" />
     <ClInclude Include="rbtnetDemoDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -205,6 +206,7 @@
   <ItemGroup>
     <ClCompile Include="ConfigDlg.cpp" />
     <ClCompile Include="DrawDlg.cpp" />
+    <ClCompile Include="Functions.cpp" />
     <ClCompile Include="rbtnetDemo.cpp" />
     <ClCompile Include="rbtnetDemoDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
