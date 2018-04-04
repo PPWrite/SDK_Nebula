@@ -111,15 +111,6 @@ BOOL CRobotpenWifiDemoDlg::OnInitDialog()
 
 	InitListCtrl();
 
-	Init_Options opts = {mqtt_onConnectResult,mqtt_onPushJob,mqtt_onStartdAnswer,mqtt_onStopAnswer,mqtt_onFinishedAnswer,this};
-	returnCode code = handle.init(&opts);
-	if (eOk != code)
-	{
-		CString str;
-		str.Format(_T("Init failed,ErrorCode:%s"),GetErrorMsg(code));
-		AfxMessageBox(str);
-	}
-
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
 
@@ -180,6 +171,11 @@ void CRobotpenWifiDemoDlg::mqtt_onConnectResult(void* context, MqttConnect_Data*
 	TRACE(_T("mqtt_onConnectResult\n"));
 }
 
+void CRobotpenWifiDemoDlg::mqtt_onSubcribeResult( void* context, MqttConnect_Data* response )
+{
+	TRACE(_T("mqtt_onSubcribeResult\n"));
+}
+
 void CRobotpenWifiDemoDlg::mqtt_onPushJob(void* conect, std::string& strNoteKey, std::string& strTarget)
 {
 	TRACE(_T("mqtt_onPushJob\n"));
@@ -214,13 +210,13 @@ void CRobotpenWifiDemoDlg::OnBnClickedButtonStart()
 
 	pListView->DeleteAllItems();
 
-	returnCode code = handle.loginMqttServer();
+	Init_Options opts = {mqtt_onConnectResult,mqtt_onSubcribeResult, mqtt_onPushJob,mqtt_onStartdAnswer,mqtt_onStopAnswer,mqtt_onFinishedAnswer,this};
+	returnCode code = handle.init(&opts);
 	if (eOk != code)
 	{
 		CString str;
-		str.Format(_T("loginMqttServer failed,ErrorCode:%s"),GetErrorMsg(code));
+		str.Format(_T("Init failed,ErrorCode:%s"),GetErrorMsg(code));
 		AfxMessageBox(str);
-		return;
 	}
 
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);

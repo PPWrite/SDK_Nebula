@@ -48,6 +48,8 @@ public:
 
 	void cleaupJson(char* p);
 
+	std::string getLocalMac();
+
 public:
 
 private:

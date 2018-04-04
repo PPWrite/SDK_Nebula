@@ -37,6 +37,7 @@ typedef struct _MqttConnect_Data
 }MqttConnect_Data;
 
 typedef void mqtt_onConnectResult(void* context, MqttConnect_Data* response);
+typedef void mqtt_onSubscribeResult(void* context, MqttConnect_Data* response);
 typedef void mqtt_onPushJob(void* conect, std::string& strNoteKey, std::string& strTarget);
 typedef void mqtt_onStartdAnswer(void* context);
 typedef void mqtt_onStopAnswer(void* context);
@@ -44,6 +45,7 @@ typedef void mqtt_onFinishedAnswer();
 
 typedef struct _Init_Options {
 	mqtt_onConnectResult* onConnectResult;
+	mqtt_onSubscribeResult* onSubscribeResult;
 	mqtt_onPushJob* onPushJob;
 	mqtt_onStartdAnswer* onStartAnswer;
 	mqtt_onStopAnswer* onStopAnswer;
