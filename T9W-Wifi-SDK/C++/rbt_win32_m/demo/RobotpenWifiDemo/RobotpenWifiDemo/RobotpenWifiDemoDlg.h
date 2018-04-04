@@ -32,6 +32,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	static void mqtt_onConnectResult(void* context, MqttConnect_Data* response);
+	static void mqtt_onSubcribeResult(void* context, MqttConnect_Data* response);
 	static void mqtt_onPushJob(void* conect, std::string& strNoteKey, std::string& strTarget);
 	static void mqtt_onStartdAnswer(void* context);
 	static void mqtt_onStopAnswer(void* context);
