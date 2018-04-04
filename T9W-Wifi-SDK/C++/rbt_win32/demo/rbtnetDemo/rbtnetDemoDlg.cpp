@@ -136,6 +136,10 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	initCbFunction();
 	initListControl();
 
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("主观题"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
+
 	m_bRun = true;
 	AfxBeginThread(ThreadProc, this);
 
@@ -467,12 +471,20 @@ void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 void CrbtnetDemoDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
+	
 	CString csBtnText;
 	GetDlgItemText(IDC_BUTTON1, csBtnText);
 	if (csBtnText == _T("开始答题")) {
 		int totalTopic = 3;
 		char pTopicType[3] = { 1,2,3 };
-		bool bSendRes = rbt_win_send_startanswer(totalTopic, pTopicType);
+		bool bSendRes = false;
+		//0为主观题,1为客观题
+		if (index == 1)
+			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
+		else
+			bSendRes = rbt_win_send_startanswer(index, 0, NULL);
+
 		if (!bSendRes) {
 			MessageBox(_T("开启答题失败"));
 			return;

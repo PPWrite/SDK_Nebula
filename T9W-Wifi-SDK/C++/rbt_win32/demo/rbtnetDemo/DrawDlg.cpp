@@ -88,7 +88,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	str.Format(_T("X:%d-Y:%d-Press:%d-Status:%d"), ux, uy, up, us);
 	if (us == 0)
 		str += "===============================";
-	TRACE(str + "\r\n");
+	//TRACE(str + "\r\n");
 	WriteLog(str);
 	if (m_nState == 90)
 	{

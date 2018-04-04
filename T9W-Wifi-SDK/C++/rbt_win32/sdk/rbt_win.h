@@ -11,7 +11,7 @@ extern "C" {
 	void rbt_win_uninit();
 
 	void rbt_win_send(sendCmdID cmdId);
-	bool rbt_win_send_startanswer(int totalTopic, char* pTopicType);
+	bool rbt_win_send_startanswer(int type,int totalTopic, char* pTopicType);
 	bool rbt_win_send_stopanswer();
 	bool rbt_win_start();
 	void rbt_win_stop();

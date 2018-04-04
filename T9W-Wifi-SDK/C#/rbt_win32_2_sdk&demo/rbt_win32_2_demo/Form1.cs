@@ -37,6 +37,9 @@ namespace rbt_win32_2_demo
             param.listenCount = 60;
             rbtnet_.init(ref param);
 
+            comboBox1.Items.Add("主观题");
+            comboBox1.Items.Add("客观题");
+            comboBox1.SelectedIndex = 0;
             /*
             * 所有事件响应接口都是在内部SDK线程中上报出来
             */
@@ -169,7 +172,18 @@ namespace rbt_win32_2_demo
                 IntPtr ptr = Marshal.AllocHGlobal(totalTopic);
                 Marshal.Copy(topicType, 0, ptr, totalTopic);
 
-                if (rbtnet_.sendStartAnswer(totalTopic,ptr))
+                int index = comboBox1.SelectedIndex;
+                bool bRes = false;
+                if(index == 0)
+                {
+                    bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
+                }
+                else
+                {
+                    bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr);
+                }
+
+                if (bRes)
                 {
                     this.button_answer.Text = "结束答题";
                 }
