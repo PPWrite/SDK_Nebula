@@ -13,13 +13,13 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180329")
+#define _VERSION  _T("版本号:20180411")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
-#define _GATEWAY
-//#define _NODE
+//#define _GATEWAY
+#define _NODE
 //#define _DONGLE
 //#define _P1
 //#define _WIFI
@@ -30,7 +30,7 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-//#define USE_OPTIMIZE
+#define USE_OPTIMIZE
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -450,12 +450,13 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetCanvasSize(960,669);//*/
 
 	//==========================优化笔记设置======================
-	/*GetInstance()->SetPenWidth(1.2);
 #ifdef USE_OPTIMIZE
 	GetInstance()->SetPenWidth(2);
-	GetInstance()->SetPressStatus(false);
+	//开启压感
+	GetInstance()->SetPressStatus(true);
+	//开启笔记优化
 	GetInstance()->SetOptimizeStatus(true);
-#endif*/
+#endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -613,7 +614,7 @@ void CUSBHelperDlg::openT7E()
 			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 			OnBnClickedButton3Open();
 
-			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3)
+			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE)
 			{
 				SetTimer(1,1000,NULL);
 			}
@@ -711,7 +712,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -745,7 +746,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -1329,7 +1330,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
@@ -1561,6 +1562,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		{
 			PAGE_INFO pageInfo = {0};
 			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
+			int id = 0;
+			memcpy(&id,&pageInfo,sizeof(pageInfo));
+			TRACE("ROBOT_SHOW_PAGE:%02x",id);
 
 			if (report.reserved >= m_list.size())
 			{
@@ -1739,7 +1743,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E)
+			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
 			{
 				switch(penInfo.nStatus)
 				{
@@ -1889,7 +1893,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		{
 			PEN_INFOF penInfof = {0};
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
-			TRACE(_T("Robot X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
+			TRACE(_T("OPTIMIZE X:%d-Y:%d-Status:%d-Width:%.2f-Speed:%.2f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth,penInfof.fSpeed);
 
 			PEN_INFO penInfo = {0};
 			penInfo.nX = penInfof.nX;

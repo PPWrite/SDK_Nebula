@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.4"
+#define FILEVERSION "1.1.4.5"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -33,6 +33,7 @@ enum eDevicePid
 	T7E_HFHH_PID=	0x6026,
 	P1_CX_M3_PID=   0x6028,
 	T9W_TY_PID	=	0x602a,
+	S1_DE_PID	=	0x602c,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -82,6 +83,8 @@ enum eDeviceType
 	P1_CX_M3,
 	T9A_EN,
 	T9W_TY,
+	T9B_YD2,
+	S1_DE,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -182,7 +185,7 @@ typedef struct st_note_header_info
 typedef struct page_info
 {
 	uint8_t page_num : 8;
-	uint8_t note_num : 6;
+	uint16_t note_num : 9;
 	bool operator==(page_info &pageInfo) const
 	{
 		if (pageInfo.page_num == this->page_num

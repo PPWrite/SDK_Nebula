@@ -17,7 +17,9 @@ extern "C" {
 	void rbt_win_stop();
 	void rbt_win_config_stu(const char *mac, const char *stu);
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *stu, const char *source);
-	int rbt_win_config_net(const char *ip, int port, bool mqtt, bool tcp, const char *source);
+	int rbt_win_config_net(const char *group, const char *ip, int port, bool mqtt, bool tcp, const char *source);
+	void rbt_win_config_freq(int freq);
+	void rbt_win_config_sleep(int mins);
 
 #ifdef __cplusplus
 }

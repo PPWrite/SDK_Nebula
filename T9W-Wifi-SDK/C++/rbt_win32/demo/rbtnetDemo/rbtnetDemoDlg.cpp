@@ -91,6 +91,9 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMRClickListConnect)
 	ON_COMMAND(ID_SETTING_STU, &CrbtnetDemoDlg::OnSettingStu)
 	ON_BN_CLICKED(IDC_BUTTON_SWITCH, &CrbtnetDemoDlg::OnBnClickedButtonSwitch)
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_SET, &CrbtnetDemoDlg::OnBnClickedButtonSet)
+	ON_BN_CLICKED(IDC_BUTTON_SET_SLEEP, &CrbtnetDemoDlg::OnBnClickedButtonSetSleep)
 END_MESSAGE_MAP()
 
 
@@ -140,8 +143,27 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 
+
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->InsertString(0, _T("不抛点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->InsertString(1, _T("5个点抛1个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->InsertString(2, _T("5个点抛2个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->InsertString(3, _T("5个点抛3个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->InsertString(4, _T("5个点抛4个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO3))->SetCurSel(0);
+
+	GetDlgItem(IDC_EDIT_GROUP)->SetWindowText(_T("224.0.1.251"));
+
 	m_bRun = true;
 	AfxBeginThread(ThreadProc, this);
+
+
+	/*((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(2, _T("学而思"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(2);
+	GetDlgItem(IDC_COMBO2)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_GROUP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_GROUP)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_STATIC_TYPE)->ShowWindow(SW_HIDE);;//*/
+
 
 	GetLocalAddress();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -409,7 +431,7 @@ void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort
 void CrbtnetDemoDlg::onDeviceMac(rbt_win_context* context, const char* pMac)
 {
 	USES_CONVERSION;
-	WriteLog(A2T(pMac),true);;
+	WriteLog(A2T(pMac), true);;
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)pMac);
 }
@@ -472,18 +494,38 @@ void CrbtnetDemoDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
-	
+
 	CString csBtnText;
 	GetDlgItemText(IDC_BUTTON1, csBtnText);
 	if (csBtnText == _T("开始答题")) {
-		int totalTopic = 3;
-		char pTopicType[3] = { 1,2,3 };
+
 		bool bSendRes = false;
 		//0为主观题,1为客观题
-		if (index == 1)
-			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
-		else
+		switch (index)
+		{
+		case 0:
+		{
 			bSendRes = rbt_win_send_startanswer(index, 0, NULL);
+
+		}
+		break;
+		case 1:
+		{
+			int totalTopic = 3;
+			char pTopicType[3] = { 1,2,3 };
+			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
+		}
+		break;
+		case 2:
+		{
+			int totalTopic = 1;
+			char pTopicType[1] = { 5 };
+			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
+		}
+		break;
+		default:
+			break;
+		}
 
 		if (!bSendRes) {
 			MessageBox(_T("开启答题失败"));
@@ -802,10 +844,28 @@ void CrbtnetDemoDlg::OnSettingStu()
 void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+	CString strGroup;
+	GetDlgItem(IDC_EDIT_GROUP)->GetWindowText(strGroup);
 	CString strIP;
 	GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
 	USES_CONVERSION;
-	rbt_win_config_net(T2A(strIP), 6001, false, true, "");
+	rbt_win_config_net(T2A(strGroup), T2A(strIP), 6001, false, true, "");
+
+	return;
+
+	CString str;
+	GetDlgItem(IDC_BUTTON_SWITCH)->GetWindowText(str);
+	if (str == _T("开始切换"))
+	{
+		GetDlgItem(IDC_BUTTON_SWITCH)->SetWindowText(_T("停止切换"));
+		SetTimer(0, 10, NULL);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_SWITCH)->SetWindowText(_T("开始切换"));
+		KillTimer(0);
+	}
 }
 
 bool CrbtnetDemoDlg::GetLocalAddress()
@@ -865,4 +925,45 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 	{
 		delete pIpAdapterInfo;
 	}
+}
+
+
+void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	switch (nIDEvent)
+	{
+	case 0:
+	{
+		CString strGroup;
+		GetDlgItem(IDC_EDIT_GROUP)->GetWindowText(strGroup);
+		CString strIP;
+		GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
+		USES_CONVERSION;
+		rbt_win_config_net(T2A(strGroup), T2A(strIP), 6001, false, true, "");
+	}
+	break;
+	default:
+		break;
+	}
+
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CrbtnetDemoDlg::OnBnClickedButtonSet()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int index = ((CComboBox*)GetDlgItem(IDC_COMBO3))->GetCurSel();
+	rbt_win_config_freq(index);
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonSetSleep()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_EDIT_SLEEP)->GetWindowText(str);
+	USES_CONVERSION;
+	rbt_win_config_sleep(atoi(T2A(str)));
 }
