@@ -237,7 +237,7 @@ namespace rbt_win32_2_demo
                 this.listView1.Items[nItemCount].SubItems.Add("");
 
                 if (!dicMac2DrawForm_.ContainsKey(strMac)) {
-                    dicMac2DrawForm_.Add(strMac, null/*new drawForm()*/);
+                    dicMac2DrawForm_.Add(strMac, new drawForm());
                 }
             }
         }
