@@ -472,7 +472,9 @@ void CrbtnetDemoDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
-	
+	static int iTest = 0; 
+	++iTest;
+
 	CString csBtnText;
 	GetDlgItemText(IDC_BUTTON1, csBtnText);
 	if (csBtnText == _T("开始答题")) {
@@ -490,8 +492,7 @@ void CrbtnetDemoDlg::OnBnClickedButton1()
 			return;
 		}
 		SetDlgItemText(IDC_BUTTON1, _T("停止答题"));
-	}
-	else {
+	} else {
 		bool bSendRes = rbt_win_send_stopanswer();
 		if (!bSendRes) {
 			MessageBox(_T("结束答题失败"));
