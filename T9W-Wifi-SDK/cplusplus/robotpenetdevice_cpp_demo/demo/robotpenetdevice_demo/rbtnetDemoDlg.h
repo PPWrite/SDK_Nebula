@@ -95,7 +95,4 @@ public:
 	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 
 	bool GetLocalAddress();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnBnClickedButtonSet();
-	afx_msg void OnBnClickedButtonSetSleep();
 };

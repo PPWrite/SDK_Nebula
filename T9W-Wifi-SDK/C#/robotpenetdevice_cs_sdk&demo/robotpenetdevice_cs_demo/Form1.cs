@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using rbt_win32_2;
+using robotpenetdevice_cs;
 using System.Runtime.InteropServices;
 
 namespace rbt_win32_2_demo
@@ -141,7 +141,6 @@ namespace rbt_win32_2_demo
         {
             if (this.button_start_stop.Text == "开始")
             {
-                GC.Collect();
                 bool bStartRes = rbtnet_.start();
                 if (!bStartRes) {
                     MessageBox.Show("启动失败");
@@ -206,6 +205,7 @@ namespace rbt_win32_2_demo
         /// <param name="strMac"></param>
         private delegate void updateDeviceMac(string strMac);
         private Dictionary<string, drawForm> dicMac2DrawForm_ = new Dictionary<string, drawForm>();
+        private static updateDeviceMac d;
         public void updateDeviceMacListView_Mac(string strMac) {
             if (this.listView1.InvokeRequired)
             {
@@ -216,7 +216,7 @@ namespace rbt_win32_2_demo
                         return;
                     }
                 }
-                updateDeviceMac d = new updateDeviceMac(updateDeviceMacListView_Mac);
+                d = new updateDeviceMac(updateDeviceMacListView_Mac);
                 this.listView1.Invoke(d, new object[] { strMac });
             }
             else
@@ -237,7 +237,7 @@ namespace rbt_win32_2_demo
                 this.listView1.Items[nItemCount].SubItems.Add("");
 
                 if (!dicMac2DrawForm_.ContainsKey(strMac)) {
-                    dicMac2DrawForm_.Add(strMac, new drawForm());
+                    dicMac2DrawForm_.Add(strMac, null/*new drawForm()*/);
                 }
             }
         }
@@ -541,7 +541,7 @@ namespace rbt_win32_2_demo
         private void button_switch_Click(object sender, EventArgs e)
         {
             string strIP = textBox1.Text;
-            rbtnet_.configNet(strIP, 6001, false, true, "");
+            rbtnet_.configNet("", strIP, 6001, false, true, "");
         }
     }
 }

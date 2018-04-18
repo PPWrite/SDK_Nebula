@@ -5,60 +5,60 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace rbt_win32_2
+namespace robotpenetdevice_cs
 {
     public class RbtNet
     {
         // 声明dll 函数接口
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_init(ref Init_Param arg);   // 初始化
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_uninit();     // 反初始化
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType);     // 发送开始答题命令
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_send_stopanswer();   // 结束答题命令
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_start();   // 开启监听
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_stop();   // 停止监听
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_config_stu(string strDeviceMac, string strDeviceStu);
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceStu, string strDeviceSrc);
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int rbt_win_config_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int rbt_win_config_net(string strGroup, string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_origindata_cb(onOriginData arg);   // 设备坐标上报函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devivedisconnect_cb(onDeviceDisconnect arg);   // 设备断开连接函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicekeypress_cb(onDeviceKeyPress arg);   // 设备按键函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_deviceshowpage_cb(onDeviceShowPage arg);   // 设备页码识别函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult arg);   // 设备选择题结果函数地址
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicename_cb(onDeviceName arg);  
 
-        [DllImport("rbt_win32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicenameresult_cb(onDeviceNameResult arg);  
 
 
@@ -75,6 +75,7 @@ namespace rbt_win32_2
         // 用于存储this对象主要保证该变量的生命周期
         private GCHandle gchandld;
         private IntPtr iPtrThis_ = IntPtr.Zero;
+        private static onDeviceMac ondevicemac;
 
         // 构造函数
         public RbtNet() {
@@ -142,6 +143,7 @@ namespace rbt_win32_2
             {
                 rbtNetThis.deviceNameResult_(ctx, strDeviceMac,res,strDeviceName);
             }
+           // thisHandle.Free();
         }
 
         /// <summary>
@@ -219,7 +221,8 @@ namespace rbt_win32_2
             rbt_win_init(ref arg);
 
             rbt_win_set_origindata_cb(originDataNotify);
-            rbt_win_set_devicemac_cb(deviceMacNotify);
+            ondevicemac = new onDeviceMac(deviceMacNotify);
+            rbt_win_set_devicemac_cb(ondevicemac);
             rbt_win_set_devicekeypress_cb(deviceKeyPress);
             rbt_win_set_deviceshowpage_cb(deviceShowPage);
             rbt_win_set_devivedisconnect_cb(deviceDisconnect);
@@ -231,6 +234,7 @@ namespace rbt_win32_2
         // 反初始化
         public void unInit() {
              rbt_win_uninit();
+            gchandld.Free();
         }
 
         /// <summary>
@@ -284,9 +288,9 @@ namespace rbt_win32_2
         /// <summary>
         /// 配网
         /// </summary>
-        public int configNet(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
+        public int configNet(string strGroup, string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
         {
-            return rbt_win_config_net(strIP, nPort, bMQTT, bTCP, strDeviceSrc);
+            return rbt_win_config_net(strGroup, strIP, nPort, bMQTT, bTCP, strDeviceSrc);
         }
     }
 }

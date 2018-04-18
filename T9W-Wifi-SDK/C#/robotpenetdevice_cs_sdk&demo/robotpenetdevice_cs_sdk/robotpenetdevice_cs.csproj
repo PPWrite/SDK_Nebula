@@ -7,8 +7,8 @@
     <ProjectGuid>{4201F1BD-B18F-41CD-A575-9DBCDCD699A4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>rbt_win32_2</RootNamespace>
-    <AssemblyName>rbt_win32_2</AssemblyName>
+    <RootNamespace>robotpenetdevice_cs</RootNamespace>
+    <AssemblyName>robotpenetdevice_cs</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -59,8 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="rbt_win32_2.cs" />
-    <Compile Include="rbt_win32_2_entity.cs" />
+    <Compile Include="robotpenetdevice.cs" />
+    <Compile Include="robotpenetdevice_entity.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

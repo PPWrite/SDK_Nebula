@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace rbt_win32_2
+namespace robotpenetdevice_cs
 {
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, System.String strDeviceMac);

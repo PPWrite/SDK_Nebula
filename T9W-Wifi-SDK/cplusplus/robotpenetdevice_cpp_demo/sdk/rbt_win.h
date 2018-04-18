@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 	// ≥ı ºªØ
-	void rbt_win_init(Init_Param* arg);
+	bool rbt_win_init(Init_Param* arg);
 	void rbt_win_uninit();
 
 	void rbt_win_send(sendCmdID cmdId);
