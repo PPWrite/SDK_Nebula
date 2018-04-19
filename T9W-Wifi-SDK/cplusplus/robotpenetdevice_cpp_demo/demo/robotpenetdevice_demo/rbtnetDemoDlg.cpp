@@ -1,7 +1,6 @@
 
 // rbtnetDemoDlg.cpp : 实现文件
 //
-
 #include "stdafx.h"
 #include "rbtnetDemo.h"
 #include "rbtnetDemoDlg.h"
@@ -12,9 +11,9 @@
 #include <Iphlpapi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
+// #ifdef _DEBUG
+// #define new DEBUG_NEW
+// #endif
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -99,7 +98,6 @@ END_MESSAGE_MAP()
 BOOL CrbtnetDemoDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
 	// 将“关于...”菜单项添加到系统菜单中。
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
@@ -136,13 +134,12 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	initCbFunction();
 	initListControl();
 
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("主观题"));
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
-
 	m_bRun = true;
 	AfxBeginThread(ThreadProc, this);
 
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("主观题"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 	GetLocalAddress();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -248,6 +245,11 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, A2T(p));
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
+		if (m_device2draw.find(p) != m_device2draw.end()) {
+			delete m_device2draw[p];
+			m_device2draw[p] = NULL;
+		}
+
 		m_device2draw[p] = new CDrawDlg();
 		m_device2draw[p]->Create(IDD_DRAWDLG);
 		m_device2draw[p]->ShowWindow(FALSE);
@@ -275,6 +277,11 @@ HRESULT CrbtnetDemoDlg::recvName(WPARAM wParam, LPARAM lParam)
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, A2T(pMac));
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
+		if (m_device2draw.find(pMac) != m_device2draw.end()) {
+			delete m_device2draw[pMac];
+			m_device2draw[pMac] = NULL;
+		}
+
 		m_device2draw[pMac] = new CDrawDlg();
 		m_device2draw[pMac]->Create(IDD_DRAWDLG);
 		m_device2draw[pMac]->ShowWindow(FALSE);
@@ -344,51 +351,6 @@ void CrbtnetDemoDlg::initCbFunction()
 
 	rbt_win_set_deviceshowpage_cb(onDeviceShowPage);//*/
 
-	/*rbt_win_set_accept_cb([](rbt_win_context* ctx, const char* pIp) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		return;
-		::PostMessage(pThis->m_hWnd, WM_RCV_ACCEPT, 0, (LPARAM)pIp);
-	});
-
-	rbt_win_set_devivedisconnect_cb([](rbt_win_context* ctx, const char* pmac) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		pThis->deviceDisconnect(pmac);
-	});
-
-	rbt_win_set_devicemac_cb([](rbt_win_context* ctx, const char* pMac) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)pMac);
-	});
-
-	rbt_win_set_devicename_cb([](rbt_win_context* ctx, const char* pMac, const char* pName) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		pThis->recvName(pMac, pName);
-	});
-
-	rbt_win_set_devicenameresult_cb([](rbt_win_context* ctx, const char* pMac, int res, const char* pName) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		pThis->recvNameResult(pMac, res, pName);
-	});
-
-	rbt_win_set_origindata_cb([](rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		pThis->recvOriginData(pMac, us, ux, uy, up);
-	});
-
-	rbt_win_set_devicekeypress_cb([](rbt_win_context* ctx, const char* pMac, keyPressEnum value) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
-		pThis->recvKeyPress(pMac, &value);
-	});
-
-	rbt_win_set_deviceanswerresult_cb([](rbt_win_context* context, const char* pMac, unsigned char* pResult, int nSize) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
-		pThis->recvDeviceAnswerResult(pMac, pResult, nSize);
-	});
-
-	rbt_win_set_deviceshowpage_cb([](rbt_win_context* context, const char* pMac, int nNoteId, int nPageId) {
-		CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
-		pThis->recvDeviceShowpage(pMac, nNoteId, nPageId);
-	});//*/
 }
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
@@ -472,9 +434,6 @@ void CrbtnetDemoDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
-	static int iTest = 0; 
-	++iTest;
-
 	CString csBtnText;
 	GetDlgItemText(IDC_BUTTON1, csBtnText);
 	if (csBtnText == _T("开始答题")) {
@@ -733,11 +692,23 @@ void CrbtnetDemoDlg::OnClose()
 	m_bRun = FALSE;
 
 	SetEvent(m_hEvent[1]);
-	Sleep(100);
-
-	::DeleteCriticalSection(&m_sectionLock);
+	Sleep(10);
 	rbt_win_stop();
 	rbt_win_uninit();
+
+	for (int i = 0; i < 2; i++)
+	{
+		CloseHandle(m_hEvent[i]);
+		m_hEvent[i] = nullptr;
+	}
+
+	for (auto it: m_device2draw)
+	{
+		delete it.second;
+		it.second = NULL;
+	}
+	m_device2draw.clear();
+	::DeleteCriticalSection(&m_sectionLock);
 	CDialogEx::OnClose();
 }
 
@@ -818,7 +789,11 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 	std::string strAddress;
 	int nCardNo = 1;
 	//PIP_ADAPTER_INFO结构体指针存储本机网卡信息
-	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();
+	PIP_ADAPTER_INFO pIpAdapterInfo = NULL;
+	PIP_ADAPTER_INFO pIpAdapterInfoEx = NULL;
+	pIpAdapterInfo = new IP_ADAPTER_INFO();
+	pIpAdapterInfoEx = pIpAdapterInfo;
+
 	//得到结构体大小,用于GetAdaptersInfo参数
 	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
 	//调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量;其中stSize参数既是一个输入量也是一个输出量
@@ -833,14 +808,22 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 		//则说明GetAdaptersInfo参数传递的内存空间不够,同时其传出stSize,表示需要的空间大小
 		//这也是说明为什么stSize既是一个输入量也是一个输出量
 		//释放原来的内存空间
-		delete pIpAdapterInfo;
+		if (NULL != pIpAdapterInfo) {
+			delete pIpAdapterInfo;
+			pIpAdapterInfo = NULL;
+			pIpAdapterInfoEx = NULL;
+		}
+
 		//重新申请内存空间用来存储所有网卡信息
 		pIpAdapterInfo = (PIP_ADAPTER_INFO)new BYTE[stSize];
+		pIpAdapterInfoEx = pIpAdapterInfo;
 		//再次调用GetAdaptersInfo函数,填充pIpAdapterInfo指针变量
 		nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);
 	}
+
 	if (ERROR_SUCCESS == nRel)
 	{
+		USES_CONVERSION;
 		//输出网卡信息
 		//可能有多网卡,因此通过循环去判断
 		while (pIpAdapterInfo)
@@ -851,19 +834,20 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 			// 需要注意的是有时可能获取的IP地址是0.0.0.0，这时需要过滤掉
 			if (std::string("0.0.0.0") != strAddress)
 			{
-				USES_CONVERSION;
 				pComboBox->AddString(A2W(strAddress.c_str()));
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;
 		}
+
 		if (pComboBox->GetCount() > 0)
 		{
 			pComboBox->SetCurSel(0);
 		}
 	}
-	//释放内存空间
-	if (pIpAdapterInfo)
+
+	if (pIpAdapterInfoEx != NULL)
 	{
-		delete pIpAdapterInfo;
+		delete pIpAdapterInfoEx;
+		pIpAdapterInfoEx = NULL;
 	}
 }

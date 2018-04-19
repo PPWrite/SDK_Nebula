@@ -1,6 +1,5 @@
 // DrawDlg.cpp : 实现文件
 //
-
 #include "stdafx.h"
 #include "rbtnetDemo.h"
 #include "DrawDlg.h"
@@ -28,6 +27,7 @@ CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
 
 CDrawDlg::~CDrawDlg()
 {
+	m_listItems.clear();
 }
 
 void CDrawDlg::onRecvData(const PEN_INFO& penInfo)
