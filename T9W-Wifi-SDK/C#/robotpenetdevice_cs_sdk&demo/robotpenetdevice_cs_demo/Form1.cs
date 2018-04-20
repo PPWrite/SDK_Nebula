@@ -433,7 +433,7 @@ namespace rbt_win32_2_demo
                     }
                 }
                 updateDeviceMac_AnswerResult d = new updateDeviceMac_AnswerResult(updateDeviceMacListView_AnswerResult);
-                this.listView1.Invoke(d, new object[] { strMac, strResult });
+                this.listView1.Invoke(d, new object[] { strMac, resID, strResult });
             }
             else
             {

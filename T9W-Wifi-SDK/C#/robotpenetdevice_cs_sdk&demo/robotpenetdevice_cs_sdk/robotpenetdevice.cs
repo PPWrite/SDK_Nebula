@@ -76,6 +76,12 @@ namespace robotpenetdevice_cs
         private GCHandle gchandld;
         private IntPtr iPtrThis_ = IntPtr.Zero;
         private static onDeviceMac ondevicemac;
+        private static onOriginData onorigindata;
+        private static onDeviceAnswerResult ondeviceanswerresult;
+        private static onDeviceKeyPress ondevicekeyPress = null;
+        private static onDeviceShowPage ondeviceshowpage = null;
+        private static onDeviceNameResult ondevicenameresult = null;
+        private static onDeviceName ondevicename = null;
 
         // 构造函数
         public RbtNet() {
@@ -220,15 +226,21 @@ namespace robotpenetdevice_cs
             arg.ctx = iPtrThis_;
             rbt_win_init(ref arg);
 
-            rbt_win_set_origindata_cb(originDataNotify);
+            onorigindata = new onOriginData(originDataNotify);
+            rbt_win_set_origindata_cb(onorigindata);
             ondevicemac = new onDeviceMac(deviceMacNotify);
             rbt_win_set_devicemac_cb(ondevicemac);
-            rbt_win_set_devicekeypress_cb(deviceKeyPress);
-            rbt_win_set_deviceshowpage_cb(deviceShowPage);
+            ondevicekeyPress = new onDeviceKeyPress(deviceKeyPress);
+            rbt_win_set_devicekeypress_cb(ondevicekeyPress);
+            ondeviceshowpage = new onDeviceShowPage(deviceShowPage);
+            rbt_win_set_deviceshowpage_cb(ondeviceshowpage);
             rbt_win_set_devivedisconnect_cb(deviceDisconnect);
-            rbt_win_set_deviceanswerresult_cb(deviceAnswerResult);
-            rbt_win_set_devicename_cb(deviceNameNotify);
-            rbt_win_set_devicenameresult_cb(deviceNameResultNotify);
+            ondeviceanswerresult = new onDeviceAnswerResult(deviceAnswerResult);
+            rbt_win_set_deviceanswerresult_cb(ondeviceanswerresult);
+            ondevicename = new onDeviceName(deviceNameNotify);
+            rbt_win_set_devicename_cb(ondevicename);
+            ondevicenameresult = new onDeviceNameResult(deviceNameResultNotify);
+            rbt_win_set_devicenameresult_cb(ondevicenameresult);
         }
 
         // 反初始化
