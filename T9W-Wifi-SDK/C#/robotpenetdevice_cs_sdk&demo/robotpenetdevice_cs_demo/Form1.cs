@@ -54,9 +54,10 @@ namespace rbt_win32_2_demo
 
         private void Rbtnet__deviceNameEvt_(IntPtr ctx, string strDeviceMac, string strDeviceName)
         {
-            Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
-
+            // Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
+            updateDeviceNameListView(strDeviceMac, strDeviceName);
         }
+        
         // 
         private void Rbtnet__deviceAnswerResultEvt_(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize)
         {
@@ -88,6 +89,7 @@ namespace rbt_win32_2_demo
 
         private void initListView() {
             this.listView1.Columns.Add("设备MAC地址", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("学号", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("状态", 60, HorizontalAlignment.Left);
             this.listView1.Columns.Add("选择题通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("按键通知", 120, HorizontalAlignment.Left);
@@ -151,6 +153,8 @@ namespace rbt_win32_2_demo
             else {
                 rbtnet_.stop();
                 this.button_start_stop.Text = "开始";
+                this.listView1.Items.Clear();
+                this.dicMac2DrawForm_.Clear();
             }
         }
 
@@ -225,12 +229,13 @@ namespace rbt_win32_2_demo
                 for (int i = 0; i < nItemCount; ++i) {
                     string strAMac = this.listView1.Items[i].SubItems[0].Text;
                     if (strAMac == strMac) {
-                        this.listView1.Items[i].SubItems[1].Text = "在线";
+                        this.listView1.Items[i].SubItems[2].Text = "在线";
                         return;
                     }
                 }
 
                 this.listView1.Items.Add(strMac);
+                this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("在线");
                 this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("");
@@ -276,7 +281,7 @@ namespace rbt_win32_2_demo
                 }
 
                 if (nFindItem > -1) {
-                    this.listView1.Items[nFindItem].SubItems[1].Text = "离线";
+                    this.listView1.Items[nFindItem].SubItems[2].Text = "离线";
 
                     if (dicMac2DrawForm_.ContainsKey(strMac))
                     {
@@ -328,7 +333,7 @@ namespace rbt_win32_2_demo
 
                 if (nFindItem > -1)
                 {
-                    this.listView1.Items[nFindItem].SubItems[4].Text = "noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId);
+                    this.listView1.Items[nFindItem].SubItems[5].Text = "noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId);
                 }
             }
         }
@@ -408,12 +413,37 @@ namespace rbt_win32_2_demo
                             break;
 
                     }
-                    this.listView1.Items[nFindItem].SubItems[3].Text = strKeyValue;
+                    this.listView1.Items[nFindItem].SubItems[4].Text = strKeyValue;
 
                 }
             }
         }
 
+        private delegate void updateDeviceName(string strDeviceMac, string strDeviceName);
+        public void updateDeviceNameListView(string strDeviceMac, string strDeviceName) {
+            if (this.listView1.InvokeRequired)
+            {
+                while (!this.listView1.IsHandleCreated)
+                {
+                    if (this.listView1.Disposing || this.listView1.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                updateDeviceName d = new updateDeviceName(updateDeviceNameListView);
+                this.listView1.Invoke(d, new object[] { strDeviceMac, strDeviceName });
+            } else {
+                foreach (ListViewItem item in this.listView1.Items)
+                {
+                    string strMac = item.SubItems[0].Text;
+                    if (strDeviceMac == (strMac))
+                    {
+                        item.SubItems[1].Text = strDeviceName;
+                        break;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 收到答题消息
@@ -491,7 +521,7 @@ namespace rbt_win32_2_demo
                                 break;
                         }
                     }
-                    this.listView1.Items[nFindItem].SubItems[2].Text = strKeyValue;
+                    this.listView1.Items[nFindItem].SubItems[3].Text = strKeyValue;
 
                 }
             }
