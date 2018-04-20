@@ -427,6 +427,12 @@ bool CDrawDlg::pointIsInvalid(int nPenStatus, CPoint& pointValue)
 }
 
 
+void CDrawDlg::PostNcDestroy()
+{
+	delete this;
+	CDialog::PostNcDestroy();
+}
+
 void CDrawDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值

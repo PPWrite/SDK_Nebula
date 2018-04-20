@@ -37,6 +37,7 @@ protected:
 	void endTrack(bool bSave = true);
 	void compressPoint(CPoint& point);
 	bool pointIsInvalid(int nPenStatus, CPoint& pointValue);
+	void PostNcDestroy();
 
 private:
 	bool m_bDrawing;

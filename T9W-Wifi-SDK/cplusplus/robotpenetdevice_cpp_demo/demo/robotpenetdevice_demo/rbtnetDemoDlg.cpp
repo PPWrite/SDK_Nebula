@@ -216,6 +216,12 @@ HRESULT CrbtnetDemoDlg::rcvAccept(WPARAM wParam, LPARAM lParam)
 		pListCtrl->InsertItem(nItemTotal, A2T(p));
 		pListCtrl->SetItemText(nItemTotal, 1, _T(""));
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
+
+		if (m_device2draw.find(p) != m_device2draw.end()) {
+			m_device2draw[p]->DestroyWindow();
+			m_device2draw[p] = NULL;
+		}
+
 		m_device2draw[p] = new CDrawDlg();
 		m_device2draw[p]->Create(IDD_DRAWDLG);
 		m_device2draw[p]->ShowWindow(true);
@@ -246,7 +252,7 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		pListCtrl->InsertItem(nItemTotal, A2T(p));
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
 		if (m_device2draw.find(p) != m_device2draw.end()) {
-			delete m_device2draw[p];
+			m_device2draw[p]->DestroyWindow();
 			m_device2draw[p] = NULL;
 		}
 
@@ -278,7 +284,7 @@ HRESULT CrbtnetDemoDlg::recvName(WPARAM wParam, LPARAM lParam)
 		pListCtrl->InsertItem(nItemTotal, A2T(pMac));
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
 		if (m_device2draw.find(pMac) != m_device2draw.end()) {
-			delete m_device2draw[pMac];
+			m_device2draw[pMac]->DestroyWindow();
 			m_device2draw[pMac] = NULL;
 		}
 
@@ -313,6 +319,13 @@ void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 		CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 		if (pListCtrl)
 			pListCtrl->DeleteAllItems();
+
+		for (auto it : m_device2draw)
+		{
+			it.second->DestroyWindow();
+			it.second = NULL;
+		}
+		m_device2draw.clear();
 	}
 }
 
@@ -371,7 +384,7 @@ void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort
 void CrbtnetDemoDlg::onDeviceMac(rbt_win_context* context, const char* pMac)
 {
 	USES_CONVERSION;
-	WriteLog(A2T(pMac),true);;
+	WriteLog(A2T(pMac),true);
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)pMac);
 }
@@ -704,7 +717,7 @@ void CrbtnetDemoDlg::OnClose()
 
 	for (auto it: m_device2draw)
 	{
-		delete it.second;
+		it.second->DestroyWindow();
 		it.second = NULL;
 	}
 	m_device2draw.clear();
