@@ -82,6 +82,7 @@ namespace robotpenetdevice_cs
         private static onDeviceShowPage ondeviceshowpage = null;
         private static onDeviceNameResult ondevicenameresult = null;
         private static onDeviceName ondevicename = null;
+        private static onDeviceDisconnect ondevicedisconnect = null;
 
         // 构造函数
         public RbtNet() {
@@ -234,7 +235,8 @@ namespace robotpenetdevice_cs
             rbt_win_set_devicekeypress_cb(ondevicekeyPress);
             ondeviceshowpage = new onDeviceShowPage(deviceShowPage);
             rbt_win_set_deviceshowpage_cb(ondeviceshowpage);
-            rbt_win_set_devivedisconnect_cb(deviceDisconnect);
+            ondevicedisconnect = new onDeviceDisconnect(deviceDisconnect);
+            rbt_win_set_devivedisconnect_cb(ondevicedisconnect);
             ondeviceanswerresult = new onDeviceAnswerResult(deviceAnswerResult);
             rbt_win_set_deviceanswerresult_cb(ondeviceanswerresult);
             ondevicename = new onDeviceName(deviceNameNotify);

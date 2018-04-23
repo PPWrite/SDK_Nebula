@@ -1847,7 +1847,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			//T9A
 			if (m_nCurNoteNum < MAX_NOTE)
 			{
-				//vecPenInfo[m_nCurNoteNum].push_back(penInfo);
+				vecPenInfo[m_nCurNoteNum].push_back(penInfo);
 			}
 
 			//m_list[0]->AddData(penInfo);

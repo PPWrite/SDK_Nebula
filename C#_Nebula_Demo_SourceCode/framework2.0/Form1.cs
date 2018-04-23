@@ -1901,5 +1901,10 @@ namespace RobotPenTestDll
         {
             robotpenController.GetInstance()._Send(cmdId.AdjustMode);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
