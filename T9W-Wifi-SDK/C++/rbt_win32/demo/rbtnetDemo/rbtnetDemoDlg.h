@@ -53,7 +53,6 @@ protected:
 public:
 	afx_msg void OnBnClickedStartOrStop();
 	afx_msg void OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBnClickedButton1();
 
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
@@ -98,4 +97,8 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonSet();
 	afx_msg void OnBnClickedButtonSetSleep();
+	afx_msg void OnBnClickedButtonStart();
+	afx_msg void OnBnClickedButtonStop();
+	afx_msg void OnBnClickedButtonEnd();
+	afx_msg void OnBnClickedButtonModule();
 };

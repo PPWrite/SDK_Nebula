@@ -89,7 +89,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	if (us == 0)
 		str += "===============================";
 	//TRACE(str + "\r\n");
-	WriteLog(str);
+	//WriteLog(str);
 	if (m_nState == 90)
 	{
 		point.SetPoint(m_nHeight - uy, ux);

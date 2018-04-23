@@ -80,12 +80,11 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_START_STOP, &CrbtnetDemoDlg::OnBnClickedStartOrStop)
+	ON_BN_CLICKED(IDC_BUTTON_STARTORSTOP, &CrbtnetDemoDlg::OnBnClickedStartOrStop)
 	ON_MESSAGE(WM_RCV_ACCEPT, &CrbtnetDemoDlg::rcvAccept)
 	ON_MESSAGE(WM_RCV_MAC, &CrbtnetDemoDlg::rcvMac)
 	ON_MESSAGE(WM_RCV_NAME, &CrbtnetDemoDlg::recvName)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
-	ON_BN_CLICKED(IDC_BUTTON1, &CrbtnetDemoDlg::OnBnClickedButton1)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMRClickListConnect)
@@ -94,6 +93,10 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_SET, &CrbtnetDemoDlg::OnBnClickedButtonSet)
 	ON_BN_CLICKED(IDC_BUTTON_SET_SLEEP, &CrbtnetDemoDlg::OnBnClickedButtonSetSleep)
+	ON_BN_CLICKED(IDC_BUTTON_START, &CrbtnetDemoDlg::OnBnClickedButtonStart)
+	ON_BN_CLICKED(IDC_BUTTON_STOP, &CrbtnetDemoDlg::OnBnClickedButtonStop)
+	ON_BN_CLICKED(IDC_BUTTON_END, &CrbtnetDemoDlg::OnBnClickedButtonEnd)
+	ON_BN_CLICKED(IDC_BUTTON_MODULE, &CrbtnetDemoDlg::OnBnClickedButtonModule)
 END_MESSAGE_MAP()
 
 
@@ -312,7 +315,7 @@ void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CString csBtnText;
-	GetDlgItemText(IDC_START_STOP, csBtnText);
+	GetDlgItemText(IDC_BUTTON_STARTORSTOP, csBtnText);
 	if (csBtnText == _T("开始")) {
 		bool bStartRes = rbt_win_start();
 		if (!bStartRes) {
@@ -320,11 +323,11 @@ void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 			return;
 		}
 
-		SetDlgItemText(IDC_START_STOP, _T("停止"));
+		SetDlgItemText(IDC_BUTTON_STARTORSTOP, _T("停止"));
 	}
 	else {
 		rbt_win_stop();
-		SetDlgItemText(IDC_START_STOP, _T("开始"));
+		SetDlgItemText(IDC_BUTTON_STARTORSTOP, _T("开始"));
 		CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 		if (pListCtrl)
 			pListCtrl->DeleteAllItems();
@@ -487,60 +490,6 @@ void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 	m_device2draw[strMac]->ShowWindow(true);
 
 	*pResult = 0;
-}
-
-// 开始答题或者结束答题
-void CrbtnetDemoDlg::OnBnClickedButton1()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
-
-	CString csBtnText;
-	GetDlgItemText(IDC_BUTTON1, csBtnText);
-	if (csBtnText == _T("开始答题")) {
-
-		bool bSendRes = false;
-		//0为主观题,1为客观题
-		switch (index)
-		{
-		case 0:
-		{
-			bSendRes = rbt_win_send_startanswer(index, 0, NULL);
-
-		}
-		break;
-		case 1:
-		{
-			int totalTopic = 3;
-			char pTopicType[3] = { 1,2,3 };
-			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
-		}
-		break;
-		case 2:
-		{
-			int totalTopic = 1;
-			char pTopicType[1] = { 5 };
-			bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
-		}
-		break;
-		default:
-			break;
-		}
-
-		if (!bSendRes) {
-			MessageBox(_T("开启答题失败"));
-			return;
-		}
-		SetDlgItemText(IDC_BUTTON1, _T("停止答题"));
-	}
-	else {
-		bool bSendRes = rbt_win_send_stopanswer();
-		if (!bSendRes) {
-			MessageBox(_T("结束答题失败"));
-			return;
-		}
-		SetDlgItemText(IDC_BUTTON1, _T("开始答题"));
-	}
 }
 
 UINT CrbtnetDemoDlg::ThreadProc(LPVOID lpParam)
@@ -938,9 +887,9 @@ void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 		CString strGroup;
 		GetDlgItem(IDC_EDIT_GROUP)->GetWindowText(strGroup);
 		CString strIP;
-		GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
-		USES_CONVERSION;
-		rbt_win_config_net(T2A(strGroup), T2A(strIP), 6001, false, true, "");
+GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
+USES_CONVERSION;
+rbt_win_config_net(T2A(strGroup), T2A(strIP), 6001, false, true, "");
 	}
 	break;
 	default:
@@ -966,4 +915,85 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetSleep()
 	GetDlgItem(IDC_EDIT_SLEEP)->GetWindowText(str);
 	USES_CONVERSION;
 	rbt_win_config_sleep(atoi(T2A(str)));
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonStart()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
+
+	bool bSendRes = false;
+	//0为主观题,1为客观题
+	switch (index)
+	{
+	case 0:
+	{
+		bSendRes = rbt_win_send_startanswer(index, 0, NULL);
+
+	}
+	break;
+	case 1:
+	{
+		int totalTopic = 3;
+		char pTopicType[3] = { 1,2,3 };
+		bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
+	}
+	break;
+	case 2:
+	{
+		int totalTopic = 1;
+		char pTopicType[1] = { 5 };
+		bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
+	}
+	break;
+	default:
+		break;
+	}
+
+	if (!bSendRes) {
+		MessageBox(_T("开启答题失败"));
+		return;
+	}
+
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonStop()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	bool bSendRes = rbt_win_send_stopanswer();
+	if (!bSendRes) {
+		MessageBox(_T("停止答题失败"));
+		return;
+	}
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonEnd()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	bool bSendRes = rbt_win_send_endanswer();
+	if (!bSendRes) {
+		MessageBox(_T("结束答题失败"));
+		return;
+	}
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonModule()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_BUTTON_MODULE)->GetWindowText(str);
+	if(str == _T("打开模组"))
+	{
+		GetDlgItem(IDC_BUTTON_MODULE)->SetWindowText(_T("关闭模组"));
+		rbt_win_open_module(true);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_MODULE)->SetWindowText(_T("打开模组"));
+		rbt_win_open_module(false);
+	}
 }

@@ -1,7 +1,6 @@
 
 // USBHelperDlg.cpp : 实现文件
 //
-
 #include "stdafx.h"
 #include "USBHelper.h"
 #include "USBHelperDlg.h"
@@ -30,7 +29,7 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-#define USE_OPTIMIZE
+//#define USE_OPTIMIZE
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -614,7 +613,8 @@ void CUSBHelperDlg::openT7E()
 			pListView->SetItemState(i,LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 			OnBnClickedButton3Open();
 
-			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE)
+			if (m_nDeviceType == T7E_TS || m_nDeviceType == T7E || m_nDeviceType == T7E_HFHH || m_nDeviceType == P1_CX_M3 
+				|| m_nDeviceType == S1_DE || m_nDeviceType == J7E)
 			{
 				SetTimer(1,1000,NULL);
 			}
@@ -712,7 +712,9 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
-	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 || m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE)
+	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 
+		|| m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE
+		|| m_nDeviceType == J7E)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -746,7 +748,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -1330,7 +1332,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
@@ -1743,7 +1745,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E || m_nDeviceType == S1_DE)
+			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
 			{
 				switch(penInfo.nStatus)
 				{
@@ -1765,7 +1767,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				default:
 					break;
 				}
-			}
+			}//*/
 
 			m_list[0]->AddData(penInfo);
 		}
@@ -1847,7 +1849,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			//T9A
 			if (m_nCurNoteNum < MAX_NOTE)
 			{
-				//vecPenInfo[m_nCurNoteNum].push_back(penInfo);
+				vecPenInfo[m_nCurNoteNum].push_back(penInfo);
 			}
 
 			//m_list[0]->AddData(penInfo);
@@ -1939,6 +1941,17 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			CString strVer2(sz_ver2);
 			GetDlgItem(IDC_EDIT_LOCAL)->SetWindowText(strVer);
 			GetDlgItem(IDC_EDIT_REMOTE)->SetWindowText(strVer2);
+		}
+		break;
+	case ROBOT_LOG_OUTPUT:
+		{
+			int len = report.reserved;
+			char buffer[MAX_PATH] =  {0};
+			memcpy(buffer,report.payload,len);
+			USES_CONVERSION;
+			CString str = A2W(buffer);
+			TRACE(str);
+			WriteLog(str);
 		}
 		break;
 	default:						
