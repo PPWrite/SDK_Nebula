@@ -1690,7 +1690,8 @@ namespace RobotPenTestDll
         {
             if (this.open_button.Text == "关闭设备")
             {
-                robotpenController.GetInstance()._ConnectDispose();
+                //robotpenController.GetInstance()._ConnectDispose();
+                robotpenController.GetInstance()._CloseConnect();
                 resetDevice();
                 return; 
             }
