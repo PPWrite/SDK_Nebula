@@ -181,10 +181,28 @@ typedef struct st_note_header_info
 
 } ST_NOTE_HEADER_INFO;
 
+typedef struct st_t9_note_header_info
+{
+	uint16_t note_identifier;
+	uint8_t note_number[3];  //值占用21bit 数组三最高位用做flag_erase_flag 标志位，原来2字节 uint8_t flash_erase_flag
+	uint8_t note_head_start;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	ST_RTC_INFO note_time;
+
+} ST_T9_NOTE_HEADER_INFO;
+
+typedef struct st_note_number_info
+{
+	uint32_t note_number : 17;
+	uint32_t unsigned_type : 6;
+	uint32_t flash_erase_flag : 1;
+
+} ST_NOTE_NUMBER_INFO;
 //页码信息
 typedef struct page_info
 {
-	uint8_t page_num : 8;
+	uint8_t page_num;
 	uint16_t note_num : 9;
 	bool operator==(page_info &pageInfo) const
 	{

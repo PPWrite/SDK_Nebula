@@ -32,7 +32,7 @@ namespace rbt_win32_2_demo
 
         public drawForm()
         {
-            bScreenO = true;
+            bScreenO = false;
             InitializeComponent();
         }
 

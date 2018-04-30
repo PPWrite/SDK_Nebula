@@ -70,14 +70,15 @@
             this.start_sync_button = new System.Windows.Forms.Button();
             this.end_sync_button = new System.Windows.Forms.Button();
             this.offline_label = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.labelnote = new System.Windows.Forms.Label();
+            this.label_sync_offline_tip = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(14, 278);
+            this.button1.Location = new System.Drawing.Point(6, 332);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(104, 31);
             this.button1.TabIndex = 0;
@@ -88,7 +89,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(138, 278);
+            this.button2.Location = new System.Drawing.Point(127, 332);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 31);
             this.button2.TabIndex = 1;
@@ -117,7 +118,7 @@
             this.open_button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.open_button.Cursor = System.Windows.Forms.Cursors.Hand;
             this.open_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.open_button.Location = new System.Drawing.Point(14, 156);
+            this.open_button.Location = new System.Drawing.Point(6, 156);
             this.open_button.Name = "open_button";
             this.open_button.Size = new System.Drawing.Size(104, 36);
             this.open_button.TabIndex = 5;
@@ -149,7 +150,7 @@
             this.status_button_query.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.status_button_query.Cursor = System.Windows.Forms.Cursors.Hand;
             this.status_button_query.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.status_button_query.Location = new System.Drawing.Point(14, 198);
+            this.status_button_query.Location = new System.Drawing.Point(7, 198);
             this.status_button_query.Name = "status_button_query";
             this.status_button_query.Size = new System.Drawing.Size(104, 35);
             this.status_button_query.TabIndex = 8;
@@ -171,7 +172,7 @@
             // ns_start_button
             // 
             this.ns_start_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ns_start_button.Location = new System.Drawing.Point(14, 325);
+            this.ns_start_button.Location = new System.Drawing.Point(6, 369);
             this.ns_start_button.Name = "ns_start_button";
             this.ns_start_button.Size = new System.Drawing.Size(104, 31);
             this.ns_start_button.TabIndex = 10;
@@ -182,7 +183,7 @@
             // ms_end_button
             // 
             this.ms_end_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ms_end_button.Location = new System.Drawing.Point(138, 325);
+            this.ms_end_button.Location = new System.Drawing.Point(126, 369);
             this.ms_end_button.Name = "ms_end_button";
             this.ms_end_button.Size = new System.Drawing.Size(100, 31);
             this.ms_end_button.TabIndex = 11;
@@ -193,7 +194,7 @@
             // set_button
             // 
             this.set_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.set_button.Location = new System.Drawing.Point(14, 397);
+            this.set_button.Location = new System.Drawing.Point(6, 440);
             this.set_button.Name = "set_button";
             this.set_button.Size = new System.Drawing.Size(104, 32);
             this.set_button.TabIndex = 12;
@@ -206,7 +207,7 @@
             this.custom_label.AutoSize = true;
             this.custom_label.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.custom_label.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.custom_label.Location = new System.Drawing.Point(12, 493);
+            this.custom_label.Location = new System.Drawing.Point(12, 534);
             this.custom_label.Name = "custom_label";
             this.custom_label.Size = new System.Drawing.Size(108, 21);
             this.custom_label.TabIndex = 13;
@@ -217,7 +218,7 @@
             this.class_label.AutoSize = true;
             this.class_label.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.class_label.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.class_label.Location = new System.Drawing.Point(211, 493);
+            this.class_label.Location = new System.Drawing.Point(211, 534);
             this.class_label.Name = "class_label";
             this.class_label.Size = new System.Drawing.Size(87, 21);
             this.class_label.TabIndex = 14;
@@ -229,7 +230,7 @@
             this.device_label.AutoSize = true;
             this.device_label.BackColor = System.Drawing.Color.Blue;
             this.device_label.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.device_label.Location = new System.Drawing.Point(365, 493);
+            this.device_label.Location = new System.Drawing.Point(365, 534);
             this.device_label.Name = "device_label";
             this.device_label.Size = new System.Drawing.Size(100, 21);
             this.device_label.TabIndex = 15;
@@ -239,7 +240,7 @@
             // class_textBox
             // 
             this.class_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.class_textBox.Location = new System.Drawing.Point(304, 493);
+            this.class_textBox.Location = new System.Drawing.Point(304, 534);
             this.class_textBox.Name = "class_textBox";
             this.class_textBox.ReadOnly = true;
             this.class_textBox.Size = new System.Drawing.Size(55, 29);
@@ -249,7 +250,7 @@
             // device_textBox
             // 
             this.device_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.device_textBox.Location = new System.Drawing.Point(471, 490);
+            this.device_textBox.Location = new System.Drawing.Point(471, 531);
             this.device_textBox.Name = "device_textBox";
             this.device_textBox.ReadOnly = true;
             this.device_textBox.Size = new System.Drawing.Size(83, 29);
@@ -259,7 +260,7 @@
             // custom_textBox
             // 
             this.custom_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.custom_textBox.Location = new System.Drawing.Point(126, 493);
+            this.custom_textBox.Location = new System.Drawing.Point(126, 534);
             this.custom_textBox.Name = "custom_textBox";
             this.custom_textBox.ReadOnly = true;
             this.custom_textBox.Size = new System.Drawing.Size(66, 29);
@@ -269,7 +270,7 @@
             // update_button
             // 
             this.update_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.update_button.Location = new System.Drawing.Point(14, 551);
+            this.update_button.Location = new System.Drawing.Point(12, 591);
             this.update_button.Name = "update_button";
             this.update_button.Size = new System.Drawing.Size(75, 31);
             this.update_button.TabIndex = 19;
@@ -279,7 +280,7 @@
             // mode_label_tip
             // 
             this.mode_label_tip.AutoSize = true;
-            this.mode_label_tip.Location = new System.Drawing.Point(104, 560);
+            this.mode_label_tip.Location = new System.Drawing.Point(104, 603);
             this.mode_label_tip.Name = "mode_label_tip";
             this.mode_label_tip.Size = new System.Drawing.Size(41, 12);
             this.mode_label_tip.TabIndex = 20;
@@ -296,7 +297,7 @@
             // voteClear_button
             // 
             this.voteClear_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.voteClear_button.Location = new System.Drawing.Point(276, 278);
+            this.voteClear_button.Location = new System.Drawing.Point(246, 332);
             this.voteClear_button.Name = "voteClear_button";
             this.voteClear_button.Size = new System.Drawing.Size(75, 31);
             this.voteClear_button.TabIndex = 22;
@@ -307,7 +308,7 @@
             // msClear_button
             // 
             this.msClear_button.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.msClear_button.Location = new System.Drawing.Point(276, 325);
+            this.msClear_button.Location = new System.Drawing.Point(245, 369);
             this.msClear_button.Name = "msClear_button";
             this.msClear_button.Size = new System.Drawing.Size(75, 31);
             this.msClear_button.TabIndex = 23;
@@ -343,7 +344,7 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(16, 10);
-            this.listView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listView1.Margin = new System.Windows.Forms.Padding(2);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(336, 126);
             this.listView1.TabIndex = 26;
@@ -360,8 +361,8 @@
             "单选",
             "多选",
             "抢答"});
-            this.comboBox2.Location = new System.Drawing.Point(18, 242);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox2.Location = new System.Drawing.Point(7, 242);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(92, 28);
             this.comboBox2.TabIndex = 27;
@@ -372,7 +373,7 @@
             this.slave_listView.FullRowSelect = true;
             this.slave_listView.GridLines = true;
             this.slave_listView.Location = new System.Drawing.Point(472, 10);
-            this.slave_listView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.slave_listView.Margin = new System.Windows.Forms.Padding(2);
             this.slave_listView.Name = "slave_listView";
             this.slave_listView.Size = new System.Drawing.Size(355, 126);
             this.slave_listView.TabIndex = 28;
@@ -383,7 +384,7 @@
             // 
             this.dongle_san_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dongle_san_button.Location = new System.Drawing.Point(472, 156);
-            this.dongle_san_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dongle_san_button.Margin = new System.Windows.Forms.Padding(2);
             this.dongle_san_button.Name = "dongle_san_button";
             this.dongle_san_button.Size = new System.Drawing.Size(76, 36);
             this.dongle_san_button.TabIndex = 29;
@@ -395,7 +396,7 @@
             // 
             this.dongle_stopsan_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dongle_stopsan_button.Location = new System.Drawing.Point(568, 156);
-            this.dongle_stopsan_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dongle_stopsan_button.Margin = new System.Windows.Forms.Padding(2);
             this.dongle_stopsan_button.Name = "dongle_stopsan_button";
             this.dongle_stopsan_button.Size = new System.Drawing.Size(72, 36);
             this.dongle_stopsan_button.TabIndex = 29;
@@ -407,7 +408,7 @@
             // 
             this.dg_con_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dg_con_button.Location = new System.Drawing.Point(658, 156);
-            this.dg_con_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dg_con_button.Margin = new System.Windows.Forms.Padding(2);
             this.dg_con_button.Name = "dg_con_button";
             this.dg_con_button.Size = new System.Drawing.Size(81, 36);
             this.dg_con_button.TabIndex = 29;
@@ -419,7 +420,7 @@
             // 
             this.dg_discon_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dg_discon_button.Location = new System.Drawing.Point(756, 156);
-            this.dg_discon_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dg_discon_button.Margin = new System.Windows.Forms.Padding(2);
             this.dg_discon_button.Name = "dg_discon_button";
             this.dg_discon_button.Size = new System.Drawing.Size(70, 36);
             this.dg_discon_button.TabIndex = 29;
@@ -469,7 +470,7 @@
             // 
             this.slave_name_textBox.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.slave_name_textBox.Location = new System.Drawing.Point(469, 278);
-            this.slave_name_textBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.slave_name_textBox.Margin = new System.Windows.Forms.Padding(2);
             this.slave_name_textBox.Multiline = true;
             this.slave_name_textBox.Name = "slave_name_textBox";
             this.slave_name_textBox.Size = new System.Drawing.Size(109, 32);
@@ -479,7 +480,7 @@
             // 
             this.slave_name_set_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.slave_name_set_button.Location = new System.Drawing.Point(643, 278);
-            this.slave_name_set_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.slave_name_set_button.Margin = new System.Windows.Forms.Padding(2);
             this.slave_name_set_button.Name = "slave_name_set_button";
             this.slave_name_set_button.Size = new System.Drawing.Size(74, 28);
             this.slave_name_set_button.TabIndex = 33;
@@ -491,7 +492,7 @@
             // 
             this.adjust_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.adjust_button.Location = new System.Drawing.Point(737, 278);
-            this.adjust_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.adjust_button.Margin = new System.Windows.Forms.Padding(2);
             this.adjust_button.Name = "adjust_button";
             this.adjust_button.Size = new System.Drawing.Size(74, 28);
             this.adjust_button.TabIndex = 33;
@@ -503,7 +504,7 @@
             // 
             this.start_sync_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.start_sync_button.Location = new System.Drawing.Point(470, 354);
-            this.start_sync_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.start_sync_button.Margin = new System.Windows.Forms.Padding(2);
             this.start_sync_button.Name = "start_sync_button";
             this.start_sync_button.Size = new System.Drawing.Size(74, 28);
             this.start_sync_button.TabIndex = 33;
@@ -515,7 +516,7 @@
             // 
             this.end_sync_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.end_sync_button.Location = new System.Drawing.Point(579, 354);
-            this.end_sync_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.end_sync_button.Margin = new System.Windows.Forms.Padding(2);
             this.end_sync_button.Name = "end_sync_button";
             this.end_sync_button.Size = new System.Drawing.Size(74, 28);
             this.end_sync_button.TabIndex = 33;
@@ -534,20 +535,10 @@
             this.offline_label.Text = "离线笔记:";
             this.offline_label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // button3
-            // 
-            this.button3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(233, 242);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(119, 33);
-            this.button3.TabIndex = 34;
-            this.button3.Text = "打开离线笔记";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(134, 242);
+            this.button4.Location = new System.Drawing.Point(7, 281);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 33);
             this.button4.TabIndex = 35;
@@ -556,13 +547,30 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // labelnote
+            // 
+            this.labelnote.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelnote.Location = new System.Drawing.Point(130, 287);
+            this.labelnote.Name = "labelnote";
+            this.labelnote.Size = new System.Drawing.Size(191, 23);
+            this.labelnote.TabIndex = 36;
+            // 
+            // label_sync_offline_tip
+            // 
+            this.label_sync_offline_tip.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label_sync_offline_tip.Location = new System.Drawing.Point(134, 257);
+            this.label_sync_offline_tip.Name = "label_sync_offline_tip";
+            this.label_sync_offline_tip.Size = new System.Drawing.Size(164, 23);
+            this.label_sync_offline_tip.TabIndex = 37;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(846, 708);
+            this.Controls.Add(this.label_sync_offline_tip);
+            this.Controls.Add(this.labelnote);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.adjust_button);
             this.Controls.Add(this.end_sync_button);
             this.Controls.Add(this.start_sync_button);
@@ -659,8 +667,9 @@
         private System.Windows.Forms.Button start_sync_button;
         private System.Windows.Forms.Button end_sync_button;
         private System.Windows.Forms.Label offline_label;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label labelnote;
+        private System.Windows.Forms.Label label_sync_offline_tip;
     }
 }
 

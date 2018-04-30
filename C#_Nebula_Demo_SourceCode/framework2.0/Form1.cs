@@ -33,8 +33,8 @@ namespace RobotPenTestDll
         private UserControl1 nodeDataWindow = null;
 
         //private demoEnum demo_type = demoEnum.GATEWAY_DEMO;
-        //private demoEnum demo_type = demoEnum.NODE_DEMO;
-        private demoEnum demo_type = demoEnum.DONGLE_DEMO;
+        private demoEnum demo_type = demoEnum.NODE_DEMO;
+        //private demoEnum demo_type = demoEnum.DONGLE_DEMO;
         //private demoEnum demo_type = demoEnum.P1_DEMO;
         //private demoEnum demo_type = demoEnum.T7E_TS_DEMO;
         private eDeviceType eDeviceTy;
@@ -378,6 +378,7 @@ namespace RobotPenTestDll
             this.start_sync_button.Hide();
             this.end_sync_button.Hide();
             this.offline_label.Hide();
+            this.label_sync_offline_tip.Hide();
         }
 
         private void isDongleMode()
@@ -398,6 +399,8 @@ namespace RobotPenTestDll
             this.device_label.Hide();
             this.msClear_button.Hide();
             this.device_textBox.Hide();
+            this.button4.Hide();
+            this.labelnote.Hide();
 
             this.slave_listView.Columns.Add("Num", 50, HorizontalAlignment.Center);
             this.slave_listView.Columns.Add("名称", 120, HorizontalAlignment.Center);
@@ -410,9 +413,6 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().dongleDataPacketEvt += new robotpenController.dongleDataPacket(Form1_dongleDataPacketEvt);
             robotpenController.GetInstance().slaveStatusEvt += new robotpenController.slaveStatus(Form1_slaveStatusEvt);
             robotpenController.GetInstance().slaveVersionEvt += new robotpenController.slaveVersion(Form1_slaveVersionEvt);
-            robotpenController.GetInstance().startSyncNoteDataEvt += new robotpenController.startSyncNoteData(Form1_startSyncNoteDataEvt);
-            robotpenController.GetInstance().syncNoteDataEvt += new robotpenController.syncNoteData(Form1_syncNoteDataEvt);
-            robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
             robotpenController.GetInstance().enterAdjustModeEvt += new robotpenController.enterAdjustMode(Form1_enterAdjustModeEvt);
             robotpenController.GetInstance().adjustResultEvt += new robotpenController.adjustResult(Form1_adjustResultEvt);
             robotpenController.GetInstance().dongleDataOptimizePacketEvt += new robotpenController.dongleOptimizeDataPacket(Form1_dongleOptimizeDataPacketEvt);
@@ -666,7 +666,14 @@ namespace RobotPenTestDll
         private void Form1_endSyncNoteDataEvt()
         {
             string strNoteCount = "同步结束";
-            UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+            if (demo_type == demoEnum.DONGLE_DEMO)
+            {
+                UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+            }
+            else
+            {
+                UpdateControlUI(strNoteCount, updateControl.esyncofflinenotefinish);
+            }
         }
 
         private void Form1_syncNoteDataEvt(byte bPenStatus, short sx, short sy, short sPress)
@@ -682,7 +689,7 @@ namespace RobotPenTestDll
             nodeCanvasWindow.recvData(sPress, Convert.ToInt32(sx), Convert.ToInt32(sy), 0);
         }
 
-        private void Form1_startSyncNoteDataEvt(byte noteCount)
+        private void Form1_startSyncNoteDataEvt(byte noteCount, ref note_header_info noteHeaderInfo)
         {
             string strNoteCount = "离线笔迹:" + Convert.ToInt32(noteCount) + "条";
             UpdateControlUI(strNoteCount, updateControl.eofflinecount);
@@ -724,6 +731,7 @@ namespace RobotPenTestDll
             edonglestatus,
             eslavestatus,
             eofflinecount,
+            esyncofflinenotefinish,
             eslaveversion,
             econnectSlaveName,
         }
@@ -832,9 +840,32 @@ namespace RobotPenTestDll
                         else
                         {
                             this.offline_label.Text = param;
+                            this.labelnote.Text = param;
+                            
                         }
                     }
                     break;
+                case updateControl.esyncofflinenotefinish:
+                    {
+                        if (this.label_sync_offline_tip.InvokeRequired)
+                        {
+                            while (!this.label_sync_offline_tip.IsHandleCreated)
+                            {
+                                if (this.label_sync_offline_tip.Disposing || this.label_sync_offline_tip.IsDisposed)
+                                {
+                                    return;
+                                }
+                            }
+                            UpdateControlDelegate d = new UpdateControlDelegate(UpdateControlUI);
+                            this.label_sync_offline_tip.Invoke(d, new object[] { "", uty });
+                        }
+                        else
+                        {
+                            this.label_sync_offline_tip.Text = "同步离线笔记完成";
+                            end_sync_button_Click(null, null);
+
+                        }
+                    }break;
                 case updateControl.eslaveversion:
                     {
                         if (this.slave_version1_label.InvokeRequired)
@@ -1054,6 +1085,21 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().keyPressEvt += new robotpenController.KeyPress(Form1_keyPressEvt);
             //////////////////////////////////////////////////////////////////////////
 
+            // offline note event
+            // 离线笔记同步中
+            robotpenController.GetInstance().startSyncNoteDataEvt += new robotpenController.startSyncNoteData(Form1_startSyncNoteDataEvt);
+            robotpenController.GetInstance().syncNoteDataEvt += new robotpenController.syncNoteData(Form1_syncNoteDataEvt);
+            robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
+            robotpenController.GetInstance().getOfflineNoteDataEvt += new robotpenController.getOfflineNoteData(Form1_getOfflineNoteDataEvt);
+        }
+        
+        // 打开设备时上报离线笔记数量
+        void Form1_getOfflineNoteDataEvt(byte noteCount)
+        {
+            //throw new NotImplementedException();
+            string strNoteCount = "离线笔迹:" + Convert.ToInt32(noteCount) + "条";
+            UpdateControlUI(strNoteCount, updateControl.eofflinecount);
+
         }
 
         void Form1_subDeviceMacEvt(int nIndex, string strMac)
@@ -1197,7 +1243,7 @@ namespace RobotPenTestDll
         private string strDeviceNum = string.Empty;
 
         // 设备版本号 
-        private void Form1_gatewatVersionEvt(string strVersion, byte bCustomNum, byte bClassNum, byte bDeviceNum)
+        private void Form1_gatewatVersionEvt(string strVersion, byte bCustomNum, byte bClassNum, byte bDeviceNum, string strMac)
         {
             updateDeviceVersionLabel(strVersion);
             strCustomNum = bCustomNum.ToString();
@@ -1904,7 +1950,7 @@ namespace RobotPenTestDll
 
         private void button4_Click(object sender, EventArgs e)
         {
-
+            robotpenController.GetInstance()._Send(cmdId.SyncBegin);
         }
     }
 }
