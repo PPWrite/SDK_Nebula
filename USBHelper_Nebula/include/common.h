@@ -205,7 +205,11 @@ typedef struct st_note_number_info
 typedef struct page_info
 {
 	uint8_t page_num;
+<<<<<<< HEAD
 	uint16_t note_num : 12;
+=======
+	uint16_t note_num : 9;
+>>>>>>> b6e09177fb3fa957c8841c6cd5c41569d803ebd9
 	bool operator==(page_info &pageInfo) const
 	{
 		if (pageInfo.page_num == this->page_num

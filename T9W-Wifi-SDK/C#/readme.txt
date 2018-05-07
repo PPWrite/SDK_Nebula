@@ -1,3 +1,6 @@
-1. 打开解决法案文件如库引用路径不对可自己重新引用当前sdk目录下的rbt_win32_2.dll文件在进行编译。
-2. 编译完成后把sdk目录下的所有文件拷贝到exe文件输出目录下在进行运行。
-3. 开发环境基于vs2015
+此SDK与DEMO支持的是罗博下的基于tcp传输的设备。
+
+1. robotpenetdevice_cs_sdk&demo文件夹中包含了C#的SDK与Demo示例源码。
+2. robotpenetdevice_cs_demo中引用的sdk为绝对路径，自己编译时请自行重新引用下robotpenetdevice_cs_demo文件下的sdk_quote中的robotpenetdevice_cs.dll文件。
+3. 编译完成后把sdk_quote目录下的所有文件拷贝到exe文件输出目录下在进行运行。
+4. 开发环境基于vs2015

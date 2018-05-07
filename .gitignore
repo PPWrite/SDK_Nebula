@@ -48,6 +48,8 @@ obj/
 Release/
 *.obj
 *.tlog
+*opendb
+*.VC.db
 
 
 
