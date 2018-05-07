@@ -1954,6 +1954,15 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			WriteLog(str);
 		}
 		break;
+	case ROBOT_SWITCH_MODE:
+		{
+			uint8_t mode = report.payload[0];
+			if (mode)
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Hand"));
+			else
+				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
+		}
+		break;
 	default:						
 		break;
 	}

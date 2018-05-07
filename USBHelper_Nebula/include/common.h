@@ -313,6 +313,7 @@ enum eRobotCmd
 	ROBOT_UPDATE_WIFI,							//升级wifi
 	ROBOT_MASS_MAC,								//上报mac地址
 	ROBOT_LOG_OUTPUT,							//log输出
+	ROBOT_SWITCH_MODE,							//切换模式
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本
