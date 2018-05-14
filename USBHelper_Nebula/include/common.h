@@ -34,6 +34,7 @@ enum eDevicePid
 	P1_CX_M3_PID=   0x6028,
 	T9W_TY_PID	=	0x602a,
 	S1_DE_PID	=	0x602c,
+	J7E_PID		=	0x602d,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -85,6 +86,7 @@ enum eDeviceType
 	T9W_TY,
 	T9B_YD2,
 	S1_DE,
+	J7E,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -203,7 +205,7 @@ typedef struct st_note_number_info
 typedef struct page_info
 {
 	uint8_t page_num;
-	uint16_t note_num : 9;
+	uint16_t note_num : 12;
 	bool operator==(page_info &pageInfo) const
 	{
 		if (pageInfo.page_num == this->page_num
@@ -310,6 +312,8 @@ enum eRobotCmd
 	ROBOT_UPDATE_SEARCH,						//升级查询
 	ROBOT_UPDATE_WIFI,							//升级wifi
 	ROBOT_MASS_MAC,								//上报mac地址
+	ROBOT_LOG_OUTPUT,							//log输出
+	ROBOT_SWITCH_MODE,							//切换模式
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本

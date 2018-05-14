@@ -232,6 +232,10 @@ public:
 		(void)result;
 		(void)secret;
 	}
+	//切换模式
+	virtual void onSwitchMode(int mode) {
+		(void)mode;
+	}
 	//笔记优化输出
 	virtual void onOut(float x,float y,float width,float speed,int status){
 		(void)x;
