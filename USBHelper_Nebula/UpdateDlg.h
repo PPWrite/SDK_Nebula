@@ -18,6 +18,7 @@ enum
 	SET_VERSION,
 	SET_MCU,
 	SET_BLE,
+	SET_FONT,
 };
 
 class CUpdateDlg : public CDialog

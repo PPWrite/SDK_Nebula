@@ -12,7 +12,10 @@ extern "C" {
 
 	void rbt_win_send(sendCmdID cmdId);
 	bool rbt_win_send_startanswer(int type,int totalTopic, char* pTopicType);
+	//Í£Ö¹´ðÌâ
 	bool rbt_win_send_stopanswer();
+	//½áÊø´ðÌâ
+	bool rbt_win_send_endanswer();
 	bool rbt_win_start();
 	void rbt_win_stop();
 	void rbt_win_config_stu(const char *mac, const char *stu);
@@ -20,6 +23,7 @@ extern "C" {
 	int rbt_win_config_net(const char *group, const char *ip, int port, bool mqtt, bool tcp, const char *source);
 	void rbt_win_config_freq(int freq);
 	void rbt_win_config_sleep(int mins);
+	void rbt_win_open_module(bool open);
 
 #ifdef __cplusplus
 }

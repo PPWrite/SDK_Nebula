@@ -321,6 +321,8 @@ public:
 	virtual void SetPwd(unsigned char *pwd) = 0;
 	//设置Secret
 	virtual void SetSecret(unsigned char *sercet) = 0;
+	//升级字库
+	virtual void UpdateFont(const char *fileFont) = 0;
 };
 
 //初始化 回调

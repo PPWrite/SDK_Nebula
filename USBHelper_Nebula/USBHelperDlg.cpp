@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("°æ±¾ºÅ:20180411")
+#define _VERSION  _T("°æ±¾ºÅ:20180514")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -1223,6 +1223,13 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 			BSTR b = (BSTR)wParam;
 			CString str(b);
 			m_strFileBle = str;
+		}
+		break;
+	case SET_FONT:
+		{
+			BSTR b = (BSTR)wParam;
+			CString str(b);
+			GetInstance()->UpdateFont(WideStrToMultiStr(str.GetBuffer()));
 		}
 		break;
 	default:

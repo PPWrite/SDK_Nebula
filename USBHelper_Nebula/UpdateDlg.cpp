@@ -45,6 +45,14 @@ END_MESSAGE_MAP()
 void CUpdateDlg::OnBnClickedButton4Update()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
+	if (nIndex == 5)
+	{
+		CString str;
+		GetDlgItem(IDC_EDIT_MCU)->GetWindowText(str);
+		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_FONT);
+		return;
+	}
 
 	ST_VERSION versionDev,versionFile;
 	CString str;
@@ -84,6 +92,12 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 	if(dlg.DoModal() == IDOK)  
 	{
 		CString strFileName = dlg.GetFileName();
+		int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
+		if (nIndex == 5)
+		{
+			GetDlgItem(IDC_EDIT_MCU)->SetWindowText(dlg.GetPathName());
+			return;
+		}
 		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
 		{
@@ -237,6 +251,7 @@ BOOL CUpdateDlg::OnInitDialog()
 	pCombobox->InsertString(2,_T("SLAVE"));
 	pCombobox->InsertString(3,_T("模组"));
 	pCombobox->InsertString(4,_T("All"));
+	pCombobox->InsertString(5,_T("字库"));
 	pCombobox->SetCurSel(1);
 
 	OnCbnSelchangeComboType();
@@ -408,6 +423,15 @@ void CUpdateDlg::OnCbnSelchangeComboType()
 		GetDlgItem(IDC_STATIC_BLE)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_BT)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(SW_HIDE);
+	}
+	else  if (nIndex == 5)
+	{
+		GetDlgItem(IDC_STATIC1)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC2)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_VERSION)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_VERSION2)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC_MCU)->ShowWindow(SW_HIDE);
+
 	}
 
 	if (nIndex == 3)
