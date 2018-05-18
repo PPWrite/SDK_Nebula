@@ -179,7 +179,10 @@ namespace rbt_win32_2_demo
                 bool bRes = false;
                 if(index == 0)
                 {
-                    bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
+                    //打开书写模组
+                    rbtnet_.openModule(true);
+                    bRes = true;
+                    //bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
                 }
                 else
                 {

@@ -26,6 +26,9 @@ namespace robotpenetdevice_cs
         internal static extern bool rbt_win_start();   // 开启监听
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_open_module(bool open);   // 打开模组
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_stop();   // 停止监听
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -281,6 +284,16 @@ namespace robotpenetdevice_cs
         /// </summary>
         public void sendStopAnswer() {
             rbt_win_send_stopanswer();
+        }
+
+        /// <summary>
+        /// TY板子打开模组
+        /// </summary>
+        /// <param name="open">true:打开，false:关闭</param>
+        /// <returns></returns>
+        public void openModule(bool open)
+        {
+           rbt_win_open_module(open);
         }
 
         /// <summary>
