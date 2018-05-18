@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180514")
+#define _VERSION  _T("版本号:20180517")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -707,7 +707,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
-		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY)
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -1752,7 +1752,11 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-			if (m_nDeviceType == T7B_HF || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
+			if (m_nDeviceType == T7B_HF 
+				|| m_nDeviceType == T7E 
+				|| m_nDeviceType == S1_DE 
+				|| m_nDeviceType == J7E
+				|| m_nDeviceType == J7B_HF)
 			{
 				switch(penInfo.nStatus)
 				{
@@ -1798,6 +1802,24 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				break;
 			case CREATEPAGE:
 				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CREATEPAGE"));
+				break;
+			case PAGEUPCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPCLICK"));
+				break;
+			case PAGEUPDBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPDBCLICK"));
+				break;
+			case PAGEUPPRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPPRESS"));
+				break;
+			case PAGEDOWNCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNCLICK"));
+				break;
+			case PAGEDOWNDBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNDBCLICK"));
+				break;
+			case PAGEDOWNPRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNPRESS"));
 				break;
 			default:
 				break;
@@ -2236,6 +2258,24 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				break;
 			case CREATEPAGE:
 				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("CREATEPAGE"));
+				break;
+			case PAGEUPCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPCLICK"));
+				break;
+			case PAGEUPDBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPDBCLICK"));
+				break;
+			case PAGEUPPRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEUPPRESS"));
+				break;
+			case PAGEDOWNCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNCLICK"));
+				break;
+			case PAGEDOWNDBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNDBCLICK"));
+				break;
+			case PAGEDOWNPRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNPRESS"));
 				break;
 			default:
 				break;

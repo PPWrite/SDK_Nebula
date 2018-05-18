@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.5"
+#define FILEVERSION "1.1.4.7"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -35,6 +35,7 @@ enum eDevicePid
 	T9W_TY_PID	=	0x602a,
 	S1_DE_PID	=	0x602c,
 	J7E_PID		=	0x602d,
+	J7B_HF_PID  =	0x602e,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -87,6 +88,7 @@ enum eDeviceType
 	T9B_YD2,
 	S1_DE,
 	J7E,
+	J7B_HF,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -379,11 +381,17 @@ typedef struct device_info
 
 enum eKeyPress
 {
-	CLICK = 1,
+	CLICK			= 0x01,
 	DBCLICK,
 	PAGEUP,
 	PAGEDOWN,
 	CREATEPAGE,
+	PAGEUPCLICK		= 0x20,
+	PAGEUPDBCLICK,
+	PAGEUPPRESS,
+	PAGEDOWNCLICK,
+	PAGEDOWNDBCLICK,
+	PAGEDOWNPRESS,
 };
 
 ////////////////////////////DONGLE////////////////////////////////
