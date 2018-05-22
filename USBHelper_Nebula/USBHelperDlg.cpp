@@ -1756,7 +1756,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				|| m_nDeviceType == T7E 
 				|| m_nDeviceType == S1_DE 
 				|| m_nDeviceType == J7E
-				|| m_nDeviceType == J7B_HF)
+				|| m_nDeviceType == J7B_HF
+				|| m_nDeviceType == J7B_ZY
+				)
 			{
 				switch(penInfo.nStatus)
 				{
