@@ -15,7 +15,7 @@ class CDrawDlg;
 
 struct _Mass_Data
 {
-	const char* pMac;
+	CString strMac;
 	PEN_INFO data;
 };
 // CrbtnetDemoDlg ¶Ô»°¿ò
@@ -53,7 +53,6 @@ protected:
 public:
 	afx_msg void OnBnClickedStartOrStop();
 	afx_msg void OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBnClickedButton1();
 
 	static UINT ThreadProc(LPVOID lpParam);
 	void ProcessMassData();
@@ -71,7 +70,7 @@ private:
 	void initCbFunction();
 
 private:
-	std::map<std::string, CDrawDlg*> m_device2draw;
+	std::map<CString, CDrawDlg*> m_device2draw;
 	CRITICAL_SECTION m_sectionLock;
 	std::queue<_Mass_Data> m_queueData;
 	bool m_bRun;
@@ -95,4 +94,10 @@ public:
 	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 
 	bool GetLocalAddress();
+	afx_msg void OnBnClickedOpenModule();
+	afx_msg void OnBnClickedCloseModule();
+	afx_msg void OnBnClickedButtonStartAnswer();
+	afx_msg void OnBnClickedButtonStopAnswer();
+	afx_msg void OnBnClickedButtonEndAnswer();
+	afx_msg void OnBnClickedButtonSetting();
 };

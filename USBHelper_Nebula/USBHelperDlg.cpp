@@ -18,8 +18,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 //#define _WIFI
 
@@ -2623,6 +2623,7 @@ void CUSBHelperDlg::OnBnClickedButtonGetId()
 void CUSBHelperDlg::OnBnClickedButton3Reset2()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//恢复出厂设置
 	GetInstance()->Send(RESET_ALL);
 }
 
