@@ -62,7 +62,13 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_devicename_cb(onDeviceName arg);  
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_devicenameresult_cb(onDeviceNameResult arg);  
+        internal static extern void rbt_win_set_devicenameresult_cb(onDeviceNameResult arg);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_config_freq(int freq);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_config_sleep(int mins);
 
 
         public event onDeviceMac deviceMacEvt_;
@@ -318,6 +324,22 @@ namespace robotpenetdevice_cs
         public int configNet(string strGroup, string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
         {
             return rbt_win_config_net(strGroup, strIP, nPort, bMQTT, bTCP, strDeviceSrc);
+        }
+
+        /// <summary>
+        /// 设置报点率(范围是0到5)
+        /// </summary>
+        public void configFreq(int freq)
+        {
+            rbt_win_config_freq(freq);
+        }
+
+        /// <summary>
+        /// 设置睡眠时间(分钟)
+        /// </summary>
+        public void configSleep(int mins)
+        {
+            rbt_win_config_sleep(mins);
         }
     }
 }
