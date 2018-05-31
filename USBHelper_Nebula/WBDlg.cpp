@@ -444,6 +444,7 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 		else
 		{
 			compressPoint(point);
+			//TRACE("onDrawing--x:%d--y:%d\r\n",point.x,point.y);
 			onDrawing(point);
 			moveCursor(point);
 		}

@@ -133,7 +133,7 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	param.ctx = this;
 	param.port = 6001;
 	param.pIp = NULL;
-	param.listenCount = 50;
+	param.listenCount = 100;
 
 	rbt_win_init(&param);
 	initCbFunction();
@@ -667,7 +667,11 @@ void CrbtnetDemoDlg::recvNameResult(const char* pMac, int res, const char* pName
 {
 	if (res == 0)
 	{
-		::PostMessage(m_hWnd, WM_RCV_NAME, (WPARAM)pName, (LPARAM)pMac);
+		USES_CONVERSION;
+		CString strName = A2T(pName);
+		CString strMac = A2T(pMac);
+		WriteLog(strName, true);;
+		::PostMessage(m_hWnd, WM_RCV_NAME, (WPARAM)strName.AllocSysString(), (LPARAM)strMac.AllocSysString());
 		AfxMessageBox(_T("…Ë÷√≥…π¶"));
 	}
 	else

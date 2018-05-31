@@ -18,8 +18,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 //#define _WIFI
 
@@ -29,7 +29,7 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-//#define USE_OPTIMIZE
+#define USE_OPTIMIZE
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -455,6 +455,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetPressStatus(true);
 	//开启笔记优化
 	GetInstance()->SetOptimizeStatus(true);
+	//设置拖尾长度
+	//GetInstance()->SetPointDelay(0.1);
 #endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -766,8 +768,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		SetTimer(0,500,NULL);
 	}
 
-	/*if (m_nDeviceType == X8)
-	GetInstance()->Send(GetMac);*/
+	/*if (m_nDeviceType == X8 || m_nDeviceType == T7B_HF || m_nDeviceType == J7B_ZY)
+		GetInstance()->Send(GetMac);//*/
 
 }
 
@@ -1573,7 +1575,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
 			int id = 0;
 			memcpy(&id,&pageInfo,sizeof(pageInfo));
-			TRACE("ROBOT_SHOW_PAGE:%02x",id);
+			TRACE("note_num:%d,page_num:%d,ROBOT_SHOW_PAGE:%02x",id,pageInfo.note_num,pageInfo.page_num);
 
 			if (report.reserved >= m_list.size())
 			{
