@@ -191,7 +191,7 @@ namespace rbt_win32_2_demo
 
                 if (bRes)
                 {
-                    this.button_answer.Text = "结束答题";
+                    this.button_answer.Text = "停止答题";
                 }
                 else
                 {
@@ -200,9 +200,14 @@ namespace rbt_win32_2_demo
 
                 Marshal.FreeHGlobal(ptr);
             }
-            else
+            else if (this.button_answer.Text == "停止答题")
             {
                 rbtnet_.sendStopAnswer();
+                this.button_answer.Text = "结束答题";
+            }
+            else
+            {
+                rbtnet_.sendEndAnswer();
                 this.button_answer.Text = "开始答题";
             }
         }

@@ -20,7 +20,10 @@ namespace robotpenetdevice_cs
         internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType);     // 发送开始答题命令
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_stopanswer();   // 结束答题命令
+        internal static extern bool rbt_win_send_stopanswer();   // 停止答题命令
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool rbt_win_send_endanswer();   // 结束答题命令
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_start();   // 开启监听
@@ -290,6 +293,14 @@ namespace robotpenetdevice_cs
         /// </summary>
         public void sendStopAnswer() {
             rbt_win_send_stopanswer();
+        }
+
+        /// <summary>
+        /// 发送结束答题命令
+        /// </summary>
+        public void sendEndAnswer()
+        {
+            rbt_win_send_endanswer();
         }
 
         /// <summary>
