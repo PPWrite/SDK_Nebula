@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.4.8"
+#define FILEVERSION "1.1.5.0"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -37,6 +37,7 @@ enum eDevicePid
 	J7E_PID		=	0x602d,
 	J7B_HF_PID  =	0x602e,
 	J7B_ZY_PID  =	0x602f,
+	J7B_PID		=	0x6031,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -91,6 +92,8 @@ enum eDeviceType
 	J7E,
 	J7B_HF,
 	J7B_ZY,
+	T8S,
+	J7B,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -333,6 +336,7 @@ enum eRobotCmd
 	ROBOT_DONGLE_BIND,							//绑定
 	ROBOT_GET_DEVICE_ID,						//获取设备唯一ID
 	ROBOT_VIRTUAL_KEY_PRESS,					//虚拟按键按下
+	ROBOT_ENTER_SYNC_RES,						//开始同步离线笔记结果
 	////////////////////////////////////////////////////////////
 	ROBOT_SEARCH_MODE,							//查询模式
 };

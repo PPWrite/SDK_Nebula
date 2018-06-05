@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180517")
+#define _VERSION  _T("版本号:20180605")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -214,6 +214,8 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UPDATE, &CUSBHelperDlg::OnBnClickedButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON_SET4, &CUSBHelperDlg::OnBnClickedButtonSet4)
 	ON_BN_CLICKED(IDC_BUTTON_SET5, &CUSBHelperDlg::OnBnClickedButtonSet5)
+	ON_WM_CHANGECBCHAIN()
+	ON_WM_DRAWCLIPBOARD()
 END_MESSAGE_MAP()
 
 
@@ -249,6 +251,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	m_hNextClipboard = ::SetClipboardViewer(GetSafeHwnd());  
+
 	//MoveWindow(0,0,1600,900)
 #ifdef _GATEWAY
 	this->ShowWindow(SW_MAXIMIZE);
@@ -417,6 +421,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
 #endif
+	//GetInstance()->SetKey("36e4a46f689611e8b441060400ef5315");
 
 	InitListCtrl();
 
@@ -1754,12 +1759,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
-			if (m_nDeviceType == T7B_HF 
-				|| m_nDeviceType == T7E 
-				|| m_nDeviceType == S1_DE 
-				|| m_nDeviceType == J7E
-				|| m_nDeviceType == J7B_HF
-				|| m_nDeviceType == J7B_ZY
+			if (T7B_HF		==	m_nDeviceType
+				|| T7E		==	m_nDeviceType
+				|| S1_DE	==	m_nDeviceType
+				|| J7E		==	m_nDeviceType
+				|| J7B_HF	==	m_nDeviceType
+				|| J7B_ZY	==	m_nDeviceType
 				)
 			{
 				switch(penInfo.nStatus)
@@ -1963,17 +1968,25 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_UPDATE_SEARCH:
 		{
-			int len = report.payload[0];
-			int len2 = report.payload[1];
-			char sz_ver[60] = {0};
-			char sz_ver2[60] = {0};
-			memcpy(sz_ver,report.payload+2,len);
-			memcpy(sz_ver2,report.payload+2+len,len2);
+			if (report.reserved == 1)
+			{
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("UPDATE_SEARCH Error"));
+			}
+			else
+			{
+				int len = report.payload[0];
+				int len2 = report.payload[1];
+				char sz_ver[60] = {0};
+				char sz_ver2[60] = {0};
+				memcpy(sz_ver,report.payload+2,len);
+				memcpy(sz_ver2,report.payload+2+len,len2);
 
-			CString strVer(sz_ver);
-			CString strVer2(sz_ver2);
-			GetDlgItem(IDC_EDIT_LOCAL)->SetWindowText(strVer);
-			GetDlgItem(IDC_EDIT_REMOTE)->SetWindowText(strVer2);
+				CString strVer(sz_ver);
+				CString strVer2(sz_ver2);
+				GetDlgItem(IDC_EDIT_LOCAL)->SetWindowText(strVer);
+				GetDlgItem(IDC_EDIT_REMOTE)->SetWindowText(strVer2);
+			}
+			
 		}
 		break;
 	case ROBOT_LOG_OUTPUT:
@@ -2107,7 +2120,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
+			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
 
 			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
 
@@ -2235,7 +2248,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
 			m_list[0]->AddData(penInfo);
 		}
@@ -2708,4 +2721,36 @@ void CUSBHelperDlg::OnBnClickedButtonSet5()
 	GetDlgItem(IDC_EDIT_SECRET)->GetWindowText(str);
 	char *buffer = WideStrToMultiStr(str.GetBuffer());
 	GetInstance()->SetSecret((unsigned char*)buffer);
+}
+
+
+void CUSBHelperDlg::OnChangeCbChain(HWND hWndRemove, HWND hWndAfter)
+{
+
+	// TODO: 在此处添加消息处理程序代码
+	if (m_hNextClipboard== hWndRemove)   
+		m_hNextClipboard = hWndAfter;   
+	else if (m_hNextClipboard) //避免下一个窗口接收不到剪贴板的消息  
+		::SendMessage(m_hNextClipboard, WM_CHANGECBCHAIN,(WPARAM)hWndRemove, (LPARAM)hWndAfter);   
+}
+
+
+void CUSBHelperDlg::OnDrawClipboard()
+{
+	if(m_hNextClipboard)   
+		::SendMessage(m_hNextClipboard, WM_DRAWCLIPBOARD,0, 0);   
+
+	CString str;
+	HANDLE hClip;
+	if (OpenClipboard())
+	{
+		hClip=GetClipboardData(CF_TEXT);
+		char* szText =(char*)GlobalLock(hClip);
+		str = MultiCharToWideChar(szText).c_str();
+		TRACE(str);
+		TRACE("\n");
+		GlobalUnlock(hClip);
+		CloseClipboard();
+	}
+	
 }

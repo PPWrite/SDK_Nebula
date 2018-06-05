@@ -323,6 +323,8 @@ public:
 	virtual void SetSecret(unsigned char *sercet) = 0;
 	//升级字体
 	virtual void UpdateFont(const char *fileFont) = 0;
+	//设置HFKey
+	virtual void SetKey(const char *key) = 0;
 };
 
 //初始化 回调
