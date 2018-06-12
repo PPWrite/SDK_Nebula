@@ -12,6 +12,7 @@ class CDrawDlg;
 #define WM_RCV_MAC (WM_USER + 101)
 #define WM_RCV_NAME (WM_USER + 102)
 #define WM_SHOW_PAGE (WM_USER + 103)
+#define WM_SHOW_ERROR (WM_USER + 104)
 
 
 struct _Mass_Data
@@ -49,6 +50,7 @@ protected:
 	afx_msg HRESULT rcvMac(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT recvName(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT showPage(WPARAM wParam, LPARAM lParam);
+	afx_msg HRESULT onShowError(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -77,7 +79,7 @@ private:
 	std::queue<_Mass_Data> m_queueData;
 	bool m_bRun;
 	HANDLE m_hEvent[2];
-	CString m_strSSID, m_strPwd, m_strStu, m_strSource;
+	CString m_strSSID, m_strPwd, m_strSource;
 public:
 	afx_msg void OnBnClickedButtonConfig();
 	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
@@ -94,6 +96,7 @@ public:
 	static void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
 	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
 	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+	static void CALLBACK onError(rbt_win_context* context, const char* pMac, int cmd, const char *msg);
 
 	bool GetLocalAddress();
 	afx_msg void OnBnClickedOpenModule();

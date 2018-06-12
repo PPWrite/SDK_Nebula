@@ -58,7 +58,6 @@ CrbtnetDemoDlg::CrbtnetDemoDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_RBTNETDEMO_DIALOG, pParent)
 	, m_strSSID("")
 	, m_strPwd("")
-	, m_strStu("")
 	, m_strSource("")
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -86,6 +85,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_MESSAGE(WM_RCV_MAC, &CrbtnetDemoDlg::rcvMac)
 	ON_MESSAGE(WM_RCV_NAME, &CrbtnetDemoDlg::recvName)
 	ON_MESSAGE(WM_SHOW_PAGE, &CrbtnetDemoDlg::showPage)
+	ON_MESSAGE(WM_SHOW_ERROR, &CrbtnetDemoDlg::onShowError)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
@@ -333,6 +333,18 @@ HRESULT CrbtnetDemoDlg::showPage(WPARAM wParam, LPARAM lParam)
 	return 0L;
 }
 
+HRESULT CrbtnetDemoDlg::onShowError(WPARAM wParam, LPARAM lParam)
+{
+	BSTR b = (BSTR)lParam;
+	CString strMac(b);
+	SysFreeString(b);
+	
+	CString strMsg;
+	strMsg.Format(_T("MAC:%s,CMD:%d Error"), strMac, wParam);
+	AfxMessageBox(strMsg);
+	return 0L;
+}
+
 // 开始启动
 void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 {
@@ -397,8 +409,9 @@ void CrbtnetDemoDlg::initCbFunction()
 
 	rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult);
 
-	rbt_win_set_deviceshowpage_cb(onDeviceShowPage);//*/
+	rbt_win_set_deviceshowpage_cb(onDeviceShowPage);
 
+	rbt_win_set_error_cb(onError);
 }
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
@@ -409,7 +422,6 @@ void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAdd
 }
 void CrbtnetDemoDlg::onErrorPacket(rbt_win_context* context)
 {
-
 }
 void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up)
 {
@@ -458,7 +470,13 @@ void CrbtnetDemoDlg::onDeviceShowPage(rbt_win_context* context, const char* pMac
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	pThis->recvDeviceShowpage(pMac, nNoteId, nPageId);
 }
-
+void CrbtnetDemoDlg::onError(rbt_win_context* context, const char* pMac, int cmd, const char *msg)
+{
+	USES_CONVERSION;
+	CString strMac = A2T(pMac);
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	::PostMessage(pThis->m_hWnd, WM_SHOW_ERROR, cmd, (LPARAM)strMac.AllocSysString());
+}
 void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
@@ -747,12 +765,12 @@ void CrbtnetDemoDlg::OnClose()
 void CrbtnetDemoDlg::OnBnClickedButtonConfig()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	CConfigDlg dlg(m_strSSID, m_strPwd, m_strStu, m_strSource);
+	CConfigDlg dlg(m_strSSID, m_strPwd, m_strSource);
 	if (dlg.DoModal() == IDOK)
 	{
-		dlg.getConfig(m_strSSID, m_strPwd, m_strStu, m_strSource);
+		dlg.getConfig(m_strSSID, m_strPwd, m_strSource);
 		USES_CONVERSION;
-		rbt_win_config_wifi(T2A(m_strSSID), T2A(m_strPwd), T2A(m_strStu), T2A(m_strSource));
+		rbt_win_config_wifi(T2A(m_strSSID), T2A(m_strPwd), T2A(m_strSource));
 	}
 }
 
@@ -811,7 +829,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 	CString strIP;
 	GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
 	USES_CONVERSION;
-	int ret = rbt_win_config_net("", T2A(strIP), 6001, false, true, "");
+	int ret = rbt_win_config_net(T2A(strIP), 6001, false, true, "");
 	if (ret != 0)
 	{
 		AfxMessageBox(_T("rbt_win_config_net error"));
@@ -976,7 +994,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetting()
 void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	int ret = rbt_win_config_net("", "", 6001, false, true, "");
+	int ret = rbt_win_config_net("", 6001, false, true, "");
 	if (ret != 0)
 	{
 		AfxMessageBox(_T("rbt_win_config_net error"));

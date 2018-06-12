@@ -8,7 +8,7 @@ class CConfigDlg : public CDialog
 	DECLARE_DYNAMIC(CConfigDlg)
 
 public:
-	CConfigDlg(const CString &strSSID, const CString &strPwd, const CString &strStu, const CString &strSource,CWnd* pParent = NULL);   // 标准构造函数
+	CConfigDlg(const CString &strSSID, const CString &strPwd, const CString &strSource,CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CConfigDlg();
 
 // 对话框数据
@@ -23,9 +23,9 @@ protected:
 
 public:
 	afx_msg void OnBnClickedOk();
-	void getConfig(CString &strSSID, CString &strPwd, CString &strStu, CString &strSource);
+	void getConfig(CString &strSSID, CString &strPwd, CString &strSource);
 private:
-	CString m_strSSID, m_strPwd, m_strStu, m_strSource;
+	CString m_strSSID, m_strPwd, m_strSource;
 public:
 	virtual BOOL OnInitDialog();
 };
