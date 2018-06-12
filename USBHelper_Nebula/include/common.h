@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.0"
+#define FILEVERSION "1.1.5.1"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -37,6 +37,7 @@ enum eDevicePid
 	J7E_PID		=	0x602d,
 	J7B_HF_PID  =	0x602e,
 	J7B_ZY_PID  =	0x602f,
+	T8S_PID		=	0x6030,
 	J7B_PID		=	0x6031,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
@@ -321,6 +322,15 @@ enum eRobotCmd
 	ROBOT_MASS_MAC,								//上报mac地址
 	ROBOT_LOG_OUTPUT,							//log输出
 	ROBOT_SWITCH_MODE,							//切换模式
+	ROBOT_SET_BMP,								//设置BMP
+	ROBOT_DATA_PACKET,							//笔记数据包
+	ROBOT_ENTER_EMR_DFU,						//进入dfu模式
+	ROBOT_FIRMWARE_EMR_LEN,						//获取固件长度
+	ROBOT_FIRMWARE_EMR_DATA,					//获取固件信息
+	ROBOT_FIRMWARE_EMR_CHECK_SUM,				//获取校验和
+	ROBOT_RAW_EMR_RESULT,						//校验结果
+	ROBOT_GATEWAY_EMR_SWITCH,					//设备重启
+	ROBOT_EXIT_EMR_DFU,							//退出dfu模式
 	//////////////////////////Dongle/////////////////////////////
 	ROBOT_DONGLE_STATUS,						//dongele状态
 	ROBOT_DONGLE_VERSION,						//dongle版本

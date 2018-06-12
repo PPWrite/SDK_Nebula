@@ -150,7 +150,7 @@ public:
 	afx_msg void OnBnClickedButtonSet4();
 	afx_msg void OnBnClickedButtonSet5();
 
-	afx_msg void OnChangeCbChain(HWND hWndRemove, HWND hWndAfter);
-	afx_msg void OnDrawClipboard();
+	/*afx_msg void OnChangeCbChain(HWND hWndRemove, HWND hWndAfter);
+	afx_msg void OnDrawClipboard();//*/
 	HWND m_hNextClipboard;  
 };

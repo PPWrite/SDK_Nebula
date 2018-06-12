@@ -72,7 +72,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL
 			|| m_nDeviceType == T9E || m_nDeviceType == T8B || m_nDeviceType == T9B_YD 
 			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY
-			|| T9B_YD2 == m_nDeviceType)
+			|| T9B_YD2 == m_nDeviceType || J7B_HF == m_nDeviceType || J7B_ZY == m_nDeviceType || J7B == m_nDeviceType)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
 		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);

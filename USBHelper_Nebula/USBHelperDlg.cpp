@@ -12,14 +12,14 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:20180605")
+#define _VERSION  _T("版本号:201806012")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 //#define _WIFI
 
@@ -29,7 +29,8 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-#define USE_OPTIMIZE
+//#define USE_OPTIMIZE
+//#define _HF
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
 
@@ -421,7 +422,9 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
 #endif
-	//GetInstance()->SetKey("36e4a46f689611e8b441060400ef5315");
+#ifdef _HF
+	GetInstance()->SetKey("36e4a46f689611e8b441060400ef5315");
+#endif
 
 	InitListCtrl();
 
@@ -1756,15 +1759,14 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
-
-			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 			if (T7B_HF		==	m_nDeviceType
 				|| T7E		==	m_nDeviceType
 				|| S1_DE	==	m_nDeviceType
 				|| J7E		==	m_nDeviceType
 				|| J7B_HF	==	m_nDeviceType
 				|| J7B_ZY	==	m_nDeviceType
+				|| T8S      ==	m_nDeviceType
 				)
 			{
 				switch(penInfo.nStatus)
@@ -1881,9 +1883,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
+			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
-			//TRACE(_T("X:%d-Y:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nStatus);
 			//T9A
 			if (m_nCurNoteNum < MAX_NOTE)
 			{
@@ -2120,9 +2121,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//penInfo.nPress = (penInfo.nStatus == 0x11) ? 1 : 0;
-
-			TRACE(_T("X:%d-Y:%d-Press:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress);
+			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
 			/*CString str;
 			str.Format(_T("压感：%d"),penInfo.nPress);
@@ -2724,7 +2723,7 @@ void CUSBHelperDlg::OnBnClickedButtonSet5()
 }
 
 
-void CUSBHelperDlg::OnChangeCbChain(HWND hWndRemove, HWND hWndAfter)
+/*void CUSBHelperDlg::OnChangeCbChain(HWND hWndRemove, HWND hWndAfter)
 {
 
 	// TODO: 在此处添加消息处理程序代码
@@ -2746,6 +2745,8 @@ void CUSBHelperDlg::OnDrawClipboard()
 	{
 		hClip=GetClipboardData(CF_TEXT);
 		char* szText =(char*)GlobalLock(hClip);
+		if (NULL == szText)
+			return;
 		str = MultiCharToWideChar(szText).c_str();
 		TRACE(str);
 		TRACE("\n");
@@ -2753,4 +2754,4 @@ void CUSBHelperDlg::OnDrawClipboard()
 		CloseClipboard();
 	}
 	
-}
+}//*/

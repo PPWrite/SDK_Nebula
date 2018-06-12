@@ -11,6 +11,7 @@ class CDrawDlg;
 #define WM_RCV_ACCEPT (WM_USER + 100)
 #define WM_RCV_MAC (WM_USER + 101)
 #define WM_RCV_NAME (WM_USER + 102)
+#define WM_SHOW_PAGE (WM_USER + 103)
 
 
 struct _Mass_Data
@@ -47,6 +48,7 @@ protected:
 	afx_msg HRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT rcvMac(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT recvName(WPARAM wParam, LPARAM lParam);
+	afx_msg HRESULT showPage(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -100,4 +102,5 @@ public:
 	afx_msg void OnBnClickedButtonStopAnswer();
 	afx_msg void OnBnClickedButtonEndAnswer();
 	afx_msg void OnBnClickedButtonSetting();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

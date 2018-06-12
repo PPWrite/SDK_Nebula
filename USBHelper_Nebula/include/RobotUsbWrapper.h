@@ -37,6 +37,7 @@ enum eRbtType
 	UpdateSearch,
 	UpdateWifi,
 	GetMassMac,
+	UpdateEmrStop,
 };
 
 //回调函数
@@ -106,6 +107,10 @@ public:
 	}
 	//重启事件
 	virtual void onGatewayReboot() {
+	}
+	//坐标原始数据事件
+	virtual void onDataPacket(const PEN_INFO &penInfo) {
+		(void)penInfo;
 	}
 	//坐标数据事件
 	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
@@ -323,8 +328,12 @@ public:
 	virtual void SetSecret(unsigned char *sercet) = 0;
 	//升级字体
 	virtual void UpdateFont(const char *fileFont) = 0;
-	//设置HFKey
+	//设置Key
 	virtual void SetKey(const char *key) = 0;
+	//设置bmp
+	virtual void SetBmp(unsigned char *buffer,int len) = 0;
+	//升级模组
+	virtual bool UpdateEmr(const char *file) = 0;
 };
 
 //初始化 回调
@@ -397,6 +406,10 @@ extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
 extern "C" ROBOT_API void SetSecret(unsigned char *sercet);
 //获取当前设备类型
 extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
+//设置Key
+extern "C" ROBOT_API void SetKey(const char *key);
+//设置bmp
+extern "C" ROBOT_API void SetBmp(unsigned char *buffer,int len);
 
 extern "C" 
 {

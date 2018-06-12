@@ -15,6 +15,8 @@
 // #define new DEBUG_NEW
 // #endif
 
+//#define _TEST
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -83,6 +85,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_MESSAGE(WM_RCV_ACCEPT, &CrbtnetDemoDlg::rcvAccept)
 	ON_MESSAGE(WM_RCV_MAC, &CrbtnetDemoDlg::rcvMac)
 	ON_MESSAGE(WM_RCV_NAME, &CrbtnetDemoDlg::recvName)
+	ON_MESSAGE(WM_SHOW_PAGE, &CrbtnetDemoDlg::showPage)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
@@ -95,6 +98,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ANSWER, &CrbtnetDemoDlg::OnBnClickedButtonStopAnswer)
 	ON_BN_CLICKED(IDC_BUTTON_END_ANSWER, &CrbtnetDemoDlg::OnBnClickedButtonEndAnswer)
 	ON_BN_CLICKED(IDC_BUTTON_SETTING, &CrbtnetDemoDlg::OnBnClickedButtonSetting)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -146,6 +150,7 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 	GetLocalAddress();
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -299,6 +304,31 @@ HRESULT CrbtnetDemoDlg::recvName(WPARAM wParam, LPARAM lParam)
 	}
 
 	pListCtrl->SetItemText(nRowIndex, 1, strName);
+
+	return 0L;
+}
+
+HRESULT CrbtnetDemoDlg::showPage(WPARAM wParam, LPARAM lParam)
+{
+	BSTR b = (BSTR)lParam;
+	CString strMac(b);
+	SysFreeString(b);
+
+	b = (BSTR)wParam;
+	CString strText(b);
+	SysFreeString(b);
+
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = strMac;
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex == -1)
+		return 0L;
+
+	pListCtrl->SetItemText(nRowIndex, 5, strText);
 
 	return 0L;
 }
@@ -647,9 +677,17 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 
 void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId)
 {
+	TRACE("recvDeviceShowpage\n");
+	USES_CONVERSION;
+	CString strMac = A2T(pMac);
+	CString strText;
+	strText.Format(_T("总页数:%d 当前页:%d"), nNoteId, nPageId);
+	PostMessage(WM_SHOW_PAGE, (WPARAM)strText.AllocSysString(), (LPARAM)strMac.AllocSysString());
+	return;
+
 	LVFINDINFO info;
 	info.flags = LVFI_PARTIAL | LVFI_STRING;
-	USES_CONVERSION;
+	//USES_CONVERSION;
 	info.psz = A2T(pMac);
 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
@@ -657,7 +695,6 @@ void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPage
 	if (nRowIndex == -1) {
 		return;
 	}
-
 	CString csValue;
 	csValue.Format(_T("总页数:%d 当前页:%d"), nNoteId, nPageId);
 	pListCtrl->SetItemText(nRowIndex, 5, csValue);
@@ -768,10 +805,18 @@ void CrbtnetDemoDlg::OnSettingStu()
 void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 {
 	// TODO: 在此添加控件通知处理程序代码
+#ifdef _TEST
+	SetTimer(0, 10, NULL);
+#else
 	CString strIP;
 	GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
 	USES_CONVERSION;
-	rbt_win_config_net("", T2A(strIP), 6001, false, true, "");
+	int ret = rbt_win_config_net("", T2A(strIP), 6001, false, true, "");
+	if (ret != 0)
+	{
+		AfxMessageBox(_T("rbt_win_config_net error"));
+	}
+#endif
 }
 
 bool CrbtnetDemoDlg::GetLocalAddress()
@@ -850,14 +895,37 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 void CrbtnetDemoDlg::OnBnClickedOpenModule()
 {
 	// TODO: 在此添加控件通知处理程序代码
+#ifdef _TEST
+	rbt_win_start();
+#else
 	rbt_win_open_module(true);
+#endif // _TEST
+
 }
 
 //关闭模组
 void CrbtnetDemoDlg::OnBnClickedCloseModule()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+#ifdef _TEST
+	rbt_win_stop();
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	if (pListCtrl)
+		pListCtrl->DeleteAllItems();
+
+	for (auto it : m_device2draw)
+	{
+		it.second->DestroyWindow();
+		it.second = NULL;
+	}
+	m_device2draw.clear();
+#else
 	rbt_win_open_module(false);
+#endif // _TEST
+
+
 }
 
 //开始答题
@@ -902,4 +970,17 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetting()
 	USES_CONVERSION;
 	int nTime = atoi(T2A(str));
 	rbt_win_config_sleep(nTime);
+}
+
+
+void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	int ret = rbt_win_config_net("", "", 6001, false, true, "");
+	if (ret != 0)
+	{
+		AfxMessageBox(_T("rbt_win_config_net error"));
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }
