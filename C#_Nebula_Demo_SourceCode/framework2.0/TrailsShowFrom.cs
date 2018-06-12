@@ -64,6 +64,14 @@ namespace RobotPenTestDll
             bOptimize = false;
         }
 
+        public TrailsShowFrom(int len, int width)
+        {
+            InitializeComponent();
+            m_nDeviceW = width;
+            m_nDeviceH = len;
+            bOptimize = false;
+        }
+
         public bool bOptimize { get; set; }
         public int pageNumber { get { return m_nPageNumber; } set { m_nPageNumber = value; } }
         public int noteNumber { get { return m_nNoteNumber; } set { m_nNoteNumber = value; } }
