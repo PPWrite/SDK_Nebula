@@ -532,6 +532,11 @@ namespace RobotPenTestDll
 
             }
 
+            if (deviceType==eDeviceType.T7PL|| deviceType == eDeviceType.T7E || deviceType == eDeviceType.S1_DE || deviceType == eDeviceType.J7E)
+            {
+                this.SwichModeBtn.Visible = true;
+            }
+
             robotpenController.GetInstance()._ConnectInitialize(deviceType, IntPtr.Zero);
 
             if (this.open_button.Text == "打开设备")
@@ -2123,6 +2128,11 @@ namespace RobotPenTestDll
         private void EndSyncBtn_Click(object sender, EventArgs e)
         {
             robotpenController.GetInstance()._Send(cmdId.SyncEnd);
+        }
+
+        private void SwichModeBtn_Click(object sender, EventArgs e)
+        {
+            robotpenController.GetInstance()._Send(cmdId.SwitchMode);
         }
     }
 }
