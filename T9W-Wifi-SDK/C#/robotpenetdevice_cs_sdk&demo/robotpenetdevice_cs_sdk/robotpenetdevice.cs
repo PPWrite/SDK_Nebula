@@ -233,10 +233,11 @@ namespace robotpenetdevice_cs
         /// 初始化
         /// </summary>
         /// <param name="arg"></param>
-        public void init(ref Init_Param arg) {
+        public void init(ref Init_Param arg,bool open=true) {
             gchandld = GCHandle.Alloc(this);
             iPtrThis_ = GCHandle.ToIntPtr(gchandld);
             arg.ctx = iPtrThis_;
+            arg.open = open;
             bool sus = rbt_win_init(ref arg);
 
             onorigindata = new onOriginData(originDataNotify);

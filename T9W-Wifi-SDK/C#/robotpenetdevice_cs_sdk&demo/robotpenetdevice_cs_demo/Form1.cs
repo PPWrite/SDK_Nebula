@@ -33,7 +33,6 @@ namespace rbt_win32_2_demo
             rbtnet_ = new RbtNet();
             // 初始化
             Init_Param param = new Init_Param();
-            param.open = true;
             param.strIp = "";
             param.port = 6001;
             param.listenCount = 60;
