@@ -4,6 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace robotpenetdevice_cs
 {
+    // 
+    public delegate void onAccept(IntPtr ctx, System.String strDeviceMac);
+    // 
+    public delegate void onErrorPacket(IntPtr ctx, System.String strDeviceMac);
+
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, System.String strDeviceMac);
     // 原点数据上报
@@ -21,10 +26,13 @@ namespace robotpenetdevice_cs
 
     public delegate void onDeviceNameResult(IntPtr ctx, String strDeviceMac, int res, String strDeviceName);
 
+    public delegate void onError(IntPtr ctx, String pmac, int cmd, String msg);
+
     public struct Init_Param {
         public string strIp;
         public Int32 port;
         public Int32 listenCount;
+        public bool open;
         public IntPtr ctx;
     }
 

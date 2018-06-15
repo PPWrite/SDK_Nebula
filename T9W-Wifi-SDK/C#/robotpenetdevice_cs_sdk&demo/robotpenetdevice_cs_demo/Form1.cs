@@ -33,6 +33,7 @@ namespace rbt_win32_2_demo
             rbtnet_ = new RbtNet();
             // 初始化
             Init_Param param = new Init_Param();
+            param.strIp = "";
             param.port = 6001;
             param.listenCount = 60;
             rbtnet_.init(ref param);
@@ -573,13 +574,13 @@ namespace rbt_win32_2_demo
             //rbtnet_.configStu(strMac, strStu);//*/
             string strSSID = "C_68E";
             string strPWD = "test1234";
-            rbtnet_.configWifi(strSSID, strPWD, "", "");//*/
+            rbtnet_.configWifi(strSSID, strPWD,  "");//*/
         }
 
         private void button_switch_Click(object sender, EventArgs e)
         {
             string strIP = textBox1.Text;
-            rbtnet_.configNet("", strIP, 6001, false, true, "");
+            rbtnet_.configNet(strIP, 6001, false, true, "");
         }
     }
 }

@@ -11,7 +11,7 @@ namespace robotpenetdevice_cs
     {
         // 声明dll 函数接口
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_init(ref Init_Param arg);   // 初始化
+        internal static extern bool rbt_win_init(ref Init_Param arg);   // 初始化
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_uninit();     // 反初始化
@@ -38,10 +38,10 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_config_stu(string strDeviceMac, string strDeviceStu);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceStu, string strDeviceSrc);
+        internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceSrc);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int rbt_win_config_net(string strGroup, string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
+        internal static extern int rbt_win_config_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
@@ -233,11 +233,12 @@ namespace robotpenetdevice_cs
         /// 初始化
         /// </summary>
         /// <param name="arg"></param>
-        public void init(ref Init_Param arg) {
+        public void init(ref Init_Param arg,bool open=true) {
             gchandld = GCHandle.Alloc(this);
             iPtrThis_ = GCHandle.ToIntPtr(gchandld);
             arg.ctx = iPtrThis_;
-            rbt_win_init(ref arg);
+            arg.open = open;
+            bool sus = rbt_win_init(ref arg);
 
             onorigindata = new onOriginData(originDataNotify);
             rbt_win_set_origindata_cb(onorigindata);
@@ -324,17 +325,17 @@ namespace robotpenetdevice_cs
         /// <summary>
         /// 切换网络
         /// </summary>
-        public int configWifi(string strDeviceSSID, string strDevicePwd, string strDeviceStu, string strDeviceSrc)
+        public int configWifi(string strDeviceSSID, string strDevicePwd, string strDeviceSrc)
         {
-            return rbt_win_config_wifi(strDeviceSSID, strDevicePwd, strDeviceStu, strDeviceSrc);
+            return rbt_win_config_wifi(strDeviceSSID, strDevicePwd, strDeviceSrc);
         }
 
         /// <summary>
         /// 配网
         /// </summary>
-        public int configNet(string strGroup, string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
+        public int configNet(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
         {
-            return rbt_win_config_net(strGroup, strIP, nPort, bMQTT, bTCP, strDeviceSrc);
+            return rbt_win_config_net(strIP, nPort, bMQTT, bTCP, strDeviceSrc);
         }
 
         /// <summary>

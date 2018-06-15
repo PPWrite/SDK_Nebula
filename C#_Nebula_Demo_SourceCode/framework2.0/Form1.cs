@@ -486,6 +486,7 @@ namespace RobotPenTestDll
             this.version_label_show.Text = "版本号";
             this.status_label.Text = "状态";
             this.mac_label_show.Text = "mac地址";
+            this.DeviceSize.Text = "";
 
             this.listView1.Items.Clear();
 
@@ -827,6 +828,7 @@ namespace RobotPenTestDll
                     {
                         str = ("BLE_CONNECTED");
                         UpdateControlUI("", updateControl.econnectSlaveName);
+                        SetDeviceHW();
                     }
                     break;
                 case eDongleStatus.BLE_ACTIVE_DISCONNECT://正在断开链接
@@ -1533,6 +1535,7 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_ACTIVE:
                     {
                         strStatus = "DEVICE_ACTIVE";
+                        SetDeviceHW();
                     }
                     break;
                 case NODE_STATUS.DEVICE_LOW_POWER_ACTIVE:
@@ -1655,6 +1658,7 @@ namespace RobotPenTestDll
         public delegate void UpdateBoxingEx(int index);
         // 更新设置结果
         public delegate void UpdateSettingRes(bool bres);
+
 
         // 
         public void showSettingRes(bool bres)
@@ -2043,6 +2047,7 @@ namespace RobotPenTestDll
         private void dg_discon_button_Click(object sender, EventArgs e)
         {
             robotpenController.GetInstance()._Send(cmdId.DongleDisconnect);
+            this.DeviceSize.Text = "";
         }
 
         // 设置蓝牙名称
@@ -2134,5 +2139,41 @@ namespace RobotPenTestDll
         {
             robotpenController.GetInstance()._Send(cmdId.SwitchMode);
         }
+
+        /// <summary>
+        /// 获取宽高
+        /// </summary>
+        private void SetDeviceHW()
+        {
+            Thread.Sleep(400);
+            int width = robotpenController.GetInstance().getWidth();
+            int height = robotpenController.GetInstance().getHeight();
+            UpdateLable(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
+        }
+
+
+        #region 更新from控件的方法
+        public delegate void UpdateLabel(string str1, System.Windows.Forms.Label lable);
+        // 更新lable标签
+        public void UpdateLable(string param, System.Windows.Forms.Label lable)
+        {
+            if (lable.InvokeRequired)
+            {
+                while (!lable.IsHandleCreated)
+                {
+                    if (lable.Disposing || lable.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                UpdateLabel d = new UpdateLabel(UpdateLable);
+                lable.Invoke(d, new object[] { param, lable });
+            }
+            else
+            {
+                lable.Text = param;
+            }
+        }
+        #endregion
     }
 }

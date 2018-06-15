@@ -71,6 +71,8 @@
             this.labelnote = new System.Windows.Forms.Label();
             this.label_sync_offline_tip = new System.Windows.Forms.Label();
             this.BaseGroup = new System.Windows.Forms.GroupBox();
+            this.DeviceSize = new System.Windows.Forms.Label();
+            this.SwichModeBtn = new System.Windows.Forms.Button();
             this.mode_label = new System.Windows.Forms.Label();
             this.mac_label_show = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -86,7 +88,6 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.SwichModeBtn = new System.Windows.Forms.Button();
             this.BaseGroup.SuspendLayout();
             this.BLEGroup.SuspendLayout();
             this.GATEWAYGroup.SuspendLayout();
@@ -295,7 +296,7 @@
             // update_button
             // 
             this.update_button.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.update_button.Location = new System.Drawing.Point(220, 143);
+            this.update_button.Location = new System.Drawing.Point(392, 110);
             this.update_button.Name = "update_button";
             this.update_button.Size = new System.Drawing.Size(93, 28);
             this.update_button.TabIndex = 19;
@@ -343,7 +344,7 @@
             "竖屏"});
             this.comboBox1.Location = new System.Drawing.Point(93, 142);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 29);
+            this.comboBox1.Size = new System.Drawing.Size(60, 29);
             this.comboBox1.TabIndex = 24;
             // 
             // screen_set_label
@@ -570,6 +571,7 @@
             // 
             // BaseGroup
             // 
+            this.BaseGroup.Controls.Add(this.DeviceSize);
             this.BaseGroup.Controls.Add(this.SwichModeBtn);
             this.BaseGroup.Controls.Add(this.mode_label);
             this.BaseGroup.Controls.Add(this.screen_set_label);
@@ -593,12 +595,32 @@
             this.BaseGroup.TabStop = false;
             this.BaseGroup.Text = "BaseGroup";
             // 
+            // DeviceSize
+            // 
+            this.DeviceSize.AutoSize = true;
+            this.DeviceSize.Font = new System.Drawing.Font("微软雅黑", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.DeviceSize.Location = new System.Drawing.Point(159, 148);
+            this.DeviceSize.Name = "DeviceSize";
+            this.DeviceSize.Size = new System.Drawing.Size(0, 19);
+            this.DeviceSize.TabIndex = 40;
+            // 
+            // SwichModeBtn
+            // 
+            this.SwichModeBtn.Location = new System.Drawing.Point(392, 143);
+            this.SwichModeBtn.Name = "SwichModeBtn";
+            this.SwichModeBtn.Size = new System.Drawing.Size(93, 28);
+            this.SwichModeBtn.TabIndex = 39;
+            this.SwichModeBtn.Text = "切换";
+            this.SwichModeBtn.UseVisualStyleBackColor = true;
+            this.SwichModeBtn.Visible = false;
+            this.SwichModeBtn.Click += new System.EventHandler(this.SwichModeBtn_Click);
+            // 
             // mode_label
             // 
             this.mode_label.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.mode_label.Location = new System.Drawing.Point(289, 113);
             this.mode_label.Name = "mode_label";
-            this.mode_label.Size = new System.Drawing.Size(157, 23);
+            this.mode_label.Size = new System.Drawing.Size(55, 23);
             this.mode_label.TabIndex = 38;
             this.mode_label.Text = "USB";
             this.mode_label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -779,17 +801,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "2.4GSetting";
             // 
-            // SwichModeBtn
-            // 
-            this.SwichModeBtn.Location = new System.Drawing.Point(319, 142);
-            this.SwichModeBtn.Name = "SwichModeBtn";
-            this.SwichModeBtn.Size = new System.Drawing.Size(93, 28);
-            this.SwichModeBtn.TabIndex = 39;
-            this.SwichModeBtn.Text = "切换";
-            this.SwichModeBtn.UseVisualStyleBackColor = true;
-            this.SwichModeBtn.Visible = false;
-            this.SwichModeBtn.Click += new System.EventHandler(this.SwichModeBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -883,6 +894,7 @@
         private System.Windows.Forms.Label slave_version_label;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button SwichModeBtn;
+        private System.Windows.Forms.Label DeviceSize;
     }
 }
 
