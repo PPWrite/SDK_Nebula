@@ -86,6 +86,7 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.SwichModeBtn = new System.Windows.Forms.Button();
             this.BaseGroup.SuspendLayout();
             this.BLEGroup.SuspendLayout();
             this.GATEWAYGroup.SuspendLayout();
@@ -569,6 +570,7 @@
             // 
             // BaseGroup
             // 
+            this.BaseGroup.Controls.Add(this.SwichModeBtn);
             this.BaseGroup.Controls.Add(this.mode_label);
             this.BaseGroup.Controls.Add(this.screen_set_label);
             this.BaseGroup.Controls.Add(this.comboBox1);
@@ -777,6 +779,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "2.4GSetting";
             // 
+            // SwichModeBtn
+            // 
+            this.SwichModeBtn.Location = new System.Drawing.Point(319, 142);
+            this.SwichModeBtn.Name = "SwichModeBtn";
+            this.SwichModeBtn.Size = new System.Drawing.Size(93, 28);
+            this.SwichModeBtn.TabIndex = 39;
+            this.SwichModeBtn.Text = "切换";
+            this.SwichModeBtn.UseVisualStyleBackColor = true;
+            this.SwichModeBtn.Visible = false;
+            this.SwichModeBtn.Click += new System.EventHandler(this.SwichModeBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -869,6 +882,7 @@
         private System.Windows.Forms.Label slave_version1_label;
         private System.Windows.Forms.Label slave_version_label;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button SwichModeBtn;
     }
 }
 
