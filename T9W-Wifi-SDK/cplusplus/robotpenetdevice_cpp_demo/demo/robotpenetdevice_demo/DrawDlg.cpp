@@ -18,6 +18,7 @@ CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
 	, m_nPenStatus(0)
 	, m_bMouseDraw(false)
 	, m_lastPoint(0, 0)
+	, m_bRed(false)
 {
 	m_nPenWidth = 2;
 	m_nState = 270;
@@ -33,6 +34,8 @@ CDrawDlg::~CDrawDlg()
 void CDrawDlg::onRecvData(const PEN_INFO& penInfo)
 {
 	CPoint point(penInfo.nX, penInfo.nY);
+
+	m_bRed = ((penInfo.nStatus == 0x20) || (penInfo.nStatus == 0x21));
 	//Clear(point);
 	/*CString str;
 	str.Format(_T("X:%d-Y:%d-Press:%d"),penInfo.nX,penInfo.nY,penInfo.nPress);
@@ -261,7 +264,7 @@ void CDrawDlg::OnPaint()
 	Graphics graphics(pdc->m_hDC);
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
+	Pen pen(m_bRed ? Color(255, 255, 0, 0) : Color(255, 0, 0, 0), m_nPenWidth);
 
 	/*for (std::list<sCanvasPointItem>::iterator it = m_listItems.begin();
 		it != m_listItems.end(); ++it)

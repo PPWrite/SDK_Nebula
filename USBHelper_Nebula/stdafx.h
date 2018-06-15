@@ -51,8 +51,8 @@ struct sCanvasPointItem
 #include "gdiplus.h"
 using namespace Gdiplus;
 
-#include "include/RobotUsbWrapper.h"
-#pragma comment(lib,"lib/RobotUsbWrapper.lib")
+#include "../SDK/include/RobotUsbWrapper.h"
+#pragma comment(lib,"../SDK/lib/RobotUsbWrapper.lib")
 
 
 #pragma pack(1)

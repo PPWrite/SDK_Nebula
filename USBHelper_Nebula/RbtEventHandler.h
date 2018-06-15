@@ -1,6 +1,6 @@
 #pragma once
 
-#include "include/RobotUsbWrapper.h"
+#include "../SDK/include/RobotUsbWrapper.h"
 
 #define WM_MSGID(code) (WM_USER+0x200+code)
 #define WM_EVTID(code) (code-0x200-WM_USER)

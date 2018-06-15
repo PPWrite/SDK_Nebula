@@ -58,4 +58,5 @@ private:
 	int m_nHeight;
 	int m_nState;
 	int m_nID;
+	bool m_bRed;
 };
