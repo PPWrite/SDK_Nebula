@@ -18,7 +18,6 @@ CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
 	, m_nPenStatus(0)
 	, m_bMouseDraw(false)
 	, m_lastPoint(0, 0)
-	, m_bRed(false)
 {
 	m_nPenWidth = 2;
 	m_nState = 270;
@@ -35,7 +34,6 @@ void CDrawDlg::onRecvData(const PEN_INFO& penInfo)
 {
 	CPoint point(penInfo.nX, penInfo.nY);
 
-	m_bRed = ((penInfo.nStatus == 0x20) || (penInfo.nStatus == 0x21));
 	//Clear(point);
 	/*CString str;
 	str.Format(_T("X:%d-Y:%d-Press:%d"),penInfo.nX,penInfo.nY,penInfo.nPress);
@@ -87,12 +85,9 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 {
 	CPoint point(ux, uy);
 	//Clear(point);
-	CString str;
+	/*CString str;
 	str.Format(_T("X:%d-Y:%d-Press:%d-Status:%d"), ux, uy, up, us);
-	if (us == 0)
-		str += "===============================";
-	//TRACE(str + "\r\n");
-	WriteLog(str);
+	WriteLog(str);//*/
 	if (m_nState == 90)
 	{
 		point.SetPoint(m_nHeight - uy, ux);
@@ -136,7 +131,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	}
 	return;//*/
 
-	if (us == 17)
+	if (us == 17 || us == 0x21)
 	{
 		// ±Ê½Ó´¥µ½°å×Ó
 		if (m_nFlags == 0)
@@ -148,7 +143,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 		else
 		{
 			compressPoint(point);
-			onDrawing(point);
+			onDrawing(point, us == 0x21);
 		}
 	}
 	else
@@ -264,7 +259,7 @@ void CDrawDlg::OnPaint()
 	Graphics graphics(pdc->m_hDC);
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	Pen pen(m_bRed ? Color(255, 255, 0, 0) : Color(255, 0, 0, 0), m_nPenWidth);
+	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
 
 	/*for (std::list<sCanvasPointItem>::iterator it = m_listItems.begin();
 		it != m_listItems.end(); ++it)
@@ -335,11 +330,11 @@ void CDrawDlg::onbegin(const CPoint& pos)
 	m_currentItem.lstPoint.clear();
 }
 
-void CDrawDlg::onDrawing(const CPoint& pos)
+void CDrawDlg::onDrawing(const CPoint& pos, bool bRed)
 {
 	if (!m_bDrawing)
 		return;
-	doDrawing(pos);
+	doDrawing(pos, bRed);
 	m_currentItem.lstPoint.push_back(pos);
 }
 
@@ -348,7 +343,7 @@ void CDrawDlg::onEnd()
 	m_bDrawing = false;
 }
 
-void CDrawDlg::doDrawing(const CPoint& pos)
+void CDrawDlg::doDrawing(const CPoint& pos, bool bRed)
 {
 	CRect rect;
 	CDC* pdc = this->GetDC();
@@ -362,7 +357,7 @@ void CDrawDlg::doDrawing(const CPoint& pos)
 	Graphics graphics(pdc->m_hDC);
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
+	Pen pen(bRed ? Color(255, 255, 0, 0) : Color(255, 0, 0, 0), m_nPenWidth);
 
 	graphics.DrawLine(&pen, m_lastPoint.x, m_lastPoint.y, pos.x, pos.y);
 	m_lastPoint = pos;

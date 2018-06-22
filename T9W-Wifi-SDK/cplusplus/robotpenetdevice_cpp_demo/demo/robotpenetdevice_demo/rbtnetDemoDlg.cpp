@@ -99,6 +99,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_END_ANSWER, &CrbtnetDemoDlg::OnBnClickedButtonEndAnswer)
 	ON_BN_CLICKED(IDC_BUTTON_SETTING, &CrbtnetDemoDlg::OnBnClickedButtonSetting)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_SET_FREQ, &CrbtnetDemoDlg::OnBnClickedButtonSetFreq)
 END_MESSAGE_MAP()
 
 
@@ -150,6 +151,13 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 	GetLocalAddress();
+
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(0, _T("不抛点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(1, _T("抛一个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(2, _T("抛两个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(3, _T("抛三个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("抛四个点"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->SetCurSel(0);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -815,7 +823,8 @@ void CrbtnetDemoDlg::OnSettingStu()
 			return;
 		}
 		USES_CONVERSION;
-		rbt_win_config_stu(T2A(strMac), T2A(strStu));
+		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
+		rbt_win_config_bmp_stu(T2A(strMac), T2A(strStu));
 	}
 }
 
@@ -1001,4 +1010,12 @@ void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonSetFreq()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->GetCurSel();
+	rbt_win_config_freq(nIndex);
 }

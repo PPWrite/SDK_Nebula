@@ -31,9 +31,9 @@ protected:
 
 protected:
 	void onbegin(const CPoint& pos);
-	void onDrawing(const CPoint& pos);
+	void onDrawing(const CPoint& pos, bool bRed = false);
 	void onEnd();
-	void doDrawing(const CPoint& pos);
+	void doDrawing(const CPoint& pos,bool bRed = false);
 	void endTrack(bool bSave = true);
 	void compressPoint(CPoint& point);
 	bool pointIsInvalid(int nPenStatus, CPoint& pointValue);
@@ -58,5 +58,4 @@ private:
 	int m_nHeight;
 	int m_nState;
 	int m_nID;
-	bool m_bRed;
 };

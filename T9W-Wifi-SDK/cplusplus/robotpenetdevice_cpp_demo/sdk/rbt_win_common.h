@@ -55,7 +55,7 @@ typedef struct _Init_Param
 	int listenCount;
 	bool open;
 	rbt_win_context* ctx;
-	_Init_Param() :pIp(""), port(6001), listenCount(100), open(true), ctx(NULL) {}
+	_Init_Param() :pIp(""), port(6001), listenCount(60), open(true), ctx(NULL) {}
 }Init_Param;
 
 #endif

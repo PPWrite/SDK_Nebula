@@ -106,4 +106,5 @@ public:
 	afx_msg void OnBnClickedButtonEndAnswer();
 	afx_msg void OnBnClickedButtonSetting();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedButtonSetFreq();
 };
