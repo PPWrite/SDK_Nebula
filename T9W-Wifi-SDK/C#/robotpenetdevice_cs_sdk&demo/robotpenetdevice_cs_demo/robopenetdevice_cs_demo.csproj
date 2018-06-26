@@ -96,6 +96,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetStuName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetStuName.Designer.cs">
+      <DependentUpon>SetStuName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingPanel.Designer.cs">
+      <DependentUpon>SettingPanel.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="drawForm.resx">
       <DependentUpon>drawForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -112,6 +124,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SetStuName.resx">
+      <DependentUpon>SetStuName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingPanel.resx">
+      <DependentUpon>SettingPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

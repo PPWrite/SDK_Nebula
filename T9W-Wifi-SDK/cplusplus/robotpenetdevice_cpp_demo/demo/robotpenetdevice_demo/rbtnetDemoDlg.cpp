@@ -830,7 +830,7 @@ void CrbtnetDemoDlg::OnSettingStu()
 		}
 		USES_CONVERSION;
 		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
-		rbt_win_config_bmp_stu(T2A(strMac), T2A(strStu));
+		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strStu));
 	}
 }
 

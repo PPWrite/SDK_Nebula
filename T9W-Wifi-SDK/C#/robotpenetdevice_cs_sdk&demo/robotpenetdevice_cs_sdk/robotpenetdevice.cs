@@ -34,8 +34,21 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_stop();   // 停止监听
 
+        /// <summary>
+        /// 设置学生id（不支持中文）
+        /// </summary>
+        /// <param name="strDeviceMac">学生mac地址</param>
+        /// <param name="strDeviceStu"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_config_stu(string strDeviceMac, string strDeviceStu);
+
+        /// <summary>
+        /// 设置学生id（支持中文）
+        /// </summary>
+        /// <param name="strDeviceMac"></param>
+        /// <param name="strDeviceStu"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_config_bmp_stu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceSrc);
@@ -73,6 +86,9 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_config_sleep(int mins);
 
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_error_cb(onError arg);
+
 
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
@@ -82,6 +98,7 @@ namespace robotpenetdevice_cs
         public event onDeviceAnswerResult deviceAnswerResultEvt_;
         public event onDeviceName deviceNameEvt_;
         public event onDeviceNameResult deviceNameResult_;
+        public event onError deviceError_ = null;
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
         // 用于存储this对象主要保证该变量的生命周期
@@ -95,6 +112,8 @@ namespace robotpenetdevice_cs
         private static onDeviceNameResult ondevicenameresult = null;
         private static onDeviceName ondevicename = null;
         private static onDeviceDisconnect ondevicedisconnect = null;
+        private static onError onerror = null;
+
 
         // 构造函数
         public RbtNet() {
@@ -230,6 +249,24 @@ namespace robotpenetdevice_cs
         }
 
         /// <summary>
+        /// 处理设备错误信息的方法
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="pmac"></param>
+        /// <param name="cmd"></param>
+        /// <param name="msg"></param>
+        private static void deviceError(IntPtr ctx, String pmac, int cmd, String msg)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.deviceError_ != null)
+            {
+                rbtNetThis.deviceError_(ctx, pmac, cmd, msg);
+            }
+        }
+
+        /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="arg"></param>
@@ -238,6 +275,14 @@ namespace robotpenetdevice_cs
             iPtrThis_ = GCHandle.ToIntPtr(gchandld);
             arg.ctx = iPtrThis_;
             arg.open = open;
+            if (arg.port == 0)
+            {
+                arg.port = 6001;
+            }
+            if (arg.listenCount == 0)
+            {
+                arg.listenCount = 60;
+            }
             bool sus = rbt_win_init(ref arg);
 
             onorigindata = new onOriginData(originDataNotify);
@@ -256,11 +301,13 @@ namespace robotpenetdevice_cs
             rbt_win_set_devicename_cb(ondevicename);
             ondevicenameresult = new onDeviceNameResult(deviceNameResultNotify);
             rbt_win_set_devicenameresult_cb(ondevicenameresult);
+            onerror = new onError(deviceError);
+            rbt_win_set_error_cb(onerror);
         }
 
         // 反初始化
         public void unInit() {
-             rbt_win_uninit();
+            rbt_win_uninit();
             gchandld.Free();
         }
 
@@ -320,6 +367,14 @@ namespace robotpenetdevice_cs
         public void configStu(string strDeviceMac, string strDeviceStu)
         {
             rbt_win_config_stu(strDeviceMac, strDeviceStu);
+        }
+
+        /// <summary>
+        /// 设置学号(支持中文)
+        /// </summary>
+        public void configBmpStu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName)
+        {
+            rbt_win_config_bmp_stu(strDeviceMac, strDeviceStuNo, strDeviceStuName);
         }
 
         /// <summary>

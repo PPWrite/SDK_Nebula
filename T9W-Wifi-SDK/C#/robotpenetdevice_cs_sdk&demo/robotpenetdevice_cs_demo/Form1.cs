@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using robotpenetdevice_cs;
 using System.Runtime.InteropServices;
+using System.Net.Sockets;
+using System.Net;
 
 namespace rbt_win32_2_demo
 {
     public partial class Form1 : Form
     {
-        private RbtNet rbtnet_ = null;
+        public RbtNet rbtnet_ = null;
 
         public Form1()
         {
@@ -33,13 +35,12 @@ namespace rbt_win32_2_demo
             rbtnet_ = new RbtNet();
             // 初始化
             Init_Param param = new Init_Param();
-            param.strIp = "";
-            param.port = 6001;
-            param.listenCount = 60;
             rbtnet_.init(ref param);
 
-            comboBox1.Items.Add("主观题");
-            comboBox1.Items.Add("客观题");
+            comboBox1.Items.Add("判断题");
+            comboBox1.Items.Add("单选题");
+            comboBox1.Items.Add("多选题");
+            comboBox1.Items.Add("多道客观题");
             comboBox1.SelectedIndex = 0;
             /*
             * 所有事件响应接口都是在内部SDK线程中上报出来
@@ -51,6 +52,11 @@ namespace rbt_win32_2_demo
             rbtnet_.deviceShowPageEvt_ += Rbtnet__deviceShowPageEvt_;
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
+            rbtnet_.deviceError_ += Rbtnet__deviceEvt;
+        }
+        public void Rbtnet__deviceEvt(IntPtr ctx, String pmac, int cmd, String msg)
+        {
+
         }
 
         private void Rbtnet__deviceNameEvt_(IntPtr ctx, string strDeviceMac, string strDeviceName)
@@ -150,12 +156,15 @@ namespace rbt_win32_2_demo
                     return;
                 }
                 this.button_start_stop.Text = "停止";
+                this.label3.Text = "开始服务，连接上的手写板会有小房子，上位机能够发送命令并能响应消息";
             }
             else {
                 rbtnet_.stop();
                 this.button_start_stop.Text = "开始";
                 this.listView1.Items.Clear();
                 this.dicMac2DrawForm_.Clear();
+
+                this.label3.Text = "关闭服务，手写板小房子消失，上位机不能发送命令和响应消息";
             }
         }
 
@@ -168,31 +177,55 @@ namespace rbt_win32_2_demo
         {
             if (this.button_answer.Text == "开始答题")
             {
-                int totalTopic = 3;
-                byte []topicType = new byte[totalTopic];
-                topicType[0] = 1;
-                topicType[1] = 2;
-                topicType[2] = 3;
+                int totalTopic = 1;
+                byte[] topicType;
+                bool bRes = false;
+
+                int index = comboBox1.SelectedIndex;
+                switch (index)
+                {
+                    case 0:
+                        {
+                            topicType = new byte[totalTopic];
+                            topicType[0] = 1;
+                            break;
+                        }
+                    case 1:
+                        {
+                            topicType = new byte[totalTopic];
+                            topicType[0] = 2;
+                            break;
+                        }
+                    case 2:
+                        {
+                            topicType = new byte[totalTopic];
+                            topicType[0] = 3;
+                            break;
+                        }
+                    case 3:
+                        {
+                            totalTopic = 3;
+                            topicType = new byte[totalTopic];
+                            topicType[0] = 1;
+                            topicType[1] = 2;
+                            topicType[2] = 3;
+                            break;
+                        }
+                    default:
+                        totalTopic = 3;
+                        topicType = new byte[totalTopic];
+                        topicType[0] = 1;
+                        topicType[1] = 2;
+                        topicType[2] = 3;
+                        break;
+                }
                 IntPtr ptr = Marshal.AllocHGlobal(totalTopic);
                 Marshal.Copy(topicType, 0, ptr, totalTopic);
 
-                int index = comboBox1.SelectedIndex;
-                bool bRes = false;
-                if(index == 0)
-                {
-                    //打开书写模组
-                    rbtnet_.openModule(true);
-                    bRes = true;
-                    //bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
-                }
-                else
-                {
-                    bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr);
-                }
-
+                bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr);
                 if (bRes)
                 {
-                    this.button_answer.Text = "停止答题";
+                    this.button_answer.Text = "结束答题";
                 }
                 else
                 {
@@ -200,16 +233,13 @@ namespace rbt_win32_2_demo
                 }
 
                 Marshal.FreeHGlobal(ptr);
-            }
-            else if (this.button_answer.Text == "停止答题")
-            {
-                rbtnet_.sendStopAnswer();
-                this.button_answer.Text = "结束答题";
+                this.label3.Text = "进入答题模式，按键事件失效，只接收手写板确认提交答案的事件";
             }
             else
             {
                 rbtnet_.sendEndAnswer();
                 this.button_answer.Text = "开始答题";
+                this.label3.Text = "恢复到正常模式，开始响应按键事件";
             }
         }
         /// <summary>
@@ -569,18 +599,142 @@ namespace rbt_win32_2_demo
 
         private void button_test_Click(object sender, EventArgs e)
         {
-            string strStu = "222";
-            string strMac = "1b2200000050";
-            //rbtnet_.configStu(strMac, strStu);//*/
-            string strSSID = "C_68E";
-            string strPWD = "test1234";
-            rbtnet_.configWifi(strSSID, strPWD,  "");//*/
+            SettingPanel sp = new SettingPanel(this);
+            sp.ShowDialog();
         }
 
         private void button_switch_Click(object sender, EventArgs e)
         {
-            string strIP = textBox1.Text;
-            rbtnet_.configNet(strIP, 6001, false, true, "");
+            string strIP = this.IpComboBox.Text;
+            if(!string.IsNullOrEmpty(strIP))
+            {
+                rbtnet_.configNet(strIP, 6001, false, true, "");
+            }
+        }
+
+        /// <summary>
+        /// 获取listview选中的MAC地址
+        /// </summary>
+        /// <returns></returns>
+        private bool GetListViewSelectMac(out string strMac,out string strName)
+        {
+            var items = this.listView1.SelectedItems;
+            strMac = string.Empty;
+            strName = string.Empty;
+            if (items.Count>0)
+            {
+                foreach (ListViewItem item in items)
+                {
+                    strMac = item.SubItems[0].Text;
+                    strName = item.SubItems[1].Text;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 设置学号，不支持中文
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TSMI_SetStu_Click(object sender, EventArgs e)
+        {
+            string macStr = string.Empty;
+            string nameStr = string.Empty;
+            if(GetListViewSelectMac(out macStr,out nameStr))
+            {
+                SetStuName ssN = new SetStuName(false, macStr, nameStr, this);
+                ssN.ShowDialog();
+            }
+        }
+        /// <summary>
+        /// 设置学号，支持中文
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TSMI_SetBmpStu_Click(object sender, EventArgs e)
+        {
+            string macStr = string.Empty;
+            string nameStr = string.Empty;
+            if (GetListViewSelectMac(out macStr, out nameStr))
+            {
+                SetStuName ssN = new SetStuName(true, macStr, nameStr, this);
+                ssN.ShowDialog();
+            }
+        }
+        /// <summary>
+        /// 更新修改后的学生姓名
+        /// </summary>
+        /// <param name="name"></param>
+        public void UpdateListViewSelectedStuName(string name)
+        {
+            var items = this.listView1.SelectedItems;
+            foreach (ListViewItem item in items)
+            {
+                item.SubItems[1].Text = name;
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                string HostName = Dns.GetHostName(); //得到主机名
+                IPHostEntry IpEntry = Dns.GetHostEntry(HostName);
+                this.IpComboBox.Items.Clear();
+                for (int i = 0; i < IpEntry.AddressList.Length; i++)
+                {
+                    //从IP地址列表中筛选出IPv4类型的IP地址
+                    //AddressFamily.InterNetwork表示此IP为IPv4,
+                    //AddressFamily.InterNetworkV6表示此地址为IPv6类型
+                    if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        this.IpComboBox.Items.Add(IpEntry.AddressList[i].ToString());
+                    }
+                }
+                if(string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
+                {
+                    this.IpComboBox.Text=this.IpComboBox.Items[0].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("获取本机IP出错:" + ex.Message);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (this.button3.Text == "开始答题")
+            {
+                //rbtnet_.openModule(true);
+                bool bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
+
+                if (bRes)
+                {
+                    this.button3.Text = "停止答题";
+                }
+                else
+                {
+                    MessageBox.Show("发送开始答题失败");
+                }
+                this.label4.Text = "调用主观题开始答题接口，手写板LED显示“开始答题”";
+            }
+            else if (this.button3.Text == "停止答题")
+            {
+                rbtnet_.sendStopAnswer();
+                this.button3.Text = "结束答题";
+                this.label4.Text = "调用停止答题命令，手写板LED显示“已停止答题”";
+            }
+            else
+            {
+                rbtnet_.sendEndAnswer();
+                this.button3.Text = "开始答题";
+                this.label4.Text = "恢复非答题状态";
+            }
         }
     }
 }
