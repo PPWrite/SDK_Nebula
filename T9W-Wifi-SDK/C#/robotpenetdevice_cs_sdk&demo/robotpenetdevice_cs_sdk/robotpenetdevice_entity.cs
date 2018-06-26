@@ -28,6 +28,8 @@ namespace robotpenetdevice_cs
 
     public delegate void onError(IntPtr ctx, String pmac, int cmd, String msg);
 
+    public delegate void onClearCanvas(IntPtr ctx, String pmac);
+
     public struct Init_Param {
         public string strIp;
         public Int32 port;

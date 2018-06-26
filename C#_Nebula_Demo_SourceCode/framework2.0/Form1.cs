@@ -576,26 +576,53 @@ namespace RobotPenTestDll
             switch (Value)
             {
                 case eKeyPress.CLICK:
-                    {
-                        CallDelegate("CLICK");
-                    }break;
+                    break;
                 case eKeyPress.DBCLICK:
-                    {
-                        CallDelegate("DBCLICK");
-                    }break;
+                    break;
                 case eKeyPress.PAGEUP:
-                    {
-                        CallDelegate("PAGEUP");
-                    }break;
+                    break;
                 case eKeyPress.PAGEDOWN:
-                    {
-                        CallDelegate("PAGEDOWN");
-                    }break;
+                    break;
                 case eKeyPress.CREATEPAGE:
-                    {
-                        CallDelegate("CREATEPAGE");
-                    }break;
+                    break;
+                case eKeyPress.KEY_A:
+                    break;
+                case eKeyPress.KEY_B:
+                    break;
+                case eKeyPress.KEY_C:
+                    break;
+                case eKeyPress.KEY_D:
+                    break;
+                case eKeyPress.KEY_E:
+                    break;
+                case eKeyPress.KEY_F:
+                    break;
+                case eKeyPress.KEY_UP:
+                    break;
+                case eKeyPress.KEY_DOWN:
+                    break;
+                case eKeyPress.KEY_YES:
+                    break;
+                case eKeyPress.KEY_NO:
+                    break;
+                case eKeyPress.KEY_CANCEL:
+                    break;
+                case eKeyPress.KEY_OK:
+                    break;
+                case eKeyPress.PAGEUPCLICK:
+                    break;
+                case eKeyPress.PAGEUPDBCLICK:
+                    break;
+                case eKeyPress.PAGEUPPRESS:
+                    break;
+                case eKeyPress.PAGEDOWNCLICK:
+                    break;
+                case eKeyPress.PAGEDOWNDBCLICK:
+                    break;
+                case eKeyPress.PAGEDOWNPRESS:
+                    break;
             }
+            CallDelegate(Value.ToString());
         }
         /// <summary>
         /// 设备插拔消息，更新listview

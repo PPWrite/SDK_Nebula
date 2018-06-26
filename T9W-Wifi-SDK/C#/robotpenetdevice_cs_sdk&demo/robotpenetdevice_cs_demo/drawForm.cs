@@ -159,7 +159,7 @@ namespace rbt_win32_2_demo
                 else
                 {
                     compressPoint(ref pointf);
-                    onTrackDraw(ref pointf);
+                    onTrackDraw(ref pointf,0, nPenStatus==33);
                 }
             }
         }
@@ -174,21 +174,22 @@ namespace rbt_win32_2_demo
             m_currentItem = item;
         }
 
-        public void onTrackDraw(ref PointF p, int nCompress = 0)
+        public void onTrackDraw(ref PointF p, int nCompress = 0, bool isRed = false)
         {
             if (!m_bDrawing)
                 return;
-            doDrawing(ref p, nCompress);
+            doDrawing(ref p, nCompress, isRed);
             m_currentItem.listpoints.Add(p);
 
         }
 
-        private void doDrawing(ref PointF pos, int nCompress = 0)
+        private void doDrawing(ref PointF pos, int nCompress = 0,bool isRed=false)
         {
             Graphics grap = this.CreateGraphics();
             grap.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             grap.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            grap.DrawLine(new Pen(Color.Black, 2), m_lastPoint, pos);
+            Color pencolor = isRed ? Color.Red : Color.Black;
+            grap.DrawLine(new Pen(pencolor, 2), m_lastPoint, pos);
             m_lastPoint = pos;
             grap.Dispose();
         }
@@ -205,8 +206,35 @@ namespace rbt_win32_2_demo
 
         private void TrailsShowFrom_DoubleClick(object sender, EventArgs e)
         {
+            ClearCanvas();
+        }
+
+        public void ClearCanvas()
+        {
             m_items.Clear();
             this.Refresh();
+        }
+
+        private delegate void clearCanvas_EvtCall();
+
+        public void clearCanvasEvtCall()
+        {
+            if(this.InvokeRequired)
+            {
+                while(!this.IsHandleCreated)
+                {
+                    if(this.IsDisposed||this.Disposing)
+                    {
+                        return;
+                    }
+                }
+                clearCanvas_EvtCall ccEvtCall = new clearCanvas_EvtCall(clearCanvasEvtCall);
+                this.Invoke(ccEvtCall);
+            }
+            else
+            {
+                ClearCanvas();
+            }
         }
     }
 }
