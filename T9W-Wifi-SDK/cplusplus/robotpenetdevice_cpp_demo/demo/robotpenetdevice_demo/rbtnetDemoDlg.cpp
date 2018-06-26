@@ -276,6 +276,9 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		m_device2draw[strMac]->Create(IDD_DRAWDLG);
 		m_device2draw[strMac]->ShowWindow(FALSE);
 	}
+	CString strCount;
+	strCount.Format(_T("上线数量：%d"), pListCtrl->GetItemCount());
+	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(strCount);
 	return 0L;
 }
 
@@ -346,7 +349,7 @@ HRESULT CrbtnetDemoDlg::onShowError(WPARAM wParam, LPARAM lParam)
 	BSTR b = (BSTR)lParam;
 	CString strMac(b);
 	SysFreeString(b);
-	
+
 	CString strMsg;
 	strMsg.Format(_T("MAC:%s,CMD:%d Error"), strMac, wParam);
 	AfxMessageBox(strMsg);
@@ -377,8 +380,11 @@ void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 
 		for (auto it : m_device2draw)
 		{
-			it.second->DestroyWindow();
-			it.second = NULL;
+			if (it.second)
+			{
+				it.second->DestroyWindow();
+				it.second = NULL;
+			}
 		}
 		m_device2draw.clear();
 	}
@@ -440,7 +446,7 @@ void CrbtnetDemoDlg::onDeviceMac(rbt_win_context* context, const char* pMac)
 {
 	USES_CONVERSION;
 	CString strMac = A2T(pMac);
-	WriteLog(strMac,true);
+	WriteLog(strMac, true);
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_RCV_MAC, 0, (LPARAM)strMac.AllocSysString());
 }
@@ -759,7 +765,7 @@ void CrbtnetDemoDlg::OnClose()
 		m_hEvent[i] = nullptr;
 	}
 
-	for (auto it: m_device2draw)
+	for (auto it : m_device2draw)
 	{
 		it.second->DestroyWindow();
 		it.second = NULL;

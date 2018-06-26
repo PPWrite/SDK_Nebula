@@ -19,7 +19,7 @@ extern "C" {
 	bool rbt_win_start();
 	void rbt_win_stop();
 	void rbt_win_config_stu(const char *mac, const char *stu);
-	void rbt_win_config_bmp_stu(const char *mac, const char *stu);
+	void rbt_win_config_bmp_stu(const char *mac, const char *stuNo, const char *stuName);
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *source);
 	int rbt_win_config_net(const char *ip, int port, bool mqtt, bool tcp, const char *source);
 	void rbt_win_config_freq(int freq);
