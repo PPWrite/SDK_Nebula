@@ -35,6 +35,7 @@ typedef void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMa
 typedef void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
 typedef void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 typedef void CALLBACK onError(rbt_win_context* context, const char* pmac, int cmd, const char *msg);
+typedef void CALLBACK onClearCanvas(rbt_win_context* context, const char* pmac);
 
 void rbt_win_set_accept_cb( onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
@@ -47,6 +48,7 @@ void rbt_win_set_devivedisconnect_cb(onDeviceDisConnect* arg);
 void rbt_win_set_deviceshowpage_cb(onDeviceShowPage* arg);
 void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult* arg);
 void rbt_win_set_error_cb(onError *arg);
+void rbt_win_set_clearcanvas_cb(onClearCanvas *arg);
 
 typedef struct _Init_Param
 {

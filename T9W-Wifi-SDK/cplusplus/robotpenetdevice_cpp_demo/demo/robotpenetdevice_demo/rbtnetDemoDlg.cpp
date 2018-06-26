@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_MESSAGE(WM_RCV_NAME, &CrbtnetDemoDlg::recvName)
 	ON_MESSAGE(WM_SHOW_PAGE, &CrbtnetDemoDlg::showPage)
 	ON_MESSAGE(WM_SHOW_ERROR, &CrbtnetDemoDlg::onShowError)
+	ON_MESSAGE(WM_DISCONNECT, &CrbtnetDemoDlg::onDisconnect)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
@@ -356,10 +357,33 @@ HRESULT CrbtnetDemoDlg::onShowError(WPARAM wParam, LPARAM lParam)
 	return 0L;
 }
 
+HRESULT CrbtnetDemoDlg::onDisconnect(WPARAM wParam, LPARAM lParam)
+{
+	BSTR b = (BSTR)lParam;
+	CString strMac(b);
+	SysFreeString(b);
+
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = strMac;
+
+	if (strMac.IsEmpty())
+		return 0;
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex != -1) {
+		pListCtrl->SetItemText(nRowIndex, 2, _T("离线"));
+	}
+}
+
+
 // 开始启动
 void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(_T(""));
 	CString csBtnText;
 	GetDlgItemText(IDC_START_STOP, csBtnText);
 	if (csBtnText == _T("开始")) {
@@ -426,6 +450,8 @@ void CrbtnetDemoDlg::initCbFunction()
 	rbt_win_set_deviceshowpage_cb(onDeviceShowPage);
 
 	rbt_win_set_error_cb(onError);
+
+	rbt_win_set_clearcanvas_cb(onClearCanvas);
 }
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
@@ -466,8 +492,12 @@ void CrbtnetDemoDlg::onDeviceNameResult(rbt_win_context* context, const char* pM
 }
 void CrbtnetDemoDlg::onDeviceDisConnect(rbt_win_context* context, const char* pMac)
 {
+	/*CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->deviceDisconnect(pMac);//*/
+	USES_CONVERSION;
+	CString strMac = A2T(pMac);
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
-	pThis->deviceDisconnect(pMac);
+	::PostMessage(pThis->m_hWnd, WM_DISCONNECT, NULL, (LPARAM)strMac.AllocSysString());
 }
 void CrbtnetDemoDlg::onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue)
 {
@@ -491,6 +521,11 @@ void CrbtnetDemoDlg::onError(rbt_win_context* context, const char* pMac, int cmd
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_SHOW_ERROR, cmd, (LPARAM)strMac.AllocSysString());
 }
+void CrbtnetDemoDlg::onClearCanvas(rbt_win_context* context, const char* pMac)
+{
+	TRACE("Mac:%d ClearCanvas\n", pMac);
+}
+
 void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
@@ -757,6 +792,7 @@ void CrbtnetDemoDlg::OnClose()
 	SetEvent(m_hEvent[1]);
 	Sleep(10);
 	rbt_win_stop();
+	Sleep(500);
 	rbt_win_uninit();
 
 	for (int i = 0; i < 2; i++)
@@ -830,7 +866,7 @@ void CrbtnetDemoDlg::OnSettingStu()
 		}
 		USES_CONVERSION;
 		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
-		rbt_win_config_bmp_stu(T2A(strMac), T2A(strStu));
+		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strStu));
 	}
 }
 

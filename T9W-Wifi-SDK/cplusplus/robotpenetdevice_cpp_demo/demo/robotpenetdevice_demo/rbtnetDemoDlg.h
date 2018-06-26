@@ -13,6 +13,7 @@ class CDrawDlg;
 #define WM_RCV_NAME (WM_USER + 102)
 #define WM_SHOW_PAGE (WM_USER + 103)
 #define WM_SHOW_ERROR (WM_USER + 104)
+#define WM_DISCONNECT (WM_USER + 105)
 
 
 struct _Mass_Data
@@ -51,6 +52,7 @@ protected:
 	afx_msg HRESULT recvName(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT showPage(WPARAM wParam, LPARAM lParam);
 	afx_msg HRESULT onShowError(WPARAM wParam, LPARAM lParam);
+	afx_msg HRESULT onDisconnect(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -97,6 +99,7 @@ public:
 	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
 	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
 	static void CALLBACK onError(rbt_win_context* context, const char* pMac, int cmd, const char *msg);
+	static void CALLBACK onClearCanvas(rbt_win_context* context, const char* pMac);
 
 	bool GetLocalAddress();
 	afx_msg void OnBnClickedOpenModule();
