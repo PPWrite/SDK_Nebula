@@ -1547,6 +1547,11 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_STANDBY:
                     {
                         strStatus = "DEVICE_STANDBY";
+                        Thread.Sleep(400);
+                        robotpenController.GetInstance()._Send(cmdId.SwitchMode);
+                        robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        robotpenController.GetInstance().rotate(180);
+                        //SetDevicePen();
                     }
                     break;
                 case NODE_STATUS.DEVICE_INIT_BTN:
@@ -2178,6 +2183,17 @@ namespace RobotPenTestDll
             UpdateLable(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
         }
 
+        /// <summary>
+        /// 模式切换
+        /// </summary>
+        private void SetDevicePen()
+        {
+            Thread.Sleep(400);
+            robotpenController.GetInstance()._Send(cmdId.SwitchMode);
+            robotpenController.GetInstance().setIsHorizontal(bScreen);
+            robotpenController.GetInstance().rotate(180);
+        }
+
 
         #region 更新from控件的方法
         public delegate void UpdateLabel(string str1, System.Windows.Forms.Label lable);
@@ -2202,5 +2218,33 @@ namespace RobotPenTestDll
             }
         }
         #endregion
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (this.comboBox1.SelectedIndex)
+            {
+                case 0:
+                    {
+                        bScreen = false;
+                        robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        break;
+                    }
+                case 1:
+                    {
+                        bScreen = true;
+                        robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        break;
+                    }
+                case 2:
+                    {
+                        bScreen = false;
+                        robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        robotpenController.GetInstance().rotate(180);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
     }
 }
