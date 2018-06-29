@@ -130,29 +130,10 @@ namespace RobotPenTestDll
             {
                 T7E_DEMO_NodeWindowShow(nSubWinStartX, nSubWinStartY);
             }
-
-            // 判断画布是否横竖屏
-            string strPath = System.Windows.Forms.Application.StartupPath;
-            strPath += "\\demo.ini";
-            String str = string.Empty;
-            str = OperateIniFile.ReadIniData("SET", "screenO", "0", strPath);
-            if (str == null || str == string.Empty)
-            {
-                // 更新字段
-                bScreen = false;
-                OperateIniFile.WriteIniData("SET", "screenO", "2", strPath);
-            }
-            else if (str == "2")
-            {
-                bScreen = false;
-            }
-            else
-            {
-                bScreen = true;
-            }
-
-            this.comboBox1.Text = bScreen ? "横屏" : "竖屏";
         }
+
+
+
         /// <summary>
         /// 初始化事件
         /// </summary>
@@ -1547,11 +1528,8 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_STANDBY:
                     {
                         strStatus = "DEVICE_STANDBY";
-                        Thread.Sleep(400);
-                        robotpenController.GetInstance()._Send(cmdId.SwitchMode);
-                        robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        robotpenController.GetInstance().rotate(180);
-                        //SetDevicePen();
+                        Thread t = new Thread(Thread_NodeSTANDBY);
+                        t.Start();
                     }
                     break;
                 case NODE_STATUS.DEVICE_INIT_BTN:
@@ -1567,7 +1545,8 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_ACTIVE:
                     {
                         strStatus = "DEVICE_ACTIVE";
-                        SetDeviceHW();
+                        Thread t1 = new Thread(Thread_NodeActive);
+                        t1.Start();
                     }
                     break;
                 case NODE_STATUS.DEVICE_LOW_POWER_ACTIVE:
@@ -2172,33 +2151,40 @@ namespace RobotPenTestDll
             robotpenController.GetInstance()._Send(cmdId.SwitchMode);
         }
 
-        /// <summary>
-        /// 获取宽高
-        /// </summary>
-        private void SetDeviceHW()
-        {
-            Thread.Sleep(400);
-            int width = robotpenController.GetInstance().getWidth();
-            int height = robotpenController.GetInstance().getHeight();
-            UpdateLable(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
-        }
 
-        /// <summary>
-        /// 模式切换
-        /// </summary>
-        private void SetDevicePen()
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Thread.Sleep(400);
-            robotpenController.GetInstance()._Send(cmdId.SwitchMode);
-            robotpenController.GetInstance().setIsHorizontal(bScreen);
-            robotpenController.GetInstance().rotate(180);
+            switch (this.comboBox1.SelectedIndex)
+            {
+                case 0:
+                    {
+                        bScreen = true;
+                        robotpenController.GetInstance().rotate(-90);
+                        break;
+                    }
+                case 1:
+                    {
+                        bScreen = false;
+                        robotpenController.GetInstance().rotate(0);
+                        break;
+                    }
+                case 2:
+                    {
+                        bScreen = true;
+                        //robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        robotpenController.GetInstance().rotate(90);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
 
         #region 更新from控件的方法
         public delegate void UpdateLabel(string str1, System.Windows.Forms.Label lable);
         // 更新lable标签
-        public void UpdateLable(string param, System.Windows.Forms.Label lable)
+        public void updateLabel(string param, System.Windows.Forms.Label lable)
         {
             if (lable.InvokeRequired)
             {
@@ -2209,7 +2195,7 @@ namespace RobotPenTestDll
                         return;
                     }
                 }
-                UpdateLabel d = new UpdateLabel(UpdateLable);
+                UpdateLabel d = new UpdateLabel(updateLabel);
                 lable.Invoke(d, new object[] { param, lable });
             }
             else
@@ -2217,34 +2203,102 @@ namespace RobotPenTestDll
                 lable.Text = param;
             }
         }
-        #endregion
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+
+        public delegate void UpdateComboBox(int selectIndex, System.Windows.Forms.ComboBox combobox);
+        // 更新lable标签
+        public void updateComboBox(int selectIndex, System.Windows.Forms.ComboBox combobox)
         {
-            switch (this.comboBox1.SelectedIndex)
+            if (combobox.InvokeRequired)
             {
-                case 0:
+                while (!combobox.IsHandleCreated)
+                {
+                    if (combobox.Disposing || combobox.IsDisposed)
                     {
-                        bScreen = false;
-                        robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        break;
+                        return;
                     }
-                case 1:
-                    {
-                        bScreen = true;
-                        robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        break;
-                    }
-                case 2:
-                    {
-                        bScreen = false;
-                        robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        robotpenController.GetInstance().rotate(180);
-                        break;
-                    }
-                default:
-                    break;
+                }
+                UpdateComboBox d = new UpdateComboBox(updateComboBox);
+                combobox.Invoke(d, new object[] { selectIndex, combobox });
+            }
+            else
+            {
+                combobox.SelectedIndex = selectIndex;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// DEVICE_ACTIVE状态异步线程
+        /// </summary>
+        private void Thread_NodeActive()
+        {
+            Thread.Sleep(1000);
+            SetDeviceHW();
+            ReSetScreen();
+        }
+        /// <summary>
+        /// DEVICE_STANDBY状态异步线程
+        /// </summary>
+        private void Thread_NodeSTANDBY()
+        {
+            Thread.Sleep(1000);
+            SetDeviceHW();
+            ReSetScreen();
+            SetDevicePen();
+        }
+
+        /// <summary>
+        /// 获取宽高
+        /// </summary>
+        private void SetDeviceHW()
+        {
+            int width = robotpenController.GetInstance().getWidth();
+            int height = robotpenController.GetInstance().getHeight();
+            updateLabel(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
+        }
+
+        /// <summary>
+        /// 模式切换
+        /// </summary>
+        private void SetDevicePen()
+        {
+            robotpenController.GetInstance()._Send(cmdId.SwitchMode);
+        }
+
+        /// <summary>
+        /// 打开设备设置横竖屏
+        /// </summary>
+        private void ReSetScreen()
+        {
+            // 判断画布是否横竖屏
+            string strPath = System.Windows.Forms.Application.StartupPath;
+            strPath += "\\demo.ini";
+            String str = string.Empty;
+            str = OperateIniFile.ReadIniData("SET", "screenO", "0", strPath);
+            if (str == null || str == string.Empty)
+            {
+                // 更新字段
+                bScreen = false;
+                OperateIniFile.WriteIniData("SET", "screenO", "2", strPath);
+            }
+            else if (str == "2")
+            {
+                bScreen = false;
+            }
+            else
+            {
+                bScreen = true;
+            }
+            if (bScreen)
+            {
+                updateComboBox(0, this.comboBox1);
+            }
+            else
+            {
+                updateComboBox(1, this.comboBox1);
+            }
+        }
+
     }
 }
