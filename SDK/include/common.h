@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.2"
+#define FILEVERSION "1.1.5.3"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -23,6 +23,7 @@ enum eDevicePid
 	J0_A4_P_PID	=	0x6013,
 	T9E_PID		=	0x6014,
 	J0_T9_PID	=	0x6015,
+	W7_PID		=	0x6019,
 	T8B_PID		=	0x601e,
 	T9B_YD_PID	=	0x601f,
 	T7B_HF_PID	=	0x6020,
@@ -402,6 +403,18 @@ enum eKeyPress
 	PAGEUP,
 	PAGEDOWN,
 	CREATEPAGE,
+	KEY_A			= 0x06,
+	KEY_B,
+	KEY_C,
+	KEY_D,
+	KEY_E,
+	KEY_F,
+	KEY_UP			= 0x10,
+	KEY_DOWN,
+	KEY_YES,			
+	KEY_NO,
+	KEY_CANCEL,
+	KEY_OK,
 	PAGEUPCLICK		= 0x20,
 	PAGEUPDBCLICK,
 	PAGEUPPRESS,

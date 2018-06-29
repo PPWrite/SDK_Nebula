@@ -278,7 +278,7 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		m_device2draw[strMac]->ShowWindow(FALSE);
 	}
 	CString strCount;
-	strCount.Format(_T("上线数量：%d"), pListCtrl->GetItemCount());
+	strCount.Format(_T("数量：%d"), pListCtrl->GetItemCount());
 	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(strCount);
 	return 0L;
 }

@@ -38,6 +38,7 @@ enum eRbtType
 	UpdateWifi,
 	GetMassMac,
 	UpdateEmrStop,
+	DeleteSync,
 };
 
 //回调函数
@@ -322,7 +323,7 @@ public:
 	virtual void SetClassPwd(unsigned char *pwd,int len) = 0;
 	//设置学生ID
 	virtual void SetStudentID(unsigned char *id,int len) = 0;
-	//设置密码
+	//设置MQTT密码
 	virtual void SetPwd(unsigned char *pwd) = 0;
 	//设置Secret
 	virtual void SetSecret(unsigned char *sercet) = 0;

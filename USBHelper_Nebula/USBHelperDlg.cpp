@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:201806012")
+#define _VERSION  _T("版本号:1.1.5.3")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -215,8 +215,6 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UPDATE, &CUSBHelperDlg::OnBnClickedButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON_SET4, &CUSBHelperDlg::OnBnClickedButtonSet4)
 	ON_BN_CLICKED(IDC_BUTTON_SET5, &CUSBHelperDlg::OnBnClickedButtonSet5)
-	ON_WM_CHANGECBCHAIN()
-	ON_WM_DRAWCLIPBOARD()
 END_MESSAGE_MAP()
 
 
@@ -252,7 +250,6 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-	m_hNextClipboard = ::SetClipboardViewer(GetSafeHwnd());  
 
 	//MoveWindow(0,0,1600,900)
 #ifdef _GATEWAY
@@ -283,7 +280,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 #endif
 
 #ifdef _NODE
-	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
+	//GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_MS)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_MS_OFF)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_MS_CLEAR)->ShowWindow(SW_HIDE);
@@ -298,6 +295,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("删除笔记"));
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SET_NAME)->ShowWindow(SW_HIDE);
@@ -698,7 +696,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->EnableWindow(!m_bNode);//*/
 	bool bShow = (m_nDeviceType == Gateway) ? TRUE : FALSE;
-	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->EnableWindow(bShow);
+	//GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->EnableWindow(bShow);
 	GetDlgItem(IDC_BUTTON3_MS)->EnableWindow(bShow);
 	GetDlgItem(IDC_BUTTON3_MS_OFF)->EnableWindow(bShow);
 	GetDlgItem(IDC_BUTTON_MS_CLEAR)->EnableWindow(bShow);
@@ -975,12 +973,20 @@ void CUSBHelperDlg::OnBnClickedButtonVoteOff()
 void CUSBHelperDlg::OnBnClickedButtonVoteClear()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	for (int i=0;i<m_list.size();i++)
+	if (m_nDeviceType == Gateway)
 	{
-		CDrawDlg *pDlg = m_list[i];
-		if (NULL != pDlg)
-			pDlg->SetVote();
+		for (int i=0;i<m_list.size();i++)
+		{
+			CDrawDlg *pDlg = m_list[i];
+			if (NULL != pDlg)
+				pDlg->SetVote();
+		}
 	}
+	else
+	{
+		GetInstance()->Send(DeleteSync);
+	}
+
 }
 
 void CUSBHelperDlg::OnBnClickedButton3Ms()
@@ -1832,6 +1838,42 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			case PAGEDOWNPRESS:
 				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNPRESS"));
 				break;
+			case KEY_A:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_A"));
+				break;
+			case KEY_B:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_B"));
+				break;
+			case KEY_C:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_C"));
+				break;
+			case KEY_D:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_D"));
+				break;
+			case KEY_E:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_E"));
+				break;
+			case KEY_F:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_F"));
+				break;
+			case KEY_UP:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_UP"));
+				break;
+			case KEY_DOWN:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_DOWN"));
+				break;
+			case KEY_YES:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_YES"));
+				break;
+			case KEY_NO:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_NO"));
+				break;
+			case KEY_CANCEL:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_CANCEL"));
+				break;
+			case KEY_OK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_OK"));
+				break;
 			default:
 				break;
 			}
@@ -1874,8 +1916,6 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(0);
 
 			OnCbnSelchangeCombo1();
-
-			OnBnClickedButtonVoteOff();
 		}
 		break;
 	case ROBOT_SYNC_PACKET:
@@ -2721,37 +2761,3 @@ void CUSBHelperDlg::OnBnClickedButtonSet5()
 	char *buffer = WideStrToMultiStr(str.GetBuffer());
 	GetInstance()->SetSecret((unsigned char*)buffer);
 }
-
-
-/*void CUSBHelperDlg::OnChangeCbChain(HWND hWndRemove, HWND hWndAfter)
-{
-
-	// TODO: 在此处添加消息处理程序代码
-	if (m_hNextClipboard== hWndRemove)   
-		m_hNextClipboard = hWndAfter;   
-	else if (m_hNextClipboard) //避免下一个窗口接收不到剪贴板的消息  
-		::SendMessage(m_hNextClipboard, WM_CHANGECBCHAIN,(WPARAM)hWndRemove, (LPARAM)hWndAfter);   
-}
-
-
-void CUSBHelperDlg::OnDrawClipboard()
-{
-	if(m_hNextClipboard)   
-		::SendMessage(m_hNextClipboard, WM_DRAWCLIPBOARD,0, 0);   
-
-	CString str;
-	HANDLE hClip;
-	if (OpenClipboard())
-	{
-		hClip=GetClipboardData(CF_TEXT);
-		char* szText =(char*)GlobalLock(hClip);
-		if (NULL == szText)
-			return;
-		str = MultiCharToWideChar(szText).c_str();
-		TRACE(str);
-		TRACE("\n");
-		GlobalUnlock(hClip);
-		CloseClipboard();
-	}
-	
-}//*/
