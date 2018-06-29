@@ -130,29 +130,10 @@ namespace RobotPenTestDll
             {
                 T7E_DEMO_NodeWindowShow(nSubWinStartX, nSubWinStartY);
             }
-
-            // 判断画布是否横竖屏
-            string strPath = System.Windows.Forms.Application.StartupPath;
-            strPath += "\\demo.ini";
-            String str = string.Empty;
-            str = OperateIniFile.ReadIniData("SET", "screenO", "0", strPath);
-            if (str == null || str == string.Empty)
-            {
-                // 更新字段
-                bScreen = false;
-                OperateIniFile.WriteIniData("SET", "screenO", "2", strPath);
-            }
-            else if (str == "2")
-            {
-                bScreen = false;
-            }
-            else
-            {
-                bScreen = true;
-            }
-
-            this.comboBox1.Text = bScreen ? "横屏" : "竖屏";
         }
+
+
+
         /// <summary>
         /// 初始化事件
         /// </summary>
@@ -576,26 +557,53 @@ namespace RobotPenTestDll
             switch (Value)
             {
                 case eKeyPress.CLICK:
-                    {
-                        CallDelegate("CLICK");
-                    }break;
+                    break;
                 case eKeyPress.DBCLICK:
-                    {
-                        CallDelegate("DBCLICK");
-                    }break;
+                    break;
                 case eKeyPress.PAGEUP:
-                    {
-                        CallDelegate("PAGEUP");
-                    }break;
+                    break;
                 case eKeyPress.PAGEDOWN:
-                    {
-                        CallDelegate("PAGEDOWN");
-                    }break;
+                    break;
                 case eKeyPress.CREATEPAGE:
-                    {
-                        CallDelegate("CREATEPAGE");
-                    }break;
+                    break;
+                case eKeyPress.KEY_A:
+                    break;
+                case eKeyPress.KEY_B:
+                    break;
+                case eKeyPress.KEY_C:
+                    break;
+                case eKeyPress.KEY_D:
+                    break;
+                case eKeyPress.KEY_E:
+                    break;
+                case eKeyPress.KEY_F:
+                    break;
+                case eKeyPress.KEY_UP:
+                    break;
+                case eKeyPress.KEY_DOWN:
+                    break;
+                case eKeyPress.KEY_YES:
+                    break;
+                case eKeyPress.KEY_NO:
+                    break;
+                case eKeyPress.KEY_CANCEL:
+                    break;
+                case eKeyPress.KEY_OK:
+                    break;
+                case eKeyPress.PAGEUPCLICK:
+                    break;
+                case eKeyPress.PAGEUPDBCLICK:
+                    break;
+                case eKeyPress.PAGEUPPRESS:
+                    break;
+                case eKeyPress.PAGEDOWNCLICK:
+                    break;
+                case eKeyPress.PAGEDOWNDBCLICK:
+                    break;
+                case eKeyPress.PAGEDOWNPRESS:
+                    break;
             }
+            CallDelegate(Value.ToString());
         }
         /// <summary>
         /// 设备插拔消息，更新listview
@@ -1520,6 +1528,8 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_STANDBY:
                     {
                         strStatus = "DEVICE_STANDBY";
+                        Thread t = new Thread(Thread_NodeSTANDBY);
+                        t.Start();
                     }
                     break;
                 case NODE_STATUS.DEVICE_INIT_BTN:
@@ -1535,7 +1545,8 @@ namespace RobotPenTestDll
                 case NODE_STATUS.DEVICE_ACTIVE:
                     {
                         strStatus = "DEVICE_ACTIVE";
-                        SetDeviceHW();
+                        Thread t1 = new Thread(Thread_NodeActive);
+                        t1.Start();
                     }
                     break;
                 case NODE_STATUS.DEVICE_LOW_POWER_ACTIVE:
@@ -2140,22 +2151,40 @@ namespace RobotPenTestDll
             robotpenController.GetInstance()._Send(cmdId.SwitchMode);
         }
 
-        /// <summary>
-        /// 获取宽高
-        /// </summary>
-        private void SetDeviceHW()
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Thread.Sleep(400);
-            int width = robotpenController.GetInstance().getWidth();
-            int height = robotpenController.GetInstance().getHeight();
-            UpdateLable(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
+            switch (this.comboBox1.SelectedIndex)
+            {
+                case 0:
+                    {
+                        bScreen = true;
+                        robotpenController.GetInstance().rotate(-90);
+                        break;
+                    }
+                case 1:
+                    {
+                        bScreen = false;
+                        robotpenController.GetInstance().rotate(0);
+                        break;
+                    }
+                case 2:
+                    {
+                        bScreen = true;
+                        //robotpenController.GetInstance().setIsHorizontal(bScreen);
+                        robotpenController.GetInstance().rotate(90);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
 
         #region 更新from控件的方法
         public delegate void UpdateLabel(string str1, System.Windows.Forms.Label lable);
         // 更新lable标签
-        public void UpdateLable(string param, System.Windows.Forms.Label lable)
+        public void updateLabel(string param, System.Windows.Forms.Label lable)
         {
             if (lable.InvokeRequired)
             {
@@ -2166,7 +2195,7 @@ namespace RobotPenTestDll
                         return;
                     }
                 }
-                UpdateLabel d = new UpdateLabel(UpdateLable);
+                UpdateLabel d = new UpdateLabel(updateLabel);
                 lable.Invoke(d, new object[] { param, lable });
             }
             else
@@ -2174,6 +2203,102 @@ namespace RobotPenTestDll
                 lable.Text = param;
             }
         }
+
+
+        public delegate void UpdateComboBox(int selectIndex, System.Windows.Forms.ComboBox combobox);
+        // 更新lable标签
+        public void updateComboBox(int selectIndex, System.Windows.Forms.ComboBox combobox)
+        {
+            if (combobox.InvokeRequired)
+            {
+                while (!combobox.IsHandleCreated)
+                {
+                    if (combobox.Disposing || combobox.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                UpdateComboBox d = new UpdateComboBox(updateComboBox);
+                combobox.Invoke(d, new object[] { selectIndex, combobox });
+            }
+            else
+            {
+                combobox.SelectedIndex = selectIndex;
+            }
+        }
         #endregion
+
+        /// <summary>
+        /// DEVICE_ACTIVE状态异步线程
+        /// </summary>
+        private void Thread_NodeActive()
+        {
+            Thread.Sleep(1000);
+            SetDeviceHW();
+            ReSetScreen();
+        }
+        /// <summary>
+        /// DEVICE_STANDBY状态异步线程
+        /// </summary>
+        private void Thread_NodeSTANDBY()
+        {
+            Thread.Sleep(1000);
+            SetDeviceHW();
+            ReSetScreen();
+            SetDevicePen();
+        }
+
+        /// <summary>
+        /// 获取宽高
+        /// </summary>
+        private void SetDeviceHW()
+        {
+            int width = robotpenController.GetInstance().getWidth();
+            int height = robotpenController.GetInstance().getHeight();
+            updateLabel(string.Format("宽:{0},高:{1}", width, height), this.DeviceSize);
+        }
+
+        /// <summary>
+        /// 模式切换
+        /// </summary>
+        private void SetDevicePen()
+        {
+            robotpenController.GetInstance()._Send(cmdId.SwitchMode);
+        }
+
+        /// <summary>
+        /// 打开设备设置横竖屏
+        /// </summary>
+        private void ReSetScreen()
+        {
+            // 判断画布是否横竖屏
+            string strPath = System.Windows.Forms.Application.StartupPath;
+            strPath += "\\demo.ini";
+            String str = string.Empty;
+            str = OperateIniFile.ReadIniData("SET", "screenO", "0", strPath);
+            if (str == null || str == string.Empty)
+            {
+                // 更新字段
+                bScreen = false;
+                OperateIniFile.WriteIniData("SET", "screenO", "2", strPath);
+            }
+            else if (str == "2")
+            {
+                bScreen = false;
+            }
+            else
+            {
+                bScreen = true;
+            }
+            if (bScreen)
+            {
+                updateComboBox(0, this.comboBox1);
+            }
+            else
+            {
+                updateComboBox(1, this.comboBox1);
+            }
+        }
+
     }
 }

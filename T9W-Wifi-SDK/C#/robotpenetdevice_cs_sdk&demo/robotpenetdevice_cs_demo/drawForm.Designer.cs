@@ -39,6 +39,7 @@
             this.Text = "drawForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.drawForm_FormClosing);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.drawForm_Paint);
+            this.DoubleClick += new System.EventHandler(this.TrailsShowFrom_DoubleClick);
             this.ResumeLayout(false);
 
         }

@@ -89,6 +89,9 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_error_cb(onError arg);
 
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_clearcanvas_cb(onClearCanvas arg);
+
 
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
@@ -99,6 +102,7 @@ namespace robotpenetdevice_cs
         public event onDeviceName deviceNameEvt_;
         public event onDeviceNameResult deviceNameResult_;
         public event onError deviceError_ = null;
+        public event onClearCanvas deviceClearCanvas_ = null;
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
         // 用于存储this对象主要保证该变量的生命周期
@@ -113,6 +117,7 @@ namespace robotpenetdevice_cs
         private static onDeviceName ondevicename = null;
         private static onDeviceDisconnect ondevicedisconnect = null;
         private static onError onerror = null;
+        private static onClearCanvas onclearcanvas = null;
 
 
         // 构造函数
@@ -267,6 +272,22 @@ namespace robotpenetdevice_cs
         }
 
         /// <summary>
+        /// 处理画布清空事件
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="pmac"></param>
+        private static void deviceClearCanvas(IntPtr ctx, String pmac)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.deviceError_ != null)
+            {
+                rbtNetThis.deviceClearCanvas_(ctx, pmac);
+            }
+        }
+
+        /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="arg"></param>
@@ -303,6 +324,8 @@ namespace robotpenetdevice_cs
             rbt_win_set_devicenameresult_cb(ondevicenameresult);
             onerror = new onError(deviceError);
             rbt_win_set_error_cb(onerror);
+            onclearcanvas = new onClearCanvas(deviceClearCanvas);
+            rbt_win_set_clearcanvas_cb(onclearcanvas);
         }
 
         // 反初始化

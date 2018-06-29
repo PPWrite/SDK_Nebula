@@ -337,15 +337,18 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "横屏",
-            "竖屏"});
+            "横屏(顶部在左)",
+            "竖屏",
+            "横屏(顶部在右)"});
             this.comboBox1.Location = new System.Drawing.Point(93, 142);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(60, 29);
+            this.comboBox1.Size = new System.Drawing.Size(147, 29);
             this.comboBox1.TabIndex = 24;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // screen_set_label
             // 
@@ -599,10 +602,11 @@
             // 
             this.DeviceSize.AutoSize = true;
             this.DeviceSize.Font = new System.Drawing.Font("微软雅黑", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.DeviceSize.Location = new System.Drawing.Point(159, 148);
+            this.DeviceSize.Location = new System.Drawing.Point(246, 148);
             this.DeviceSize.Name = "DeviceSize";
-            this.DeviceSize.Size = new System.Drawing.Size(0, 19);
+            this.DeviceSize.Size = new System.Drawing.Size(61, 19);
             this.DeviceSize.TabIndex = 40;
+            this.DeviceSize.Text = "设备大小";
             // 
             // SwichModeBtn
             // 

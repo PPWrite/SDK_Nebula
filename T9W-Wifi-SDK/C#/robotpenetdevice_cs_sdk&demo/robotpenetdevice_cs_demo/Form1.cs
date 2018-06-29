@@ -53,10 +53,20 @@ namespace rbt_win32_2_demo
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
             rbtnet_.deviceError_ += Rbtnet__deviceEvt;
+            rbtnet_.deviceClearCanvas_ += Rbtnet__deviceClearCanvas;
         }
         public void Rbtnet__deviceEvt(IntPtr ctx, String pmac, int cmd, String msg)
         {
+            updateLable(this.label3,string.Format(@"命令：{0}，错误信息：{1}", cmd.ToString(), msg));
+        }
 
+        public void Rbtnet__deviceClearCanvas(IntPtr ctx, String pmac)
+        {
+            string sMac = pmac;
+            if (dicMac2DrawForm_.ContainsKey(sMac))
+            {
+                dicMac2DrawForm_[sMac].clearCanvasEvtCall();
+            }
         }
 
         private void Rbtnet__deviceNameEvt_(IntPtr ctx, string strDeviceMac, string strDeviceName)
@@ -98,7 +108,7 @@ namespace rbt_win32_2_demo
             this.listView1.Columns.Add("设备MAC地址", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("学号", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("状态", 60, HorizontalAlignment.Left);
-            this.listView1.Columns.Add("选择题通知", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("答题提交通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("按键通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("页码通知", 120, HorizontalAlignment.Left);
         }
@@ -120,7 +130,7 @@ namespace rbt_win32_2_demo
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             if (dicMac2DrawForm_.ContainsKey(sMac)) {
                 int npenStatus = Convert.ToInt32(us);
-                if (npenStatus != 17)
+                if (npenStatus != 17&& npenStatus != 33)
                 {
                     npenStatus = 0;
                 }
@@ -734,6 +744,29 @@ namespace rbt_win32_2_demo
                 rbtnet_.sendEndAnswer();
                 this.button3.Text = "开始答题";
                 this.label4.Text = "恢复非答题状态";
+            }
+        }
+
+
+
+        private delegate void updateLable_Evt(Label _lable, string Text);
+        public void updateLable(Label _lable, string Text)
+        {
+            if(_lable.InvokeRequired)
+            {
+                while(!_lable.IsHandleCreated)
+                {
+                    if(_lable.Disposing|| _lable.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                updateLable_Evt uLEvt = new updateLable_Evt(updateLable);
+                _lable.Invoke(uLEvt,new object[] { _lable , Text });
+            }
+            else
+            {
+                _lable.Text = Text;
             }
         }
     }
