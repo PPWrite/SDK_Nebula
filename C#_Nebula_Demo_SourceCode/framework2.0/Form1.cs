@@ -2159,20 +2159,20 @@ namespace RobotPenTestDll
                 case 0:
                     {
                         bScreen = true;
-                        robotpenController.GetInstance().rotate(-90);
+                        robotpenController.GetInstance().rotate(-180);
                         break;
                     }
                 case 1:
                     {
                         bScreen = false;
-                        robotpenController.GetInstance().rotate(0);
+                        robotpenController.GetInstance().rotate(-90);
                         break;
                     }
                 case 2:
                     {
                         bScreen = true;
                         //robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        robotpenController.GetInstance().rotate(90);
+                        robotpenController.GetInstance().rotate(0);
                         break;
                     }
                 default:
