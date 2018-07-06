@@ -88,6 +88,7 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.BaseGroup.SuspendLayout();
             this.BLEGroup.SuspendLayout();
             this.GATEWAYGroup.SuspendLayout();
@@ -574,6 +575,7 @@
             // 
             // BaseGroup
             // 
+            this.BaseGroup.Controls.Add(this.button3);
             this.BaseGroup.Controls.Add(this.DeviceSize);
             this.BaseGroup.Controls.Add(this.SwichModeBtn);
             this.BaseGroup.Controls.Add(this.mode_label);
@@ -805,6 +807,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "2.4GSetting";
             // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button3.Location = new System.Drawing.Point(392, 76);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(93, 28);
+            this.button3.TabIndex = 41;
+            this.button3.Text = "开启优化笔记";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -899,6 +912,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button SwichModeBtn;
         private System.Windows.Forms.Label DeviceSize;
+        private System.Windows.Forms.Button button3;
     }
 }
 
