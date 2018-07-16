@@ -6,6 +6,8 @@
 #include <map>
 #include <queue>
 #include "rbt_win.h"
+#include "ConfigDlg.h"
+
 class CDrawDlg;
 
 #define WM_RCV_ACCEPT (WM_USER + 100)
@@ -81,7 +83,7 @@ private:
 	std::queue<_Mass_Data> m_queueData;
 	bool m_bRun;
 	HANDLE m_hEvent[2];
-	CString m_strSSID, m_strPwd, m_strSource;
+	CConfigDlg *m_pDlg;
 public:
 	afx_msg void OnBnClickedButtonConfig();
 	afx_msg void OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
@@ -90,7 +92,7 @@ public:
 
 	static void CALLBACK onAccept(rbt_win_context* context, const char* pClientIpAddress);
 	static void CALLBACK onErrorPacket(rbt_win_context* context);
-	static void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
+	static void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
 	static void CALLBACK onDeviceMac(rbt_win_context* context, const char* pMac);
 	static void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
 	static void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac, int res, const char* pName);
@@ -110,4 +112,5 @@ public:
 	afx_msg void OnBnClickedButtonSetting();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonSetFreq();
+	afx_msg void OnBnClickedButtonClear();
 };

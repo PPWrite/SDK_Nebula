@@ -22,6 +22,7 @@ extern "C" {
 	void rbt_win_config_bmp_stu(const char *mac, const char *stuNo, const char *stuName);
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *source);
 	int rbt_win_config_net(const char *ip, int port, bool mqtt, bool tcp, const char *source);
+	int rbt_win_config_wifi_net(const char *ssid, const char *pwd, const char *ip, int port, bool mqtt, bool tcp, const char *source);
 	void rbt_win_config_freq(int freq);
 	void rbt_win_config_sleep(int mins);
 	void rbt_win_open_module(bool open);

@@ -24,18 +24,18 @@ enum keyPressEnum
 	K_SURE = 0x15,
 };
 
-typedef void CALLBACK onAccept(rbt_win_context* context, const char* pClientIpAddress );
-typedef void CALLBACK onErrorPacket(rbt_win_context* context);
-typedef void CALLBACK onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up);
-typedef void CALLBACK onDeviceMac(rbt_win_context* context, const char* pMac);
-typedef void CALLBACK onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
-typedef void CALLBACK onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
-typedef void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
-typedef void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
-typedef void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
-typedef void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
-typedef void CALLBACK onError(rbt_win_context* context, const char* pmac, int cmd, const char *msg);
-typedef void CALLBACK onClearCanvas(rbt_win_context* context, const char* pmac);
+typedef void __stdcall onAccept(rbt_win_context* context, const char* pClientIpAddress );
+typedef void __stdcall onErrorPacket(rbt_win_context* context);
+typedef void __stdcall onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
+typedef void __stdcall onDeviceMac(rbt_win_context* context, const char* pMac);
+typedef void __stdcall onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
+typedef void __stdcall onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
+typedef void __stdcall onDeviceDisConnect(rbt_win_context* context, const char* pMac);
+typedef void __stdcall onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
+typedef void __stdcall onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
+typedef void __stdcall onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+typedef void __stdcall onError(rbt_win_context* context, const char* pmac, int cmd, const char *msg);
+typedef void __stdcall onClearCanvas(rbt_win_context* context, const char* pmac);
 
 void rbt_win_set_accept_cb( onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
@@ -57,7 +57,7 @@ typedef struct _Init_Param
 	int listenCount;
 	bool open;
 	rbt_win_context* ctx;
-	_Init_Param() :pIp(""), port(6001), listenCount(60), open(true), ctx(NULL) {}
+	_Init_Param() :pIp(nullptr), port(6001), listenCount(60), open(true), ctx(nullptr) {}
 }Init_Param;
 
 #endif

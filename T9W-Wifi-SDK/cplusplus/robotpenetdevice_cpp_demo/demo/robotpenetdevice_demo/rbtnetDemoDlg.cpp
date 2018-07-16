@@ -6,7 +6,6 @@
 #include "rbtnetDemoDlg.h"
 #include "afxdialogex.h"
 #include "DrawDlg.h"
-#include "ConfigDlg.h"
 #include "StuDlg.h"
 #include <Iphlpapi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库
@@ -56,9 +55,7 @@ END_MESSAGE_MAP()
 
 CrbtnetDemoDlg::CrbtnetDemoDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_RBTNETDEMO_DIALOG, pParent)
-	, m_strSSID("")
-	, m_strPwd("")
-	, m_strSource("")
+	, m_pDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -101,6 +98,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SETTING, &CrbtnetDemoDlg::OnBnClickedButtonSetting)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_SET_FREQ, &CrbtnetDemoDlg::OnBnClickedButtonSetFreq)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CrbtnetDemoDlg::OnBnClickedButtonClear)
 END_MESSAGE_MAP()
 
 
@@ -160,6 +158,10 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("抛四个点"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->SetCurSel(0);
 
+
+	m_pDlg = new CConfigDlg;
+	m_pDlg->Create(IDD_CONFIGDLG);
+	m_pDlg->ShowWindow(SW_HIDE);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -463,7 +465,7 @@ void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAdd
 void CrbtnetDemoDlg::onErrorPacket(rbt_win_context* context)
 {
 }
-void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up)
+void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len)
 {
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
 	pThis->recvOriginData(pMac, us, ux, uy, up);
@@ -608,7 +610,7 @@ void CrbtnetDemoDlg::recvOriginData(const char* pMac,
 	if (NULL != pDlg)
 		pDlg->onRecvData(us, ux, uy, up);
 	return;
-
+	//////////////////////////////////////////////////////////////
 	_Mass_Data data;
 	data.strMac = strMac;
 	data.data.nStatus = us;
@@ -815,13 +817,12 @@ void CrbtnetDemoDlg::OnClose()
 void CrbtnetDemoDlg::OnBnClickedButtonConfig()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	CConfigDlg dlg(m_strSSID, m_strPwd, m_strSource);
-	if (dlg.DoModal() == IDOK)
+	if (m_pDlg)
 	{
-		dlg.getConfig(m_strSSID, m_strPwd, m_strSource);
-		USES_CONVERSION;
-		rbt_win_config_wifi(T2A(m_strSSID), T2A(m_strPwd), T2A(m_strSource));
+		m_pDlg->ShowWindow(SW_SHOW);
+		m_pDlg->CenterWindow();
 	}
+
 }
 
 
@@ -877,13 +878,39 @@ void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 #ifdef _TEST
 	SetTimer(0, 10, NULL);
 #else
-	CString strIP;
-	GetDlgItem(IDC_COMBO_IP)->GetWindowText(strIP);
-	USES_CONVERSION;
-	int ret = rbt_win_config_net(T2A(strIP), 6001, false, true, "");
-	if (ret != 0)
+	int type = m_pDlg->getType();
+	CString strSSID, strPwd, strIP;
+	bool bTcp;
+	switch (type)
 	{
-		AfxMessageBox(_T("rbt_win_config_net error"));
+	case 1:
+	{
+		m_pDlg->getWifiConfig(strSSID, strPwd);
+		if (strSSID.IsEmpty())
+			break;
+		USES_CONVERSION;
+		rbt_win_config_wifi(T2A(strSSID), T2A(strPwd), "");
+	}
+	break;
+	case 2:
+	{
+		m_pDlg->getNetConfig(bTcp, strIP);
+		USES_CONVERSION;
+		rbt_win_config_net(T2A(strIP), 6001, !bTcp, bTcp, "");
+	}
+	break;
+	case 3:
+	{
+		m_pDlg->getWifiConfig(strSSID, strPwd);
+		m_pDlg->getNetConfig(bTcp, strIP);
+		if (strSSID.IsEmpty())
+			break;
+		USES_CONVERSION;
+		rbt_win_config_wifi_net(T2A(strSSID), T2A(strPwd), T2A(strIP), 6001, !bTcp, bTcp, "");
+	}
+	break;
+	default:
+		break;
 	}
 #endif
 }
@@ -988,7 +1015,7 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 	{
 		it.second->DestroyWindow();
 		it.second = NULL;
-	}
+}
 	m_device2draw.clear();
 #else
 	rbt_win_open_module(false);
@@ -1060,4 +1087,15 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetFreq()
 	// TODO: 在此添加控件通知处理程序代码
 	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->GetCurSel();
 	rbt_win_config_freq(nIndex);
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonClear()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	std::map<CString, CDrawDlg*>::iterator iter;
+	for (iter = m_device2draw.begin(); iter != m_device2draw.end(); iter++)
+	{
+		iter->second->Clear();
+	}
 }
