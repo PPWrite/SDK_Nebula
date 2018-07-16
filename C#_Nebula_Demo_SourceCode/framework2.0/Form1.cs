@@ -491,14 +491,6 @@ namespace RobotPenTestDll
                 return;
             }
 
-            // 是否开启笔记优化
-            /*robotpenController.GetInstance().setPenWidthF((float)1.5);
-            robotpenController.GetInstance().setTrailsIsOptimize(true);
-            robotpenController.GetInstance().setPressStatus(true);
-            robotpenController.GetInstance().setPointDelay((float)0.1);
-            robotpenController.GetInstance().setPointDamping((float)0.018);*/
-
-
             string strPID = this.listView1.SelectedItems[0].SubItems[2].Text;
             UInt16 nPid = Convert.ToUInt16(strPID);
             string strDeviceType = this.listView1.SelectedItems[0].SubItems[3].Text;
@@ -669,7 +661,7 @@ namespace RobotPenTestDll
                 return;
 
             int npenStatus = Convert.ToInt32(bPenStatus);
-            if (npenStatus != 17)
+            if (fPenWidthF == 0)
             {
                 npenStatus = 0;
             }
@@ -2159,20 +2151,20 @@ namespace RobotPenTestDll
                 case 0:
                     {
                         bScreen = true;
-                        robotpenController.GetInstance().rotate(-90);
+                        robotpenController.GetInstance().rotate(-180);
                         break;
                     }
                 case 1:
                     {
                         bScreen = false;
-                        robotpenController.GetInstance().rotate(0);
+                        robotpenController.GetInstance().rotate(-90);
                         break;
                     }
                 case 2:
                     {
                         bScreen = true;
                         //robotpenController.GetInstance().setIsHorizontal(bScreen);
-                        robotpenController.GetInstance().rotate(90);
+                        robotpenController.GetInstance().rotate(0);
                         break;
                     }
                 default:
@@ -2300,5 +2292,30 @@ namespace RobotPenTestDll
             }
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(this.button3.Text== "开启优化笔记")
+            {
+                this.button3.Text = "关闭优化笔记";
+                // 设置笔宽度
+                robotpenController.GetInstance().setPenWidthF((float)2);
+                // 是否开启笔记优化
+                robotpenController.GetInstance().setTrailsIsOptimize(true);
+                // 是否开启压感
+                robotpenController.GetInstance().setPressStatus(true);
+                //设置拖尾阈值，设置的越小，拖尾越长(0~1) 默认0.4
+                robotpenController.GetInstance().setPointDelay((float)0.4);
+                // 设置粗细变化阈值，设置的越小，粗细变化越小 默认0.026
+                robotpenController.GetInstance().setPointDamping((float)0.026);
+            }
+            else
+            {
+                this.button3.Text = "开启优化笔记";
+                // 是否开启笔记优化
+                robotpenController.GetInstance().setTrailsIsOptimize(false);
+                // 是否开启压感
+                robotpenController.GetInstance().setPressStatus(false);
+            }
+        }
     }
 }

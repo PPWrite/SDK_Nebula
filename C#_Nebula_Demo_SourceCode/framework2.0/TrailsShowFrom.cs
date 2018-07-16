@@ -161,14 +161,14 @@ namespace RobotPenTestDll
         {
             //
             //if (canvastype == canvasType.NODE)
-            {
-                if (!bScreenO)
-                {
-                    float fY = point.Y;
-                    point.Y = m_nDeviceW - point.X;
-                    point.X = fY;
-                }
-            }
+            //{
+            //    if (!bScreenO)
+            //    {
+            //        float fY = point.Y;
+            //        point.Y = m_nDeviceW - point.X;
+            //        point.X = fY;
+            //    }
+            //}
 
             int nBordereW = this.Width - this.ClientRectangle.Width;
             if (bScreenO)  // 横屏
