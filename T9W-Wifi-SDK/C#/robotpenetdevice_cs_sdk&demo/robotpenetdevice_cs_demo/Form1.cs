@@ -125,7 +125,7 @@ namespace rbt_win32_2_demo
             ushort us, 
             ushort ux, 
             ushort uy, 
-            ushort up)
+            ushort up,string buffer,int len)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             if (dicMac2DrawForm_.ContainsKey(sMac)) {

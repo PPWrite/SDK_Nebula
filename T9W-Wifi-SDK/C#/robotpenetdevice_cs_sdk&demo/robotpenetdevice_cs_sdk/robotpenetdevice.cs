@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace robotpenetdevice_cs
 {
@@ -55,6 +54,9 @@ namespace robotpenetdevice_cs
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int rbt_win_config_wifi_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
@@ -133,11 +135,13 @@ namespace robotpenetdevice_cs
         /// <param name="ux"></param>
         /// <param name="uy"></param>
         /// <param name="up"></param>
-        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up) {
+        /// <param name="buffer"></param>
+        /// <param name="len"></param>
+        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up,string buffer,int len) {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
             if (rbtNetThis != null && rbtNetThis.deviceOriginDataEvt_ != null) {
-                rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up);
+                rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up, buffer, len);
             }
         }
 
