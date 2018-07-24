@@ -18,8 +18,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-#define _NODE
-//#define _DONGLE
+//#define _NODE
+#define _DONGLE
 //#define _P1
 //#define _WIFI
 
@@ -477,7 +477,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	//开启笔记优化
 	GetInstance()->SetOptimizeStatus(true);
 	//设置拖尾长度
-	//GetInstance()->SetPointDelay(0.1);
+	GetInstance()->SetPointDelay(0.4);
 #endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -2408,7 +2408,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
 			TRACE(_T("OPTIMIZE X:%d-Y:%d-Status:%d-Width:%.2f-Speed:%.2f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth,penInfof.fSpeed);
 
-			PEN_INFO penInfo = {0};
+			PEN_INFO penInfo = { 0 };
 			penInfo.nX = penInfof.nX;
 			penInfo.nY = penInfof.nY;
 			penInfo.nStatus = penInfof.nStatus;

@@ -12,7 +12,7 @@ namespace robotpenetdevice_cs
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, System.String strDeviceMac);
     // 原点数据上报
-    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up);
+    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up,string buffer,int len);
     //
     public delegate void onDeviceDisconnect(IntPtr ctx, IntPtr strDeviceMac);
     //
