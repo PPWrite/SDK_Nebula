@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.5.3")
+#define _VERSION  _T("版本号:1.1.5.4")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -29,7 +29,7 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-//#define USE_OPTIMIZE
+#define USE_OPTIMIZE
 //#define _HF
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
@@ -215,6 +215,9 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UPDATE, &CUSBHelperDlg::OnBnClickedButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON_SET4, &CUSBHelperDlg::OnBnClickedButtonSet4)
 	ON_BN_CLICKED(IDC_BUTTON_SET5, &CUSBHelperDlg::OnBnClickedButtonSet5)
+	ON_BN_CLICKED(IDC_BUTTON_SET6, &CUSBHelperDlg::OnBnClickedButtonSet6)
+	ON_CBN_SELCHANGE(IDC_COMBO_PEN, &CUSBHelperDlg::OnCbnSelchangeComboPen)
+	ON_BN_CLICKED(IDC_BUTTON_SER_PEN, &CUSBHelperDlg::OnBnClickedButtonSerPen)
 END_MESSAGE_MAP()
 
 
@@ -339,6 +342,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_SECRET)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_EDIT_SECRET)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET5)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_STATIC_MAC)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_MAC)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET6)->ShowWindow(SW_SHOW);
 #endif
 	
 #ifdef _DONGLE
@@ -423,6 +430,14 @@ BOOL CUSBHelperDlg::OnInitDialog()
 #ifdef _HF
 	GetInstance()->SetKey("36e4a46f689611e8b441060400ef5315");
 #endif
+
+	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(0,_T("M2"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(1,_T("M3K"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(2,_T("M3"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->SetCurSel(0);
+
+	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_HIDE);
+	//GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_HIDE);
 
 	InitListCtrl();
 
@@ -1765,7 +1780,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 			if (T7B_HF		==	m_nDeviceType
 				|| T7E		==	m_nDeviceType
 				|| S1_DE	==	m_nDeviceType
@@ -2050,6 +2065,21 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
 		}
 		break;
+	case ROBOT_PEN_TYPE:
+		{
+			uint8_t type = report.payload[0];
+			((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->SetCurSel(type-1);			
+		}
+		break;
+	case ROBOT_SEARCH_STORAGE:
+		{
+			STORAGE_INFO storageInfo = {0};
+			memcpy(&storageInfo,report.payload,sizeof(STORAGE_INFO));
+			CString str;
+			str.Format(_T("total:%d,free:%d"),storageInfo.total,storageInfo.free);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
 	default:						
 		break;
 	}
@@ -2161,7 +2191,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
 			/*CString str;
 			str.Format(_T("压感：%d"),penInfo.nPress);
@@ -2376,13 +2406,13 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		{
 			PEN_INFOF penInfof = {0};
 			memcpy(&penInfof,report.payload,sizeof(PEN_INFOF));
-			TRACE(_T("DONGLE X:%d-Y:%d-Status:%d-Width:%f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth);
+			TRACE(_T("OPTIMIZE X:%d-Y:%d-Status:%d-Width:%.2f-Speed:%.2f\n"),penInfof.nX,penInfof.nY,penInfof.nStatus,penInfof.fWidth,penInfof.fSpeed);
 
 			PEN_INFO penInfo = {0};
 			penInfo.nX = penInfof.nX;
 			penInfo.nY = penInfof.nY;
 			penInfo.nStatus = penInfof.nStatus;
-			if (penInfof.nStatus == 17)
+			if (penInfof.fWidth > 0)
 				penInfo.nPress = 1;
 			else
 				penInfo.nPress = 0;
@@ -2415,6 +2445,15 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			CString str;
 			str.Format(_T("%d"),nKey);
 			GetDlgItem(IDC_STATIC_SLAVE_STATUS)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_SEARCH_STORAGE:
+		{
+			STORAGE_INFO storageInfo = {0};
+			memcpy(&storageInfo,report.payload,sizeof(STORAGE_INFO));
+			CString str;
+			str.Format(_T("total:%d,free:%d"),storageInfo.total,storageInfo.free);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
 	default:
@@ -2582,7 +2621,8 @@ void CUSBHelperDlg::OnBnClickedButtonSyncOpen()
 void CUSBHelperDlg::OnBnClickedButton3Reset()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	GetInstance()->Send(RESET_NODE);
+	GetInstance()->Send(SearchStorage);
+	//GetInstance()->Send(RESET_NODE);
 	//GetInstance()->SetPage(255);
 }
 
@@ -2760,4 +2800,35 @@ void CUSBHelperDlg::OnBnClickedButtonSet5()
 	GetDlgItem(IDC_EDIT_SECRET)->GetWindowText(str);
 	char *buffer = WideStrToMultiStr(str.GetBuffer());
 	GetInstance()->SetSecret((unsigned char*)buffer);
+}
+
+void CUSBHelperDlg::OnBnClickedButtonSet6()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	unsigned char buffer[20] = {0};
+	CString str;
+	GetDlgItem(IDC_EDIT_MAC)->GetWindowText(str);
+	int len = str.GetLength();
+	int index = 0;
+	for (int i=0;i<len;i+=2)
+	{
+		CString strNum = str.Mid(i,2);
+		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
+	}
+	GetInstance()->SetMac(m_nDeviceType,buffer,index);
+}
+
+
+void CUSBHelperDlg::OnCbnSelchangeComboPen()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->GetCurSel() + 1;
+	GetInstance()->SetPenType((ePenType)nIndex);
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSerPen()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(GetPenType);
 }

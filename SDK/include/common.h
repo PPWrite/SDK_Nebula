@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.3"
+#define FILEVERSION "1.1.5.5"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -350,6 +350,8 @@ enum eRobotCmd
 	ROBOT_ENTER_SYNC_RES,						//开始同步离线笔记结果
 	////////////////////////////////////////////////////////////
 	ROBOT_SEARCH_MODE,							//查询模式
+	ROBOT_PEN_TYPE,								//笔类型
+	ROBOT_SEARCH_STORAGE,						//查询设备容量
 };
 // 笔数据信息
 typedef struct pen_info
@@ -422,6 +424,13 @@ enum eKeyPress
 	PAGEDOWNDBCLICK,
 	PAGEDOWNPRESS,
 };
+//扇区信息
+typedef struct storage_info
+{
+	uint16_t total;
+	uint16_t free;
+
+}STORAGE_INFO;
 
 ////////////////////////////DONGLE////////////////////////////////
 #pragma pack(1)
@@ -487,6 +496,13 @@ enum eDeviceMode
 {
 	DEVICE_MOUSE = 0,
 	DEVICE_HAND,
+};
+
+enum ePenType
+{
+	M2 = 1,
+	M3K,
+	M3,
 };
 
 //笔状态

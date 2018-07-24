@@ -149,4 +149,7 @@ public:
 	afx_msg void OnBnClickedButtonUpdate();
 	afx_msg void OnBnClickedButtonSet4();
 	afx_msg void OnBnClickedButtonSet5();
+	afx_msg void OnBnClickedButtonSet6();
+	afx_msg void OnCbnSelchangeComboPen();
+	afx_msg void OnBnClickedButtonSerPen();
 };

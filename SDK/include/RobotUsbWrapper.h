@@ -39,10 +39,15 @@ enum eRbtType
 	GetMassMac,
 	UpdateEmrStop,
 	DeleteSync,
+	GetPenType,
+	SearchStorage,
 };
 
 //回调函数
 typedef void (CALLBACK *UsbDataCallback_t)(const unsigned char*,int,void*);
+//识别回调
+typedef void (CALLBACK *ResultCallback_t)(int,char*,void*);
+
 
 class IRobotEventHandler
 {
@@ -335,6 +340,29 @@ public:
 	virtual void SetBmp(unsigned char *buffer,int len) = 0;
 	//升级模组
 	virtual bool UpdateEmr(const char *file) = 0;
+	//设置mac
+	virtual void SetMac(int type,unsigned char *mac,int len) = 0;
+	//设置笔类型
+	virtual void SetPenType(ePenType type) = 0;
+	////////////////////////////////////////////////
+	//设置识别回调函数
+	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;
+	//设置用户信息
+	virtual void SetUserInfo(const char *user_id,const char *secret, int source) = 0;
+	//设置超时 毫秒
+	virtual void SetSyncTimeout(int ms = 5000) = 0;
+	//打开识别接口 缓存最大点数
+	virtual int OpenRecog(int maxSize = 3000) = 0;
+	//设置缓存状态
+	virtual void SetCacheStatus(bool cache) = 0;
+	//创建识别笔记,方向,0为竖屏
+	virtual int CreateRecogNote(char *note_key,int direct = 0) = 0;
+	//追加笔记
+	virtual int AppendNote(void *pen_array,int array_size,const char *note_key) = 0;
+	//识别笔记
+	virtual int RecogNote(char *note_key) = 0;
+	//关闭识别接口
+	virtual void CloseRecog() = 0;
 };
 
 //初始化 回调
