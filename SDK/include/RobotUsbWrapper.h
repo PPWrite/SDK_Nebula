@@ -47,7 +47,8 @@ enum eRbtType
 typedef void (CALLBACK *UsbDataCallback_t)(const unsigned char*,int,void*);
 //识别回调
 typedef void (CALLBACK *ResultCallback_t)(int,char*,void*);
-
+//鼠标笔记回调函数
+typedef void(CALLBACK *PacketCallback)(float, float, int, float, int, void *);
 
 class IRobotEventHandler
 {
@@ -344,7 +345,7 @@ public:
 	virtual void SetMac(int type,unsigned char *mac,int len) = 0;
 	//设置笔类型
 	virtual void SetPenType(ePenType type) = 0;
-	////////////////////////////////////////////////
+	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;
 	//设置用户信息
@@ -352,17 +353,33 @@ public:
 	//设置超时 毫秒
 	virtual void SetSyncTimeout(int ms = 5000) = 0;
 	//打开识别接口 缓存最大点数
-	virtual int OpenRecog(int maxSize = 3000) = 0;
+	virtual int OpenRecog(int maxSize = 3000,bool autoAppend = false) = 0;
 	//设置缓存状态
 	virtual void SetCacheStatus(bool cache) = 0;
-	//创建识别笔记,方向,0为竖屏
-	virtual int CreateRecogNote(char *note_key,int direct = 0) = 0;
+	//创建识别笔记,language,1英语 2中文 3数学公式,direct,0为竖屏,1为横屏
+	virtual int CreateRecogNote(char *note_key,int language, int direct = 0) = 0;
 	//追加笔记
-	virtual int AppendNote(void *pen_array,int array_size,const char *note_key) = 0;
+	virtual int AppendNote(void *pen_array,int array_size,const char *note_key,int draw = 0) = 0;
+	virtual int AppendNote(const char *note_key,int draw = 0) = 0;
 	//识别笔记
-	virtual int RecogNote(char *note_key) = 0;
+	virtual int RecogNote(const char *user_id,const char *note_key) = 0;
 	//关闭识别接口
 	virtual void CloseRecog() = 0;
+	//////////////////////////////////////////////鼠标控制接口//////////////////////////////////////////////
+	//设置鼠标控制开关
+	virtual void openMouseControl(bool isOpen = false) = 0;
+	//设置电脑屏幕窗体尺寸
+	virtual void SetWindowSize(const int width, const int height) = 0;
+	//设置手写板尺寸
+	virtual void SetDeviceSize(const int width, const int height) = 0;
+	//设置画布尺寸以及画布的原点坐标,画布坐标是相对于电脑屏幕坐标
+	virtual void SetCanvasSizeAndPos(const int width, const int height, const float fX, const float fY) = 0;
+	//设置板子数据
+	virtual void SetDevicePacket(const int nX, const int nY, const int nStatus, const float nWidth, const int nSpeed) = 0;
+	//开启鼠标模式
+	virtual void SetMouseMode(bool isOpen = false) = 0;
+	//设置回调函数（画布点坐标回调）
+	virtual void SetOnPacketCallback(PacketCallback pCallback, void *context) = 0;
 };
 
 //初始化 回调

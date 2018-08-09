@@ -75,6 +75,8 @@ BOOL CConfigDlg::OnInitDialog()
 
 	GetLocalAddress();
 
+	((CButton*)GetDlgItem(IDC_CHECK2))->SetCheck(true);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }

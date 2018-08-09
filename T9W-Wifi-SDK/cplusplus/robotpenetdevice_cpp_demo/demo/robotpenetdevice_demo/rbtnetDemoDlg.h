@@ -99,9 +99,11 @@ public:
 	static void CALLBACK onDeviceDisConnect(rbt_win_context* context, const char* pMac);
 	static void CALLBACK onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
 	static void CALLBACK onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
-	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId);
+	static void CALLBACK onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId, int nPageInfo);
 	static void CALLBACK onError(rbt_win_context* context, const char* pMac, int cmd, const char *msg);
 	static void CALLBACK onClearCanvas(rbt_win_context* context, const char* pMac);
+	static void CALLBACK onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed);
+
 
 	bool GetLocalAddress();
 	afx_msg void OnBnClickedOpenModule();

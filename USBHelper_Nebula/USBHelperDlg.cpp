@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.5.4")
+#define _VERSION  _T("版本号:1.1.5.5")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -351,7 +351,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
 
-	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("删除笔记"));
 	GetDlgItem(IDC_BUTTON3_MS)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_MS_OFF)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_MS_CLEAR)->ShowWindow(SW_HIDE);
@@ -437,7 +438,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->SetCurSel(0);
 
 	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_HIDE);
-	//GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON3_RESET)->ShowWindow(SW_SHOW);
 
 	InitListCtrl();
 
@@ -730,7 +731,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
-		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType)
+		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
+		|| T9W_QX == m_nDeviceType)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));

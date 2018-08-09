@@ -137,6 +137,8 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	param.ctx = this;
 	param.port = 6001;
 	param.pIp = NULL;
+	param.open = true;
+	param.optimize = false;
 	param.listenCount = 100;
 
 	rbt_win_init(&param);
@@ -149,6 +151,13 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("主观题"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("客观题"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
+
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(0, _T("判断"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(1, _T("单选"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(2, _T("多选"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(3, _T("抢答"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->SetCurSel(0);
+
 	GetLocalAddress();
 
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(0, _T("不抛点"));
@@ -157,7 +166,6 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(3, _T("抛三个点"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("抛四个点"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->SetCurSel(0);
-
 
 	m_pDlg = new CConfigDlg;
 	m_pDlg->Create(IDD_CONFIGDLG);
@@ -454,6 +462,8 @@ void CrbtnetDemoDlg::initCbFunction()
 	rbt_win_set_error_cb(onError);
 
 	rbt_win_set_clearcanvas_cb(onClearCanvas);
+
+	rbt_win_set_optimizedata_cb(onOptimizeData);
 }
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
@@ -511,7 +521,7 @@ void CrbtnetDemoDlg::onDeviceAnswerResult(rbt_win_context* context, const char* 
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	pThis->recvDeviceAnswerResult(pMac, resID, pResult, nSize);
 }
-void CrbtnetDemoDlg::onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId)
+void CrbtnetDemoDlg::onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId, int nPageInfo)
 {
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	pThis->recvDeviceShowpage(pMac, nNoteId, nPageId);
@@ -526,6 +536,12 @@ void CrbtnetDemoDlg::onError(rbt_win_context* context, const char* pMac, int cmd
 void CrbtnetDemoDlg::onClearCanvas(rbt_win_context* context, const char* pMac)
 {
 	TRACE("Mac:%d ClearCanvas\n", pMac);
+}
+
+void CrbtnetDemoDlg::onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
+	pThis->recvOriginData(pMac, us, ux, uy, width);
 }
 
 void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
@@ -737,6 +753,14 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		case 0x13:
 			csValue.Format(_T("%s错误"), csValue);
 			break;
+		case 0x14:
+			break;
+		case 0x15:
+		{
+			if (((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel() == 3)
+				csValue.Format(_T("参与抢答"));
+		}
+		break;
 		default:
 			break;
 		}
@@ -869,7 +893,7 @@ void CrbtnetDemoDlg::OnSettingStu()
 		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
 		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strStu));
 	}
-}
+	}
 
 
 void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
@@ -985,7 +1009,7 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 		delete pIpAdapterInfoEx;
 		pIpAdapterInfoEx = NULL;
 	}
-}
+	}
 
 //打开模组
 void CrbtnetDemoDlg::OnBnClickedOpenModule()
@@ -1015,7 +1039,7 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 	{
 		it.second->DestroyWindow();
 		it.second = NULL;
-}
+	}
 	m_device2draw.clear();
 #else
 	rbt_win_open_module(false);
@@ -1030,8 +1054,10 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 	// TODO: 在此添加控件通知处理程序代码
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 
-	int totalTopic = 3;
-	char pTopicType[3] = { 1,2,3 };
+	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
+
+	int totalTopic = 1;
+	char pTopicType[1] = { subject + 1 };
 	bool bSendRes = false;
 	//0为主观题,1为客观题
 	if (index == 1)

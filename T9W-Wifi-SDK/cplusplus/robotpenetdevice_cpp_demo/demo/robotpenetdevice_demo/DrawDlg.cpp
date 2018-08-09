@@ -102,7 +102,9 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	}
 	else
 		point.SetPoint(ux, uy);
-	//TRACE("X:%d,Y:%d,Press:%d\n",penInfo.nX,penInfo.nY, penInfo.nPress);
+	CString str;
+	str.Format(_T("X:%d,Y:%d,Press:%d,Status:%d\n"), ux, uy, up, us);
+	//OutputDebugString(str);
 	/*TRACE("%d\n", us);
 	switch (us)
 	{

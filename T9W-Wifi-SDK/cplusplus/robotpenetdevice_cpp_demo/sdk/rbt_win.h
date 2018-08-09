@@ -11,11 +11,11 @@ extern "C" {
 	void rbt_win_uninit();
 
 	void rbt_win_send(sendCmdID cmdId);
-	bool rbt_win_send_startanswer(int type, int totalTopic, char* pTopicType);
+	bool rbt_win_send_startanswer(int type, int totalTopic, char* pTopicType, const char* mac = "");
 	//Í£Ö¹´ðÌâ
-	bool rbt_win_send_stopanswer();
+	bool rbt_win_send_stopanswer(const char* mac = "");
 	//½áÊø´ðÌâ
-	bool rbt_win_send_endanswer();
+	bool rbt_win_send_endanswer(const char* mac = "");
 	bool rbt_win_start();
 	void rbt_win_stop();
 	void rbt_win_config_stu(const char *mac, const char *stu);

@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.5"
+#define FILEVERSION "1.1.5.6"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -40,6 +40,7 @@ enum eDevicePid
 	J7B_ZY_PID  =	0x602f,
 	T8S_PID		=	0x6030,
 	J7B_PID		=	0x6031,
+	T9W_QX_PID	=	0x6032,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -96,6 +97,7 @@ enum eDeviceType
 	J7B_ZY,
 	T8S,
 	J7B,
+	T9W_QX,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
