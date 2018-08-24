@@ -10,6 +10,7 @@ enum sendCmdID
 	endAnsewer,
 };
 
+//按键类型
 enum keyPressEnum
 {
 	K_A = 0x06,
@@ -24,18 +25,31 @@ enum keyPressEnum
 	K_SURE = 0x15,
 };
 
+//设备上线回调
 typedef void __stdcall onAccept(rbt_win_context* context, const char* pClientIpAddress );
+//错误包回调
 typedef void __stdcall onErrorPacket(rbt_win_context* context);
+//笔迹数据回调
 typedef void __stdcall onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
+//Mac地址回调
 typedef void __stdcall onDeviceMac(rbt_win_context* context, const char* pMac);
+//设备名称回调
 typedef void __stdcall onDeviceName(rbt_win_context* context, const char* pMac, const char* pName);
+//设置设备名称回调
 typedef void __stdcall onDeviceNameResult(rbt_win_context* context, const char* pMac,int res,const char* pName);
+//设备断开回调
 typedef void __stdcall onDeviceDisConnect(rbt_win_context* context, const char* pMac);
+//按键回调
 typedef void __stdcall onDeviceKeyPress(rbt_win_context* context, const char* pMac, keyPressEnum keyValue);
+//答案回调
 typedef void __stdcall onDeviceAnswerResult(rbt_win_context* context, const char* pMac, int resID, unsigned char* pResult, int nSize);
+//页面显示回调
 typedef void __stdcall onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId, int nPageInfo);
+//错误回调
 typedef void __stdcall onError(rbt_win_context* context, const char* pmac, int cmd, const char *msg);
+//清楚画布回调
 typedef void __stdcall onClearCanvas(rbt_win_context* context, const char* pmac);
+//优化笔记回调
 typedef void __stdcall onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width,float speed);
 
 void rbt_win_set_accept_cb( onAccept* arg);
@@ -54,12 +68,12 @@ void rbt_win_set_optimizedata_cb(onOptimizeData *arg);
 
 typedef struct _Init_Param
 {
-	char* pIp;
-	int port;
-	int listenCount;
-	bool open;
-	bool optimize;
-	rbt_win_context* ctx;
+	char* pIp; //本机ip，默认为NULL
+	int port;	//监听端口，6001
+	int listenCount; //最大连接数 默认60
+	bool open;  //是否打开模组， 默认打开
+	bool optimize;	//是否输出优化笔记，默认关闭
+	rbt_win_context* ctx; //上下文指针
 	_Init_Param() :pIp(nullptr), port(6001), listenCount(60), open(true), optimize(false), ctx(nullptr) {}
 }Init_Param;
 

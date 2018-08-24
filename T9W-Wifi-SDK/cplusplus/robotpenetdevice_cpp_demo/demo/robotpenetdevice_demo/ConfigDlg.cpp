@@ -77,6 +77,12 @@ BOOL CConfigDlg::OnInitDialog()
 
 	((CButton*)GetDlgItem(IDC_CHECK2))->SetCheck(true);
 
+	GetDlgItem(IDC_EDIT1)->GetWindowText(m_strSSID);
+	GetDlgItem(IDC_EDIT2)->GetWindowText(m_strPwd);
+	GetDlgItem(IDC_COMBO_IP)->GetWindowText(m_strIP);
+
+	m_bTcp = (((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel() == 0);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }

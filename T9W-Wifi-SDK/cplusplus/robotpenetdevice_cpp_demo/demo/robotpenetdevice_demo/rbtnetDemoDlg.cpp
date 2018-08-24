@@ -16,6 +16,8 @@
 
 //#define _TEST
 
+//#define USE_OPT
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -138,8 +140,12 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	param.port = 6001;
 	param.pIp = NULL;
 	param.open = true;
+#ifdef USE_OPT
+	param.optimize = true;
+#else
 	param.optimize = false;
-	param.listenCount = 100;
+#endif // USE_OPT
+	param.listenCount = 60;
 
 	rbt_win_init(&param);
 	initCbFunction();
@@ -478,7 +484,10 @@ void CrbtnetDemoDlg::onErrorPacket(rbt_win_context* context)
 void CrbtnetDemoDlg::onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len)
 {
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(ctx);
+#ifndef USE_OPT
 	pThis->recvOriginData(pMac, us, ux, uy, up);
+#endif // USE_OPT
+
 }
 void CrbtnetDemoDlg::onDeviceMac(rbt_win_context* context, const char* pMac)
 {
@@ -1056,8 +1065,8 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 
 	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
 
-	int totalTopic = 1;
-	char pTopicType[1] = { subject + 1 };
+	int totalTopic = 1; //题目总数
+	char pTopicType[1] = { subject + 1 }; //题目类型 1判断 2单选 3多选 4抢答
 	bool bSendRes = false;
 	//0为主观题,1为客观题
 	if (index == 1)
