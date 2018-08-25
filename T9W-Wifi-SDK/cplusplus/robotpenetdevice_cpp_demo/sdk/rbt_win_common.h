@@ -72,8 +72,8 @@ typedef struct _Init_Param
 	int port;	//监听端口，6001
 	int listenCount; //最大连接数 默认60
 	bool open;  //是否打开模组， 默认打开
-	bool optimize;	//是否输出优化笔记，默认关闭
 	rbt_win_context* ctx; //上下文指针
+	bool optimize;	//是否输出优化笔记，默认关闭
 	_Init_Param() :pIp(nullptr), port(6001), listenCount(60), open(true), optimize(false), ctx(nullptr) {}
 }Init_Param;
 
