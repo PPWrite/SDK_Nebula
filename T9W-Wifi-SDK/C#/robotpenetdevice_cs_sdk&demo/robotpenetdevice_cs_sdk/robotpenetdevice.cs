@@ -15,14 +15,22 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_uninit();     // 反初始化
 
+        /// <summary>
+        ///开始答题
+        /// </summary>
+        /// <param name="type">type 0为主观题 1为客观题</param>
+        /// <param name="totalTopic">题目总数</param>
+        /// <param name="pTopicType">题目类型 1判断 2单选 3多选 4抢答</param>
+        /// <param name="mac">mac 为空时，发送命令到所有设备，否则为当前mac设备</param>
+        /// <returns></returns>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType);     // 发送开始答题命令
-
+        internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType,string mac);     // 发送开始答题命令
+        //mac 为空时，发送命令到所有设备，否则为当前mac设备
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_stopanswer();   // 停止答题命令
-
+        internal static extern bool rbt_win_send_stopanswer( string mac);   // 停止答题命令
+        //mac 为空时，发送命令到所有设备，否则为当前mac设备
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_endanswer();   // 结束答题命令
+        internal static extern bool rbt_win_send_endanswer(string mac);   // 结束答题命令
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_start();   // 开启监听
@@ -94,6 +102,16 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_clearcanvas_cb(onClearCanvas arg);
 
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_optimizedata_cb(onClearCanvas arg);
+
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_accept_cb(onAccept arg);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_errorpacket_cb(onErrorPacket arg);
+
 
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
@@ -151,8 +169,8 @@ namespace robotpenetdevice_cs
         /// <param name="ctx"></param>
         /// <param name="strDeviceMac"></param>
         private static void deviceMacNotify(IntPtr ctx, System.String strDeviceMac) {
-            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
-            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+           GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+           RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
             if (rbtNetThis != null && rbtNetThis.deviceMacEvt_ != null)
             {
@@ -300,6 +318,7 @@ namespace robotpenetdevice_cs
             iPtrThis_ = GCHandle.ToIntPtr(gchandld);
             arg.ctx = iPtrThis_;
             arg.open = open;
+            arg.optimize = true;
             if (arg.port == 0)
             {
                 arg.port = 6001;
@@ -359,23 +378,23 @@ namespace robotpenetdevice_cs
         /// <param name="nTotalTopic"></param>
         /// <param name="strTopicType"></param>
         /// <returns></returns>
-        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType) {
-            return rbt_win_send_startanswer(type, totalTopic, pTopicType);
+        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType,string mac) {
+            return rbt_win_send_startanswer(type, totalTopic, pTopicType,mac);
         }
 
         /// <summary>
         /// 发送结束答题命令
         /// </summary>
-        public void sendStopAnswer() {
-            rbt_win_send_stopanswer();
+        public void sendStopAnswer(string mac) {
+            rbt_win_send_stopanswer(mac);
         }
 
         /// <summary>
         /// 发送结束答题命令
         /// </summary>
-        public void sendEndAnswer()
+        public void sendEndAnswer(string mac)
         {
-            rbt_win_send_endanswer();
+            rbt_win_send_endanswer(mac);
         }
 
         /// <summary>

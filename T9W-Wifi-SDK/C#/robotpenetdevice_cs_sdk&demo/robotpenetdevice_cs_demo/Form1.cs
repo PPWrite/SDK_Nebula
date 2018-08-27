@@ -37,6 +37,7 @@ namespace rbt_win32_2_demo
             Init_Param param = new Init_Param();
             rbtnet_.init(ref param);
 
+
             comboBox1.Items.Add("判断题");
             comboBox1.Items.Add("单选题");
             comboBox1.Items.Add("多选题");
@@ -45,7 +46,8 @@ namespace rbt_win32_2_demo
             /*
             * 所有事件响应接口都是在内部SDK线程中上报出来
             */
-            rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
+           rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
+
             rbtnet_.deviceNameEvt_ += Rbtnet__deviceNameEvt_;
             rbtnet_.deviceDisconnectEvt_ += Rbtnet__deviceDisconnectEvt_;
             rbtnet_.deviceOriginDataEvt_ += Rbtnet__deviceOriginDataEvt_;
@@ -232,7 +234,7 @@ namespace rbt_win32_2_demo
                 IntPtr ptr = Marshal.AllocHGlobal(totalTopic);
                 Marshal.Copy(topicType, 0, ptr, totalTopic);
 
-                bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr);
+                bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr, "");
                 if (bRes)
                 {
                     this.button_answer.Text = "结束答题";
@@ -247,7 +249,7 @@ namespace rbt_win32_2_demo
             }
             else
             {
-                rbtnet_.sendEndAnswer();
+                rbtnet_.sendEndAnswer("");
                 this.button_answer.Text = "开始答题";
                 this.label3.Text = "恢复到正常模式，开始响应按键事件";
             }
@@ -602,9 +604,22 @@ namespace rbt_win32_2_demo
                 item.Value.Close();
             }
             dicMac2DrawForm_.Clear();
+            try
+            {
+                new Task
+                Environment.Exit(0);
+            }
+            catch (Exception)
+            {
 
-            rbtnet_.stop();
-            rbtnet_.unInit();
+                Environment.Exit(0);
+            }
+            finally
+            {
+                Environment.Exit(0);
+            }
+        
+            
         }
 
         private void button_test_Click(object sender, EventArgs e)
@@ -721,7 +736,7 @@ namespace rbt_win32_2_demo
             if (this.button3.Text == "开始答题")
             {
                 //rbtnet_.openModule(true);
-                bool bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
+                bool bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero,"");
 
                 if (bRes)
                 {
@@ -735,13 +750,13 @@ namespace rbt_win32_2_demo
             }
             else if (this.button3.Text == "停止答题")
             {
-                rbtnet_.sendStopAnswer();
+                rbtnet_.sendStopAnswer("");
                 this.button3.Text = "结束答题";
                 this.label4.Text = "调用停止答题命令，手写板LED显示“已停止答题”";
             }
             else
             {
-                rbtnet_.sendEndAnswer();
+                rbtnet_.sendEndAnswer("");
                 this.button3.Text = "开始答题";
                 this.label4.Text = "恢复非答题状态";
             }
