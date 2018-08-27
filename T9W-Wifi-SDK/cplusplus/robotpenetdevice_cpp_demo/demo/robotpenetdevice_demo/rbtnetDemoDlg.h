@@ -115,4 +115,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonSetFreq();
 	afx_msg void OnBnClickedButtonClear();
+
+	CString GetAnswerResult(int resID, unsigned char* pResult, int nSize);
+	afx_msg void OnCbnSelchangeCombo2();
 };

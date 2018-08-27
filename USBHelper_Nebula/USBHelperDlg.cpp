@@ -18,8 +18,8 @@
 #define RESET_ALL  0x29
 
 //#define _GATEWAY
-//#define _NODE
-#define _DONGLE
+#define _NODE
+//#define _DONGLE
 //#define _P1
 //#define _WIFI
 
@@ -29,7 +29,7 @@
 //#define TEST_T7E
 
 //#define USE_POWER
-#define USE_OPTIMIZE
+//#define USE_OPTIMIZE
 //#define _HF
 
 static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
@@ -347,7 +347,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT_MAC)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET6)->ShowWindow(SW_SHOW);
 #endif
-	
+
 #ifdef _DONGLE
 	GetDlgItem(IDC_STATIC_MODE_NAME)->ShowWindow(SW_HIDE);
 
@@ -472,7 +472,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	//==========================优化笔记设置======================
 #ifdef USE_OPTIMIZE
-	GetInstance()->SetPenWidth(2);
+	GetInstance()->SetPenWidth(1);
 	//开启压感
 	GetInstance()->SetPressStatus(true);
 	//开启笔记优化
@@ -739,7 +739,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 
 		|| m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE
-		|| m_nDeviceType == J7E)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -773,7 +773,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetDlgItem(IDC_EDIT_DEV)->ShowWindow(SW_HIDE);
 	}
 
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -792,7 +793,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 
 	/*if (m_nDeviceType == X8 || m_nDeviceType == T7B_HF || m_nDeviceType == J7B_ZY)
-		GetInstance()->Send(GetMac);//*/
+	GetInstance()->Send(GetMac);//*/
 
 }
 
@@ -1294,7 +1295,7 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				{
 					GetInstance()->Send(DongleVersion);
 				}
-				else if (m_nDeviceType == T7PL)
+				else if (m_nDeviceType == T7PL || m_nDeviceType == K7_HW || m_nDeviceType == K8)
 				{
 					resetDevice();
 					AddList();
@@ -1372,7 +1373,8 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE || m_nDeviceType == J7E)
+	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
@@ -1891,7 +1893,33 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			case KEY_OK:
 				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("KEY_OK"));
 				break;
+			case SELF1CLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF1CLICK"));
+				break;
+			case SELF1DBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF1DBCLICK"));
+				break;
+			case SELF1PRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF1PRESS"));
+				break;
+			case SELF2CLICK:
+				{
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF2CLICK"));
+					Send(SwitchMode);
+				}
+				break;
+			case SELF2DBCLICK:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF2DBCLICK"));
+				break;
+			case SELF2PRESS:
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("SELF2PRESS"));
+				break;
 			default:
+				{
+					CString str;
+					str.Format(_T("Press:%d"),nStatus);
+					GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+				}
 				break;
 			}
 		}
@@ -2044,7 +2072,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				GetDlgItem(IDC_EDIT_LOCAL)->SetWindowText(strVer);
 				GetDlgItem(IDC_EDIT_REMOTE)->SetWindowText(strVer2);
 			}
-			
+
 		}
 		break;
 	case ROBOT_LOG_OUTPUT:
@@ -2366,6 +2394,9 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("PAGEDOWNPRESS"));
 				break;
 			default:
+				CString str;
+				str.Format(_T("Press:%d"),nStatus);
+				GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 				break;
 			}
 		}
@@ -2688,8 +2719,8 @@ void CUSBHelperDlg::OnTimer(UINT_PTR nIDEvent)
 			GetDlgItem(IDC_STATIC_VERSION)->GetWindowText(str);
 			if (!str.IsEmpty())
 			{
-				KillTimer(0);
-				break;
+			KillTimer(0);
+			break;
 			}//*/
 			KillTimer(0);
 			OnBnClickedButtonStatus();
@@ -2754,8 +2785,8 @@ void CUSBHelperDlg::OnBnClickedButtonSet3()
 	int index = 0;
 	for (int i=0;i<len;i+=2)
 	{
-		CString strNum = str.Mid(i,2);
-		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
+	CString strNum = str.Mid(i,2);
+	buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
 	}//*/
 	CString str;
 	GetDlgItem(IDC_EDIT_SID)->GetWindowText(str);
