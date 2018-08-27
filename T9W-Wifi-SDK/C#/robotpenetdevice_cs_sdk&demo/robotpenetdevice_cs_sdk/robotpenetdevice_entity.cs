@@ -10,7 +10,7 @@ namespace robotpenetdevice_cs
     public delegate void onErrorPacket(IntPtr ctx, System.String strDeviceMac);
 
     // 设备MAC地址上报
-    public delegate void onDeviceMac(IntPtr ctx, System.String strDeviceMac);
+    public delegate void onDeviceMac(IntPtr ctx, string strDeviceMac);
     // 原点数据上报
     public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up,string buffer,int len);
     //
@@ -36,6 +36,8 @@ namespace robotpenetdevice_cs
         public Int32 listenCount;
         public bool open;
         public IntPtr ctx;
+        public bool optimize;
+
     }
 
     public enum keyPressEnum
