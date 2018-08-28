@@ -12,7 +12,7 @@ namespace robotpenetdevice_cs
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, string strDeviceMac);
     // 原点数据上报
-    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up,string buffer,int len);
+    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, string buffer, int len);
     //
     public delegate void onDeviceDisconnect(IntPtr ctx, IntPtr strDeviceMac);
     //
@@ -30,14 +30,18 @@ namespace robotpenetdevice_cs
 
     public delegate void onClearCanvas(IntPtr ctx, String pmac);
 
-    public struct Init_Param {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Init_Param
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string strIp;
         public Int32 port;
         public Int32 listenCount;
+        [MarshalAs(UnmanagedType.I1)]
         public bool open;
-        public IntPtr ctx;
+        [MarshalAs(UnmanagedType.I1)]
         public bool optimize;
-
+        public IntPtr ctx;
     }
 
     public enum keyPressEnum

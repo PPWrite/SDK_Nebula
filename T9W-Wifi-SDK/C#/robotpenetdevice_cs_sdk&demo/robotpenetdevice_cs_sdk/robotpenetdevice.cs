@@ -24,10 +24,10 @@ namespace robotpenetdevice_cs
         /// <param name="mac">mac 为空时，发送命令到所有设备，否则为当前mac设备</param>
         /// <returns></returns>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType,string mac);     // 发送开始答题命令
+        internal static extern bool rbt_win_send_startanswer(int type, int totalTopic, IntPtr pTopicType, string mac);     // 发送开始答题命令
         //mac 为空时，发送命令到所有设备，否则为当前mac设备
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool rbt_win_send_stopanswer( string mac);   // 停止答题命令
+        internal static extern bool rbt_win_send_stopanswer(string mac);   // 停止答题命令
         //mac 为空时，发送命令到所有设备，否则为当前mac设备
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_send_endanswer(string mac);   // 结束答题命令
@@ -85,7 +85,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult arg);   // 设备选择题结果函数地址
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_devicename_cb(onDeviceName arg);  
+        internal static extern void rbt_win_set_devicename_cb(onDeviceName arg);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicenameresult_cb(onDeviceNameResult arg);
@@ -141,7 +141,8 @@ namespace robotpenetdevice_cs
 
 
         // 构造函数
-        public RbtNet() {
+        public RbtNet()
+        {
         }
 
         /// <summary>
@@ -155,10 +156,12 @@ namespace robotpenetdevice_cs
         /// <param name="up"></param>
         /// <param name="buffer"></param>
         /// <param name="len"></param>
-        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up,string buffer,int len) {
+        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, string buffer, int len)
+        {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
-            if (rbtNetThis != null && rbtNetThis.deviceOriginDataEvt_ != null) {
+            if (rbtNetThis != null && rbtNetThis.deviceOriginDataEvt_ != null)
+            {
                 rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up, buffer, len);
             }
         }
@@ -168,13 +171,14 @@ namespace robotpenetdevice_cs
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="strDeviceMac"></param>
-        private static void deviceMacNotify(IntPtr ctx, System.String strDeviceMac) {
-           GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
-           RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+        private static void deviceMacNotify(IntPtr ctx, System.String strDeviceMac)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
             if (rbtNetThis != null && rbtNetThis.deviceMacEvt_ != null)
             {
-                rbtNetThis.deviceMacEvt_(ctx,  strDeviceMac);
+                rbtNetThis.deviceMacEvt_(ctx, strDeviceMac);
             }
         }
 
@@ -190,7 +194,7 @@ namespace robotpenetdevice_cs
 
             if (rbtNetThis != null && rbtNetThis.deviceNameEvt_ != null)
             {
-                rbtNetThis.deviceNameEvt_(ctx, strDeviceMac,strDeviceName);
+                rbtNetThis.deviceNameEvt_(ctx, strDeviceMac, strDeviceName);
             }
         }
 
@@ -206,9 +210,9 @@ namespace robotpenetdevice_cs
 
             if (rbtNetThis != null && rbtNetThis.deviceNameResult_ != null)
             {
-                rbtNetThis.deviceNameResult_(ctx, strDeviceMac,res,strDeviceName);
+                rbtNetThis.deviceNameResult_(ctx, strDeviceMac, res, strDeviceName);
             }
-           // thisHandle.Free();
+            // thisHandle.Free();
         }
 
         /// <summary>
@@ -216,11 +220,13 @@ namespace robotpenetdevice_cs
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="strDeviceMac"></param>
-        private static void deviceDisconnect(IntPtr ctx, IntPtr strDeviceMac) {
+        private static void deviceDisconnect(IntPtr ctx, IntPtr strDeviceMac)
+        {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
-            if (rbtNetThis != null && rbtNetThis.deviceDisconnectEvt_ != null) {
+            if (rbtNetThis != null && rbtNetThis.deviceDisconnectEvt_ != null)
+            {
                 rbtNetThis.deviceDisconnectEvt_(ctx, strDeviceMac);
             }
         }
@@ -231,7 +237,8 @@ namespace robotpenetdevice_cs
         /// <param name="ctx"></param>
         /// <param name="strDeviceMac"></param>
         /// <param name="keyValue"></param>
-        private static void deviceKeyPress(IntPtr ctx, IntPtr strDeviceMac, int keyValue) {
+        private static void deviceKeyPress(IntPtr ctx, IntPtr strDeviceMac, int keyValue)
+        {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
@@ -248,7 +255,8 @@ namespace robotpenetdevice_cs
         /// <param name="strDeviceMac"></param>
         /// <param name="nNoteId"></param>
         /// <param name="nPageId"></param>
-        private static void deviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId) {
+        private static void deviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId)
+        {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
@@ -265,7 +273,8 @@ namespace robotpenetdevice_cs
         /// <param name="strDeviceMac"></param>
         /// <param name="result"></param>
         /// <param name="nResultSize"></param>
-        private static void deviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize) {
+        private static void deviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize)
+        {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
@@ -313,12 +322,12 @@ namespace robotpenetdevice_cs
         /// 初始化
         /// </summary>
         /// <param name="arg"></param>
-        public void init(ref Init_Param arg,bool open=true) {
+        public void init(ref Init_Param arg, bool open = true)
+        {
             gchandld = GCHandle.Alloc(this);
             iPtrThis_ = GCHandle.ToIntPtr(gchandld);
             arg.ctx = iPtrThis_;
             arg.open = open;
-            arg.optimize = true;
             if (arg.port == 0)
             {
                 arg.port = 6001;
@@ -328,6 +337,9 @@ namespace robotpenetdevice_cs
                 arg.listenCount = 60;
             }
             bool sus = rbt_win_init(ref arg);
+
+            /*int size = Marshal.SizeOf(typeof(Init_Param));
+            System.Diagnostics.Debug.WriteLine(size);//*/
 
             onorigindata = new onOriginData(originDataNotify);
             rbt_win_set_origindata_cb(onorigindata);
@@ -352,7 +364,8 @@ namespace robotpenetdevice_cs
         }
 
         // 反初始化
-        public void unInit() {
+        public void unInit()
+        {
             rbt_win_uninit();
             gchandld.Free();
         }
@@ -361,14 +374,16 @@ namespace robotpenetdevice_cs
         /// 开启服务
         /// </summary>
         /// <returns>bool</returns>
-        public bool start() {
+        public bool start()
+        {
             return rbt_win_start();
         }
 
         /// <summary>
         /// 停止服务
         /// </summary>
-        public void stop() {
+        public void stop()
+        {
             rbt_win_stop();
         }
 
@@ -378,14 +393,16 @@ namespace robotpenetdevice_cs
         /// <param name="nTotalTopic"></param>
         /// <param name="strTopicType"></param>
         /// <returns></returns>
-        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType,string mac) {
-            return rbt_win_send_startanswer(type, totalTopic, pTopicType,mac);
+        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType, string mac)
+        {
+            return rbt_win_send_startanswer(type, totalTopic, pTopicType, mac);
         }
 
         /// <summary>
         /// 发送结束答题命令
         /// </summary>
-        public void sendStopAnswer(string mac) {
+        public void sendStopAnswer(string mac)
+        {
             rbt_win_send_stopanswer(mac);
         }
 
@@ -404,7 +421,7 @@ namespace robotpenetdevice_cs
         /// <returns></returns>
         public void openModule(bool open)
         {
-           rbt_win_open_module(open);
+            rbt_win_open_module(open);
         }
 
         /// <summary>

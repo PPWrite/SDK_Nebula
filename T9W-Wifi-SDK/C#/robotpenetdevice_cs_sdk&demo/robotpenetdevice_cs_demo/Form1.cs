@@ -606,8 +606,9 @@ namespace rbt_win32_2_demo
             dicMac2DrawForm_.Clear();
             try
             {
-                new Task
-                Environment.Exit(0);
+                rbtnet_.unInit();
+                rbtnet_.stop();
+
             }
             catch (Exception)
             {
