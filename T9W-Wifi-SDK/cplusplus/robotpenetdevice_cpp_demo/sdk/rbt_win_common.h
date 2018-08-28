@@ -66,6 +66,7 @@ void rbt_win_set_error_cb(onError *arg);
 void rbt_win_set_clearcanvas_cb(onClearCanvas *arg);
 void rbt_win_set_optimizedata_cb(onOptimizeData *arg);
 
+#pragma pack(1)
 typedef struct _Init_Param
 {
 	char ip[32]; //本机ip，默认为空
@@ -76,5 +77,6 @@ typedef struct _Init_Param
 	rbt_win_context* ctx; //上下文指针
 	_Init_Param() :ip(""), port(6001), listenCount(60), open(true), optimize(false), ctx(nullptr) {}
 }Init_Param;
+#pragma pack()
 
 #endif

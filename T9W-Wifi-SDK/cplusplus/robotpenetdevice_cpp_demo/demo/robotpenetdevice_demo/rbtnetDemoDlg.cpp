@@ -101,6 +101,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_SET_FREQ, &CrbtnetDemoDlg::OnBnClickedButtonSetFreq)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CrbtnetDemoDlg::OnBnClickedButtonClear)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &CrbtnetDemoDlg::OnCbnSelchangeCombo2)
 END_MESSAGE_MAP()
 
 
@@ -138,7 +139,6 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	Init_Param param;
 	param.ctx = this;
 	param.port = 6001;
-	param.pIp = NULL;
 	param.open = true;
 #ifdef USE_OPT
 	param.optimize = true;
@@ -173,9 +173,14 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("抛四个点"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->SetCurSel(0);
 
+	GetDlgItem(IDC_EDIT_NUM)->SetWindowText(_T("1"));
+
 	m_pDlg = new CConfigDlg;
 	m_pDlg->Create(IDD_CONFIGDLG);
 	m_pDlg->ShowWindow(SW_HIDE);
+
+	OnCbnSelchangeCombo2();
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -719,20 +724,11 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 	}
 }
 
-void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize)
+CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int nSize)
 {
-	LVFINDINFO info;
-	info.flags = LVFI_PARTIAL | LVFI_STRING;
-	USES_CONVERSION;
-	info.psz = A2T(pMac);
-
-	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
-	int nRowIndex = pListCtrl->FindItem(&info);
-	CString csValue;
+	CString csValue(_T(""));
 	csValue.Format(_T("%d："), resID);
-	if (nRowIndex < 0)
-		return;
-
+	
 	for (int i = 0; i < nSize; ++i)
 	{
 		int nResult = (int)*(pResult + i);
@@ -774,6 +770,41 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 			break;
 		}
 	}
+
+	return csValue;
+}
+
+void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize)
+{
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = A2T(pMac);
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex < 0)
+		return;
+
+	CString csValue(_T(""));
+
+	if (0x6e == resID)
+	{
+		int nCount = nSize / 8;
+		for (size_t i = 0; i < nCount; i++)
+		{
+			uint8_t buf[8] = { 0 };
+			memcpy(buf, pResult + i * 8, 8);
+			CString str = GetAnswerResult(i+1/*buf[0]*/, buf + 2, buf[1]);
+			csValue += str;
+		}
+	}
+	else
+	{
+		csValue = GetAnswerResult(resID, pResult, nSize);
+	}
+
+	
 	pListCtrl->SetItemText(nRowIndex, 3, csValue);
 }
 
@@ -1065,8 +1096,15 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 
 	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
 
-	int totalTopic = 1; //题目总数
-	char pTopicType[1] = { subject + 1 }; //题目类型 1判断 2单选 3多选 4抢答
+	CString strNum;
+	GetDlgItem(IDC_EDIT_NUM)->GetWindowText(strNum);
+	USES_CONVERSION;
+	int totalTopic = atoi(T2A(strNum));; //题目总数
+	char pTopicType[128] = { 0 };
+	for (size_t i = 0; i < totalTopic; i++)
+	{
+		pTopicType[i] = subject + 1 ; //题目类型 1判断 2单选 3多选 4抢答
+	}
 	bool bSendRes = false;
 	//0为主观题,1为客观题
 	if (index == 1)
@@ -1133,4 +1171,13 @@ void CrbtnetDemoDlg::OnBnClickedButtonClear()
 	{
 		iter->second->Clear();
 	}
+}
+
+
+void CrbtnetDemoDlg::OnCbnSelchangeCombo2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
+	GetDlgItem(IDC_COMBO_SUBJECT)->ShowWindow(index ? SW_SHOW : SW_HIDE);
+	GetDlgItem(IDC_EDIT_NUM)->ShowWindow(index ? SW_SHOW : SW_HIDE);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.6"
+#define FILEVERSION "1.1.5.7"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -41,6 +41,8 @@ enum eDevicePid
 	T8S_PID		=	0x6030,
 	J7B_PID		=	0x6031,
 	T9W_QX_PID	=	0x6032,
+	K7_HW_PID	=   0x6033,
+	K8_PID		=	0x6034,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -98,6 +100,8 @@ enum eDeviceType
 	T8S,
 	J7B,
 	T9W_QX,
+	K7_HW,
+	K8,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -425,6 +429,12 @@ enum eKeyPress
 	PAGEDOWNCLICK,
 	PAGEDOWNDBCLICK,
 	PAGEDOWNPRESS,
+	SELF1CLICK		= 0x26,
+	SELF1DBCLICK,		
+	SELF1PRESS,	
+	SELF2CLICK,
+	SELF2DBCLICK,		
+	SELF2PRESS,	
 };
 //…»«¯–≈œ¢
 typedef struct storage_info
@@ -531,3 +541,6 @@ enum ePenStatus
 
 #define WIDTH_X8	22100
 #define HEIGHT_X8	14650
+
+#define WIDTH_K7	22016
+#define HEIGHT_K7	14787

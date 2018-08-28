@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 
-#if defined(DLL_EXPORT)
+#ifdef DLL_EXPORT
 #define ROBOT_API __declspec(dllexport) 
 #else 
 #define ROBOT_API __declspec(dllimport) 
@@ -47,8 +47,6 @@ enum eRbtType
 typedef void (CALLBACK *UsbDataCallback_t)(const unsigned char*,int,void*);
 //识别回调
 typedef void (CALLBACK *ResultCallback_t)(int,char*,void*);
-//鼠标笔记回调函数
-typedef void(CALLBACK *PacketCallback)(float, float, int, float, int, void *);
 
 class IRobotEventHandler
 {
@@ -365,21 +363,6 @@ public:
 	virtual int RecogNote(const char *user_id,const char *note_key) = 0;
 	//关闭识别接口
 	virtual void CloseRecog() = 0;
-	//////////////////////////////////////////////鼠标控制接口//////////////////////////////////////////////
-	//设置鼠标控制开关
-	virtual void openMouseControl(bool isOpen = false) = 0;
-	//设置电脑屏幕窗体尺寸
-	virtual void SetWindowSize(const int width, const int height) = 0;
-	//设置手写板尺寸
-	virtual void SetDeviceSize(const int width, const int height) = 0;
-	//设置画布尺寸以及画布的原点坐标,画布坐标是相对于电脑屏幕坐标
-	virtual void SetCanvasSizeAndPos(const int width, const int height, const float fX, const float fY) = 0;
-	//设置板子数据
-	virtual void SetDevicePacket(const int nX, const int nY, const int nStatus, const float nWidth, const int nSpeed) = 0;
-	//开启鼠标模式
-	virtual void SetMouseMode(bool isOpen = false) = 0;
-	//设置回调函数（画布点坐标回调）
-	virtual void SetOnPacketCallback(PacketCallback pCallback, void *context) = 0;
 };
 
 //初始化 回调
