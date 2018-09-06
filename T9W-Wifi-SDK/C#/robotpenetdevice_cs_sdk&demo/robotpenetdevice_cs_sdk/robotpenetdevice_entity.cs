@@ -7,18 +7,18 @@ namespace robotpenetdevice_cs
     // 
     public delegate void onAccept(IntPtr ctx, System.String strDeviceMac);
     // 
-    public delegate void onErrorPacket(IntPtr ctx, System.String strDeviceMac);
+    public delegate void onErrorPacket(IntPtr ctx);
 
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, string strDeviceMac);
     // 原点数据上报
-    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, string buffer, int len);
+    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len);
     //
     public delegate void onDeviceDisconnect(IntPtr ctx, IntPtr strDeviceMac);
     //
     public delegate void onDeviceKeyPress(IntPtr ctx, IntPtr strDeviceMac, int keyValue);
     // 
-    public delegate void onDeviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId);
+    public delegate void onDeviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo);
     //
     public delegate void onDeviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize);
 

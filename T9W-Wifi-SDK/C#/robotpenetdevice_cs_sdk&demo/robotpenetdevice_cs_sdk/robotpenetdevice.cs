@@ -156,7 +156,7 @@ namespace robotpenetdevice_cs
         /// <param name="up"></param>
         /// <param name="buffer"></param>
         /// <param name="len"></param>
-        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, string buffer, int len)
+        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len)
         {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
@@ -255,14 +255,14 @@ namespace robotpenetdevice_cs
         /// <param name="strDeviceMac"></param>
         /// <param name="nNoteId"></param>
         /// <param name="nPageId"></param>
-        private static void deviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId)
+        private static void deviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
         {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
             if (rbtNetThis != null && rbtNetThis.deviceShowPageEvt_ != null)
             {
-                rbtNetThis.deviceShowPageEvt_(ctx, strDeviceMac, nNoteId, nPageId);
+                rbtNetThis.deviceShowPageEvt_(ctx, strDeviceMac, nNoteId, nPageId, nPageInfo);
             }
         }
 

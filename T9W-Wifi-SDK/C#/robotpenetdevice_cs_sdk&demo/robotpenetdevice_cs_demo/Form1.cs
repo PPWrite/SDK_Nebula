@@ -49,11 +49,13 @@ namespace rbt_win32_2_demo
            rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
 
             rbtnet_.deviceNameEvt_ += Rbtnet__deviceNameEvt_;
+            rbtnet_.deviceNameResult_ += Rbtnet__eviceNameResultEvt_;
             rbtnet_.deviceDisconnectEvt_ += Rbtnet__deviceDisconnectEvt_;
             rbtnet_.deviceOriginDataEvt_ += Rbtnet__deviceOriginDataEvt_;
             rbtnet_.deviceShowPageEvt_ += Rbtnet__deviceShowPageEvt_;
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
+
             rbtnet_.deviceError_ += Rbtnet__deviceEvt;
             rbtnet_.deviceClearCanvas_ += Rbtnet__deviceClearCanvas;
         }
@@ -75,8 +77,15 @@ namespace rbt_win32_2_demo
         {
             // Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
             updateDeviceNameListView(strDeviceMac, strDeviceName);
+            Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
         }
-        
+
+        private void Rbtnet__eviceNameResultEvt_(IntPtr ctx, string strDeviceMac,int res, string strDeviceName)
+        {
+            // Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
+            updateDeviceNameListView(strDeviceMac, strDeviceName);
+        }
+
         // 
         private void Rbtnet__deviceAnswerResultEvt_(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize)
         {
@@ -84,8 +93,9 @@ namespace rbt_win32_2_demo
             string sResult = Marshal.PtrToStringAnsi(result);
             byte[] byteRes = new byte[nResultSize];
             Marshal.Copy(result, byteRes, 0, nResultSize);
-            Console.WriteLine("Rbtnet__deviceAnswerResultEvt_:{0}-{1}", sMac, sResult);
-            updateDeviceMacListView_AnswerResult(sMac, resID, byteRes);
+            //Console.WriteLine("Rbtnet__deviceAnswerResultEvt_:{0}-{1}", sMac, sResult);
+            updateDeviceMacListView_AnswerResult(sMac, resID, byteRes, nResultSize);
+
         }
 
         private void Rbtnet__deviceKeyPressEvt_(IntPtr ctx, IntPtr strDeviceMac, int keyValue)
@@ -94,7 +104,7 @@ namespace rbt_win32_2_demo
             updateDeviceMacListView_KeyPress(sMac, keyValue);
         }
 
-        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId)
+        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             updateDeviceMacListView_ShowPage(sMac, nNoteId, nPageId);
@@ -127,7 +137,7 @@ namespace rbt_win32_2_demo
             ushort us, 
             ushort ux, 
             ushort uy, 
-            ushort up,string buffer,int len)
+            ushort up, IntPtr buffer,int len)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             if (dicMac2DrawForm_.ContainsKey(sMac)) {
@@ -218,9 +228,9 @@ namespace rbt_win32_2_demo
                         {
                             totalTopic = 3;
                             topicType = new byte[totalTopic];
-                            topicType[0] = 1;
+                            topicType[0] = 3;
                             topicType[1] = 2;
-                            topicType[2] = 3;
+                            topicType[2] = 1;
                             break;
                         }
                     default:
@@ -501,8 +511,8 @@ namespace rbt_win32_2_demo
         /// </summary>
         /// <param name="strMac"></param>
         /// <param name="keyValue"></param>
-        private delegate void updateDeviceMac_AnswerResult(string strMac, int resID, byte[] strResult);
-        public void updateDeviceMacListView_AnswerResult(string strMac, int resID, byte[] strResult)
+        private delegate void updateDeviceMac_AnswerResult(string strMac, int resID, byte[] strResult, int nResultSize);
+        public void updateDeviceMacListView_AnswerResult(string strMac, int resID, byte[] strResult,int nResultSize)
         {
             if (this.listView1.InvokeRequired)
             {
@@ -514,7 +524,7 @@ namespace rbt_win32_2_demo
                     }
                 }
                 updateDeviceMac_AnswerResult d = new updateDeviceMac_AnswerResult(updateDeviceMacListView_AnswerResult);
-                this.listView1.Invoke(d, new object[] { strMac, resID, strResult });
+                this.listView1.Invoke(d, new object[] { strMac, resID, strResult, nResultSize });
             }
             else
             {
@@ -532,51 +542,72 @@ namespace rbt_win32_2_demo
 
                 if (nFindItem > -1)
                 {
-                    string strKeyValue = string.Format("{0}", resID);
-
-                    foreach (var c in strResult) {
-                        keyPressEnum keyValueE = (keyPressEnum)c;
-                        switch (keyValueE)
+                    string strKeyValue = string.Empty;
+                    if (resID==0x0e)
+                    {
+                        strKeyValue = GetResultKey(resID, strResult);
+                    }
+                    else
+                    {
+                        int count = nResultSize / 8;
+                        for (int i = 0; i < count; i++)
                         {
-                            case keyPressEnum.K_A:
-                                strKeyValue += "A";
-                                break;
-                            case keyPressEnum.K_B:
-                                strKeyValue += "B";
-                                break;
-                            case keyPressEnum.K_C:
-                                strKeyValue += "C";
-                                break;
-                            case keyPressEnum.K_D:
-                                strKeyValue += "D";
-                                break;
-                            case keyPressEnum.K_E:
-                                strKeyValue += "E";
-                                break;
-                            case keyPressEnum.K_F:
-                                strKeyValue += "F";
-                                break;
-                            case keyPressEnum.K_SUCC:
-                                strKeyValue += "正确";
-                                break;
-                            case keyPressEnum.K_ERROR:
-                                strKeyValue += "错误";
-                                break;
-                            case keyPressEnum.K_CACLE:
-                                strKeyValue += "取消";
-                                break;
-                            case keyPressEnum.K_SURE:
-                                strKeyValue += "确认";
-                                break;
-                            default:
-                                break;
+                            byte[] byteRes = new byte[6];
+                            Array.Copy(strResult,i*8+2, byteRes,0,6);
+                            strKeyValue+= GetResultKey(i+1, byteRes)+"；";
                         }
                     }
+                    
                     this.listView1.Items[nFindItem].SubItems[3].Text = strKeyValue;
 
                 }
             }
         }
+        private string GetResultKey(int resultId,byte[] strResult)
+        {
+            string strKeyValue = string.Format("{0}：", resultId);
+            foreach (var c in strResult)
+            {
+                keyPressEnum keyValueE = (keyPressEnum)c;
+                switch (keyValueE)
+                {
+                    case keyPressEnum.K_A:
+                        strKeyValue += "A";
+                        break;
+                    case keyPressEnum.K_B:
+                        strKeyValue += "B";
+                        break;
+                    case keyPressEnum.K_C:
+                        strKeyValue += "C";
+                        break;
+                    case keyPressEnum.K_D:
+                        strKeyValue += "D";
+                        break;
+                    case keyPressEnum.K_E:
+                        strKeyValue += "E";
+                        break;
+                    case keyPressEnum.K_F:
+                        strKeyValue += "F";
+                        break;
+                    case keyPressEnum.K_SUCC:
+                        strKeyValue += "正确";
+                        break;
+                    case keyPressEnum.K_ERROR:
+                        strKeyValue += "错误";
+                        break;
+                    case keyPressEnum.K_CACLE:
+                        strKeyValue += "取消";
+                        break;
+                    case keyPressEnum.K_SURE:
+                        strKeyValue += "确认";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return strKeyValue;
+        }
+
 
         /// <summary>
         /// 双击弹出画布
