@@ -118,4 +118,9 @@ public:
 
 	CString GetAnswerResult(int resID, unsigned char* pResult, int nSize);
 	afx_msg void OnCbnSelchangeCombo2();
+
+	afx_msg void OnBnClickedButtonImport();
+	afx_msg void OnBnClickedButtonExport();
+
+	void SetItemName(const CString &strMac,const CString &strName);
 };

@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "DrawDlg.h"
 #include "StuDlg.h"
+#include <locale> 
 #include <Iphlpapi.h>
 #pragma comment(lib,"Iphlpapi.lib") //需要添加Iphlpapi.lib库
 
@@ -102,6 +103,8 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET_FREQ, &CrbtnetDemoDlg::OnBnClickedButtonSetFreq)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CrbtnetDemoDlg::OnBnClickedButtonClear)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CrbtnetDemoDlg::OnCbnSelchangeCombo2)
+	ON_BN_CLICKED(IDC_BUTTON_IMPORT, &CrbtnetDemoDlg::OnBnClickedButtonImport)
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT, &CrbtnetDemoDlg::OnBnClickedButtonExport)
 END_MESSAGE_MAP()
 
 
@@ -181,6 +184,10 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 
 	OnCbnSelchangeCombo2();
 
+#ifdef _TEST
+	SetTimer(0, 100, NULL);
+#endif
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -236,35 +243,6 @@ HCURSOR CrbtnetDemoDlg::OnQueryDragIcon()
 // 接收到有设备连接
 HRESULT CrbtnetDemoDlg::rcvAccept(WPARAM wParam, LPARAM lParam)
 {
-	BSTR b = (BSTR)lParam;
-	CString strMac(b);
-	SysFreeString(b);
-
-	LVFINDINFO info;
-	info.flags = LVFI_PARTIAL | LVFI_STRING;
-	USES_CONVERSION;
-	info.psz = strMac;
-
-	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
-	int nRowIndex = pListCtrl->FindItem(&info);
-	if (nRowIndex != -1) {
-		pListCtrl->SetItemText(nRowIndex, 2, _T("在线"));
-	}
-	else {
-		int nItemTotal = pListCtrl->GetItemCount();
-		pListCtrl->InsertItem(nItemTotal, strMac);
-		pListCtrl->SetItemText(nItemTotal, 1, _T(""));
-		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
-
-		if (m_device2draw.find(strMac) != m_device2draw.end()) {
-			m_device2draw[strMac]->DestroyWindow();
-			m_device2draw[strMac] = NULL;
-		}
-
-		m_device2draw[strMac] = new CDrawDlg();
-		m_device2draw[strMac]->Create(IDD_DRAWDLG);
-		m_device2draw[strMac]->ShowWindow(true);
-	}
 	return 0L;
 }
 
@@ -290,8 +268,11 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		pListCtrl->InsertItem(nItemTotal, strMac);
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
 		if (m_device2draw.find(strMac) != m_device2draw.end()) {
-			m_device2draw[strMac]->DestroyWindow();
-			m_device2draw[strMac] = NULL;
+			if (m_device2draw[strMac])
+			{
+				m_device2draw[strMac]->DestroyWindow();
+				m_device2draw[strMac] = NULL;
+			}
 		}
 
 		m_device2draw[strMac] = new CDrawDlg();
@@ -326,14 +307,6 @@ HRESULT CrbtnetDemoDlg::recvName(WPARAM wParam, LPARAM lParam)
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, strMac);
 		pListCtrl->SetItemText(nItemTotal, 2, _T("在线"));
-		if (m_device2draw.find(strMac) != m_device2draw.end()) {
-			m_device2draw[strMac]->DestroyWindow();
-			m_device2draw[strMac] = NULL;
-		}
-
-		m_device2draw[strMac] = new CDrawDlg();
-		m_device2draw[strMac]->Create(IDD_DRAWDLG);
-		m_device2draw[strMac]->ShowWindow(FALSE);
 	}
 
 	pListCtrl->SetItemText(nRowIndex, 1, strName);
@@ -479,8 +452,9 @@ void CrbtnetDemoDlg::initCbFunction()
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
 {
-	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	return;
+
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_RCV_ACCEPT, 0, (LPARAM)pClientIpAddress);
 }
 void CrbtnetDemoDlg::onErrorPacket(rbt_win_context* context)
@@ -728,7 +702,7 @@ CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int n
 {
 	CString csValue(_T(""));
 	csValue.Format(_T("%d："), resID);
-	
+
 	for (int i = 0; i < nSize; ++i)
 	{
 		int nResult = (int)*(pResult + i);
@@ -795,7 +769,7 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		{
 			uint8_t buf[8] = { 0 };
 			memcpy(buf, pResult + i * 8, 8);
-			CString str = GetAnswerResult(i+1/*buf[0]*/, buf + 2, buf[1]);
+			CString str = GetAnswerResult(i + 1/*buf[0]*/, buf + 2, buf[1]);
 			csValue += str;
 		}
 	}
@@ -804,7 +778,7 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		csValue = GetAnswerResult(resID, pResult, nSize);
 	}
 
-	
+
 	pListCtrl->SetItemText(nRowIndex, 3, csValue);
 }
 
@@ -835,6 +809,14 @@ void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPage
 
 void CrbtnetDemoDlg::recvNameResult(const char* pMac, int res, const char* pName)
 {
+#ifdef _TEST
+	if (res != 0)
+	{
+		USES_CONVERSION;
+		CString strMac = A2T(pMac);
+		SetItemName(strMac, _T(""));
+	}
+#else
 	if (res == 0)
 	{
 		USES_CONVERSION;
@@ -848,6 +830,7 @@ void CrbtnetDemoDlg::recvNameResult(const char* pMac, int res, const char* pName
 	{
 		AfxMessageBox(_T("设置失败"));
 	}
+#endif
 }
 
 void CrbtnetDemoDlg::OnClose()
@@ -919,28 +902,29 @@ void CrbtnetDemoDlg::OnSettingStu()
 	int nItem = pListCtrl->GetNextSelectedItem(pos);
 
 	CString strMac = pListCtrl->GetItemText(nItem, 0);
-	CString strStu = pListCtrl->GetItemText(nItem, 1);
-	CStuDlg dlg(strStu);
+	CString strName = pListCtrl->GetItemText(nItem, 1);
+	CStuDlg dlg(strName);
 	if (dlg.DoModal() == IDOK)
 	{
-		strStu = dlg.getStu();
-		if (strStu.GetLength() > 6)
+		strName = dlg.getStu();
+		if (strName.GetLength() > 6)
 		{
 			AfxMessageBox(_T("0-6 bytes！"));
 			return;
 		}
 		USES_CONVERSION;
 		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
-		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strStu));
+		SetItemName(strMac, strName);
+		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strName));
 	}
-	}
+}
 
 
 void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 {
 	// TODO: 在此添加控件通知处理程序代码
 #ifdef _TEST
-	SetTimer(0, 10, NULL);
+	SetTimer(0, 100, NULL);
 #else
 	int type = m_pDlg->getType();
 	CString strSSID, strPwd, strIP;
@@ -975,7 +959,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 	break;
 	default:
 		break;
-	}
+}
 #endif
 }
 
@@ -1049,17 +1033,15 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 		delete pIpAdapterInfoEx;
 		pIpAdapterInfoEx = NULL;
 	}
-	}
+}
 
 //打开模组
 void CrbtnetDemoDlg::OnBnClickedOpenModule()
 {
 	// TODO: 在此添加控件通知处理程序代码
-#ifdef _TEST
-	rbt_win_start();
-#else
+	//rbt_win_start();
+
 	rbt_win_open_module(true);
-#endif // _TEST
 
 }
 
@@ -1068,8 +1050,7 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 {
 	// TODO: 在此添加控件通知处理程序代码
 
-#ifdef _TEST
-	rbt_win_stop();
+	/*rbt_win_stop();
 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	if (pListCtrl)
@@ -1080,12 +1061,9 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 		it.second->DestroyWindow();
 		it.second = NULL;
 	}
-	m_device2draw.clear();
-#else
+	m_device2draw.clear();//*/
+
 	rbt_win_open_module(false);
-#endif // _TEST
-
-
 }
 
 //开始答题
@@ -1099,11 +1077,11 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 	CString strNum;
 	GetDlgItem(IDC_EDIT_NUM)->GetWindowText(strNum);
 	USES_CONVERSION;
-	int totalTopic = atoi(T2A(strNum));; //题目总数
+	int totalTopic = atoi(T2A(strNum)); //题目总数
 	char pTopicType[128] = { 0 };
 	for (size_t i = 0; i < totalTopic; i++)
 	{
-		pTopicType[i] = subject + 1 ; //题目类型 1判断 2单选 3多选 4抢答
+		pTopicType[i] = subject + 1; //题目类型 1判断 2单选 3多选 4抢答
 	}
 	bool bSendRes = false;
 	//0为主观题,1为客观题
@@ -1145,10 +1123,39 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetting()
 void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	int ret = rbt_win_config_net("", 6001, false, true, "");
-	if (ret != 0)
+	int type = m_pDlg->getType();
+	CString strSSID, strPwd, strIP;
+	bool bTcp;
+	switch (type)
 	{
-		AfxMessageBox(_T("rbt_win_config_net error"));
+	case 1:
+	{
+		m_pDlg->getWifiConfig(strSSID, strPwd);
+		if (strSSID.IsEmpty())
+			break;
+		USES_CONVERSION;
+		rbt_win_config_wifi(T2A(strSSID), T2A(strPwd), "");
+	}
+	break;
+	case 2:
+	{
+		m_pDlg->getNetConfig(bTcp, strIP);
+		USES_CONVERSION;
+		rbt_win_config_net(T2A(strIP), 6001, !bTcp, bTcp, "");
+	}
+	break;
+	case 3:
+	{
+		m_pDlg->getWifiConfig(strSSID, strPwd);
+		m_pDlg->getNetConfig(bTcp, strIP);
+		if (strSSID.IsEmpty())
+			break;
+		USES_CONVERSION;
+		rbt_win_config_wifi_net(T2A(strSSID), T2A(strPwd), T2A(strIP), 6001, !bTcp, bTcp, "");
+	}
+	break;
+	default:
+		break;
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -1180,4 +1187,79 @@ void CrbtnetDemoDlg::OnCbnSelchangeCombo2()
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 	GetDlgItem(IDC_COMBO_SUBJECT)->ShowWindow(index ? SW_SHOW : SW_HIDE);
 	GetDlgItem(IDC_EDIT_NUM)->ShowWindow(index ? SW_SHOW : SW_HIDE);
+}
+
+void CrbtnetDemoDlg::OnBnClickedButtonImport()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR szFilter[] = _T("文本文件(*.csv)|*.csv|所有文件(*.*)|*.*||");
+	CFileDialog dlg(TRUE, _T("csv"), NULL, 0, szFilter, this);
+	if (dlg.DoModal() == IDOK)
+	{
+		char* old_locale = _strdup(setlocale(LC_CTYPE, NULL));
+		setlocale(LC_CTYPE, "chs");//设定   
+		CStdioFile file;
+		if (file.Open(dlg.GetPathName(), CFile::modeRead))
+		{
+			CString str;
+			while (file.ReadString(str))
+			{
+				str = str.Trim(_T(" "));
+				CStringArray sArray;
+				SplitFields(str, sArray, _T(","));
+				if (sArray.GetCount() > 1)
+				{
+					SetItemName(sArray[0], sArray[1]);
+					USES_CONVERSION;
+					rbt_win_config_bmp_stu(T2A(sArray[0]), T2A(sArray[0]), T2A(sArray[1]));
+				}
+			}
+			setlocale(LC_CTYPE, old_locale);
+			free(old_locale);//还原区域设定
+			file.Close();
+		}
+	}
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonExport()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR szFilter[] = _T("文本文件(*.csv)|*.csv|所有文件(*.*)|*.*||");
+	CFileDialog dlg(FALSE, _T("csv"), _T(""), 0, szFilter, this);
+	if (dlg.DoModal() == IDOK)
+	{
+		CStdioFile file;
+		if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite))
+		{
+			CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+
+			int nCount = pListCtrl->GetItemCount();
+
+			for (size_t i = 0; i < nCount; i++)
+			{
+				CString strMac = pListCtrl->GetItemText(i, 0);
+				CString str = strMac + "\n";
+				file.WriteString(str);
+			}
+
+			file.Close();
+		}
+	}
+}
+
+
+void CrbtnetDemoDlg::SetItemName(const CString &strMac, const CString &strName)
+{
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = strMac;
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex < 0)
+		return;
+
+	pListCtrl->SetItemText(nRowIndex, 1, strName);
 }

@@ -148,7 +148,7 @@ bool CConfigDlg::GetLocalAddress()
 
 		if (pComboBox->GetCount() > 0)
 		{
-			pComboBox->SetCurSel(0);
+			//pComboBox->SetCurSel(0);
 		}
 	}
 
