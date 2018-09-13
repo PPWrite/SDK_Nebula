@@ -6,14 +6,15 @@
 #include "afxdialogex.h"
 #include <algorithm>
 
-
 // CDrawDlg 对话框
+
+#define USE_CURSOR
 
 IMPLEMENT_DYNAMIC(CDrawDlg, CDialog)
 
 CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(IDD_DRAWDLG, pParent),
-	m_nFlags(0)
+	: CDialog(IDD_DRAWDLG, pParent)
+	, m_bTrack(false)
 	, m_bDrawing(false)
 	, m_nPenStatus(0)
 	, m_bMouseDraw(false)
@@ -54,22 +55,12 @@ void CDrawDlg::onRecvData(const PEN_INFO& penInfo)
 		point.SetPoint(penInfo.nX, penInfo.nY);
 	//TRACE("X:%d,Y:%d,Press:%d\n",penInfo.nX,penInfo.nY, penInfo.nPress);
 
-	if (penInfo.nPress == 0 && m_nFlags == 1)// 笔离开板子
-	{
-#ifdef USE_FILE
-		if (m_pageInfo.page_num > 0)
-			SaveData(m_pageInfo, m_vecPenInfo);
-		m_vecPenInfo.clear();
-#endif
-		endTrack(true);
-		m_nFlags = 0;
-	}
-	else
+	if (penInfo.nStatus == 0x11)
 	{
 		// 笔接触到板子
-		if (m_nFlags == 0)
+		if (!m_bTrack)
 		{
-			m_nFlags = 1;
+			m_bTrack = true;
 			compressPoint(point);
 			onbegin(point);
 		}
@@ -77,6 +68,19 @@ void CDrawDlg::onRecvData(const PEN_INFO& penInfo)
 		{
 			compressPoint(point);
 			onDrawing(point);
+		}
+	}
+	else
+	{
+		if (m_bTrack)
+		{
+#ifdef USE_FILE
+			if (m_pageInfo.page_num > 0)
+				SaveData(m_pageInfo, m_vecPenInfo);
+			m_vecPenInfo.clear();
+#endif
+			m_bTrack = false;
+			endTrack(true);
 		}
 	}
 }
@@ -133,12 +137,12 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	}
 	return;//*/
 
-	if (us == 17 || us == 0x21)
+	if (us == 0x11 || us == 0x21)
 	{
 		// 笔接触到板子
-		if (m_nFlags == 0)
+		if (!m_bTrack)
 		{
-			m_nFlags = 1;
+			m_bTrack = true;
 			compressPoint(point);
 			onbegin(point);
 		}
@@ -147,11 +151,28 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 			compressPoint(point);
 			onDrawing(point, us == 0x21);
 		}
+
+#ifdef USE_CURSOR
+		ClientToScreen(&point);
+		::SetCursorPos(point.x, point.y);
+#endif // USE_CURSOR
 	}
 	else
 	{
-		endTrack(true);
-		m_nFlags = 0;
+#ifdef USE_CURSOR
+		if (us == 0x10 || us == 0x20)
+		{
+			compressPoint(point);
+			ClientToScreen(&point);
+			::SetCursorPos(point.x, point.y);
+		}
+#endif // USE_CURSOR
+		if (m_bTrack)
+		{
+			m_bTrack = false;
+			endTrack(true);
+		}
+
 	}
 
 	/*if (up == 0 && m_nFlags == 1)// 笔离开板子
@@ -178,7 +199,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 
 void CDrawDlg::Clear()
 {
-	m_nFlags = 0;
+	m_bTrack = 0;
 	m_currentItem.lstPoint.clear();
 	m_listItems.clear();
 	Invalidate();
@@ -406,8 +427,8 @@ void CDrawDlg::endTrack(bool bSave /*= true*/)
 #ifdef BEZIER
 		Invalidate();
 #endif
-		}
 	}
+}
 
 void CDrawDlg::compressPoint(CPoint& point)
 {

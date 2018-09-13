@@ -243,7 +243,7 @@ public:
 		(void)secret;
 	}
 	//切换模式
-	virtual void onSwitchMode(int mode) {
+	virtual void onSwitchMode(eDeviceMode mode) {
 		(void)mode;
 	}
 	//笔记优化输出

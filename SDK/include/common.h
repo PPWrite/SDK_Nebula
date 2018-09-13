@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.5.7"
+#define FILEVERSION "1.1.6.0"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -43,6 +43,9 @@ enum eDevicePid
 	T9W_QX_PID	=	0x6032,
 	K7_HW_PID	=   0x6033,
 	K8_PID		=	0x6034,
+	K7W_PID		=	0x6035,
+	T9W_YJ_PID	=	0x6037,
+	T7PL_CL_PID =	0x6038,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -102,6 +105,10 @@ enum eDeviceType
 	T9W_QX,
 	K7_HW,
 	K8,
+	K7W,
+	T7C_BN,
+	T9W_YJ,
+	T7PL_CL,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -544,3 +551,6 @@ enum ePenStatus
 
 #define WIDTH_K7	22016
 #define HEIGHT_K7	14787
+
+#define WIDTH_K7W	21260
+#define HEIGHT_K7W	13842

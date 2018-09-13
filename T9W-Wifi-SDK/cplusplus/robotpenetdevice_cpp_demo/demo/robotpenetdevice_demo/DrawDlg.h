@@ -49,7 +49,7 @@ private:
 	int m_nDevStatus;
 	double nCompress;
 	bool m_bMouseDraw;
-	int m_nFlags;
+	bool m_bTrack;
 	int	m_nPenWidth;
 
 	PAGE_INFO m_pageInfo;

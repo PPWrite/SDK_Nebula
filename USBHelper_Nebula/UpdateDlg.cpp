@@ -73,7 +73,7 @@ void CUpdateDlg::OnBnClickedButton4Update()
 			|| m_nDeviceType == T9E || m_nDeviceType == T8B || m_nDeviceType == T9B_YD || m_nDeviceType == K8
 			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY
 			|| T9B_YD2 == m_nDeviceType || J7B_HF == m_nDeviceType || J7B_ZY == m_nDeviceType || J7B == m_nDeviceType 
-			|| T9W_QX == m_nDeviceType)
+			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T7PL_CL == m_nDeviceType)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
 		else if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
@@ -102,7 +102,7 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 		}
 		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-			|| T9W_QX == m_nDeviceType)
+			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
 		{
 			if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 			{
@@ -156,7 +156,7 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 		CString strFileName = dlg.GetFileName();
 		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-			|| T9W_QX == m_nDeviceType)
+			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
 		{
 			if(strFileName.MakeLower().Find(_T("ble")) < 0)
 			{
@@ -269,7 +269,7 @@ void CUpdateDlg::OnBnClickedButton4Stop()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType)
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
 	else if(m_nDeviceType == Gateway)
 		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
@@ -367,7 +367,7 @@ void CUpdateDlg::SetUpgradeType(int nDeviceType)
 	m_nDeviceType = nDeviceType;
 	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 		|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType) ? TRUE : FALSE;
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
@@ -469,7 +469,7 @@ void CUpdateDlg::AutoSetPath()
 
 	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType)
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
 	{
 		if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 		{

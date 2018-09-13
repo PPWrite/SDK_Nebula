@@ -4,12 +4,6 @@
 typedef void rbt_win_context;
 typedef unsigned short ushort;
 
-enum sendCmdID
-{
-	startAnswer,
-	endAnsewer,
-};
-
 //°´¼üÀàĞÍ
 enum keyPressEnum
 {

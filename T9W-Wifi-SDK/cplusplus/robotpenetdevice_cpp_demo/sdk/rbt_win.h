@@ -11,7 +11,7 @@ extern "C" {
 	//释放
 	void rbt_win_uninit();
 	//发送命令
-	void rbt_win_send(sendCmdID cmdId);
+	void rbt_win_send(int cmdId);
 	//开始答题
 	//type 0为主观题 1为客观题
 	//pTopicType 题目总数
@@ -51,6 +51,8 @@ extern "C" {
 	void rbt_win_config_sleep(int mins);
 	//设置打开模组
 	void rbt_win_open_module(bool open);
+	//设置打开悬浮点
+	void rbt_win_open_suspension(bool open);
 
 #ifdef __cplusplus
 }

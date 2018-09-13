@@ -123,4 +123,7 @@ public:
 	afx_msg void OnBnClickedButtonExport();
 
 	void SetItemName(const CString &strMac,const CString &strName);
+
+	void ShowOnlineCount();
+	afx_msg void OnBnClickedButtonPoint();
 };

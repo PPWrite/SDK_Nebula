@@ -105,6 +105,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CrbtnetDemoDlg::OnCbnSelchangeCombo2)
 	ON_BN_CLICKED(IDC_BUTTON_IMPORT, &CrbtnetDemoDlg::OnBnClickedButtonImport)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT, &CrbtnetDemoDlg::OnBnClickedButtonExport)
+	ON_BN_CLICKED(IDC_BUTTON_POINT, &CrbtnetDemoDlg::OnBnClickedButtonPoint)
 END_MESSAGE_MAP()
 
 
@@ -279,9 +280,9 @@ HRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 		m_device2draw[strMac]->Create(IDD_DRAWDLG);
 		m_device2draw[strMac]->ShowWindow(FALSE);
 	}
-	CString strCount;
-	strCount.Format(_T("数量：%d"), pListCtrl->GetItemCount());
-	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(strCount);
+
+	ShowOnlineCount();
+	
 	return 0L;
 }
 
@@ -370,6 +371,9 @@ HRESULT CrbtnetDemoDlg::onDisconnect(WPARAM wParam, LPARAM lParam)
 	if (nRowIndex != -1) {
 		pListCtrl->SetItemText(nRowIndex, 2, _T("离线"));
 	}
+
+	ShowOnlineCount();
+
 }
 
 
@@ -645,6 +649,7 @@ void CrbtnetDemoDlg::deviceDisconnect(const char* pMac)
 	if (nRowIndex != -1) {
 		pListCtrl->SetItemText(nRowIndex, 2, _T("离线"));
 	}
+
 }
 
 void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
@@ -1262,4 +1267,38 @@ void CrbtnetDemoDlg::SetItemName(const CString &strMac, const CString &strName)
 		return;
 
 	pListCtrl->SetItemText(nRowIndex, 1, strName);
+}
+
+void CrbtnetDemoDlg::ShowOnlineCount()
+{
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+
+	int nCount = pListCtrl->GetItemCount();
+	int nSum = 0;
+	for (size_t i = 0; i < nCount; i++)
+	{
+		if (pListCtrl->GetItemText(i, 2) == _T("在线"))
+			nSum++;
+	}
+
+	CString strCount;
+	strCount.Format(_T("在线/总数：%d/%d"), nSum, nCount);
+	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(strCount);
+}
+
+void CrbtnetDemoDlg::OnBnClickedButtonPoint()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_BUTTON_POINT)->GetWindowText(str);
+	if (str == _T("打开悬浮点"))
+	{
+		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("关闭悬浮点"));
+		rbt_win_open_suspension(true);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("打开悬浮点"));
+		rbt_win_open_suspension(false);
+	}
 }

@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.5.5")
+#define _VERSION  _T("版本号:1.1.5.7")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -732,14 +732,14 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType)
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
 	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 
 		|| m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE
-		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8 || m_nDeviceType == T7PL_CL)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -774,7 +774,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
-		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
+		|| m_nDeviceType == T7PL_CL)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -1295,7 +1296,10 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				{
 					GetInstance()->Send(DongleVersion);
 				}
-				else if (m_nDeviceType == T7PL || m_nDeviceType == K7_HW || m_nDeviceType == K8)
+				else if (m_nDeviceType == T7PL 
+					|| m_nDeviceType == K7_HW 
+					|| m_nDeviceType == K8 
+					|| m_nDeviceType == T7PL_CL)
 				{
 					resetDevice();
 					AddList();
@@ -1374,7 +1378,8 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE
-		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
+		|| m_nDeviceType == T7PL_CL)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
