@@ -11,6 +11,7 @@ using robotpenetdevice_cs;
 using System.Runtime.InteropServices;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading;
 
 namespace rbt_win32_2_demo
 {
@@ -104,7 +105,7 @@ namespace rbt_win32_2_demo
             updateDeviceMacListView_KeyPress(sMac, keyValue);
         }
 
-        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
+        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             updateDeviceMacListView_ShowPage(sMac, nNoteId, nPageId);
@@ -137,7 +138,7 @@ namespace rbt_win32_2_demo
             ushort us, 
             ushort ux, 
             ushort uy, 
-            ushort up, IntPtr buffer,int len)
+            ushort up)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             if (dicMac2DrawForm_.ContainsKey(sMac)) {
@@ -244,7 +245,7 @@ namespace rbt_win32_2_demo
                 IntPtr ptr = Marshal.AllocHGlobal(totalTopic);
                 Marshal.Copy(topicType, 0, ptr, totalTopic);
 
-                bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr, "");
+                bRes = rbtnet_.sendStartAnswer(1, totalTopic, ptr);
                 if (bRes)
                 {
                     this.button_answer.Text = "结束答题";
@@ -259,7 +260,7 @@ namespace rbt_win32_2_demo
             }
             else
             {
-                rbtnet_.sendEndAnswer("");
+                rbtnet_.sendEndAnswer();
                 this.button_answer.Text = "开始答题";
                 this.label3.Text = "恢复到正常模式，开始响应按键事件";
             }
@@ -291,6 +292,10 @@ namespace rbt_win32_2_demo
                     string strAMac = this.listView1.Items[i].SubItems[0].Text;
                     if (strAMac == strMac) {
                         this.listView1.Items[i].SubItems[2].Text = "在线";
+                        if (!dicMac2DrawForm_.ContainsKey(strMac))
+                        {
+                            dicMac2DrawForm_.Add(strMac, new drawForm());
+                        }
                         return;
                     }
                 }
@@ -543,7 +548,7 @@ namespace rbt_win32_2_demo
                 if (nFindItem > -1)
                 {
                     string strKeyValue = string.Empty;
-                    if (resID==0x0e)
+                    if (resID!=110)
                     {
                         strKeyValue = GetResultKey(resID, strResult);
                     }
@@ -637,8 +642,9 @@ namespace rbt_win32_2_demo
             dicMac2DrawForm_.Clear();
             try
             {
-                rbtnet_.unInit();
                 rbtnet_.stop();
+                //Thread.Sleep(1000);
+                //rbtnet_.unInit();
 
             }
             catch (Exception)
@@ -750,6 +756,7 @@ namespace rbt_win32_2_demo
                     if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
                     {
                         this.IpComboBox.Items.Add(IpEntry.AddressList[i].ToString());
+                        //rbtnet_.configNet(IpEntry.AddressList[i].ToString(), 6001, false, true, "");
                     }
                 }
                 if(string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
@@ -768,7 +775,7 @@ namespace rbt_win32_2_demo
             if (this.button3.Text == "开始答题")
             {
                 //rbtnet_.openModule(true);
-                bool bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero,"");
+                bool bRes = rbtnet_.sendStartAnswer(0, 0, IntPtr.Zero);
 
                 if (bRes)
                 {
@@ -782,13 +789,13 @@ namespace rbt_win32_2_demo
             }
             else if (this.button3.Text == "停止答题")
             {
-                rbtnet_.sendStopAnswer("");
+                rbtnet_.sendStopAnswer();
                 this.button3.Text = "结束答题";
                 this.label4.Text = "调用停止答题命令，手写板LED显示“已停止答题”";
             }
             else
             {
-                rbtnet_.sendEndAnswer("");
+                rbtnet_.sendEndAnswer();
                 this.button3.Text = "开始答题";
                 this.label4.Text = "恢复非答题状态";
             }
