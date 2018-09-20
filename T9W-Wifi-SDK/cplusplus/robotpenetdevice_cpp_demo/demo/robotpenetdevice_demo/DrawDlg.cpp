@@ -8,7 +8,7 @@
 
 // CDrawDlg ¶Ô»°¿ò
 
-#define USE_CURSOR
+//#define USE_CURSOR
 
 IMPLEMENT_DYNAMIC(CDrawDlg, CDialog)
 
