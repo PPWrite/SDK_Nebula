@@ -29,9 +29,9 @@ extern "C" {
 	//停止服务
 	void rbt_win_stop();
 	//设置学生姓名
-	void rbt_win_config_stu(const char *mac, const char *stu);
+	int rbt_win_config_stu(const char *mac, const char *stu);
 	//设置学生中文姓名
-	void rbt_win_config_bmp_stu(const char *mac, const char *stuNo, const char *stuName);
+	int rbt_win_config_bmp_stu(const char *mac, const char *stuNo, const char *stuName);
 	//配网
 	//source 默认为空,暂时无效
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *source = "");
