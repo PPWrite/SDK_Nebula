@@ -103,7 +103,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_clearcanvas_cb(onClearCanvas arg);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_optimizedata_cb(onClearCanvas arg);
+        internal static extern void rbt_win_set_optimizedata_cb(onOptimizeData arg);
 
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -125,6 +125,7 @@ namespace robotpenetdevice_cs
         public event onDeviceNameResult deviceNameResult_;
         public event onError deviceError_ = null;
         public event onClearCanvas deviceClearCanvas_ = null;
+        public event onOptimizeData deviceOptimizeDataEvt_ = null;
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
         // 用于存储this对象主要保证该变量的生命周期
@@ -142,6 +143,7 @@ namespace robotpenetdevice_cs
         private static onDeviceDisconnect ondevicedisconnect = null;
         private static onError onerror = null;
         private static onClearCanvas onclearcanvas = null;
+        private static onOptimizeData onoptimizedata = null;
 
 
         // 构造函数
@@ -176,6 +178,19 @@ namespace robotpenetdevice_cs
                     rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up);
                 }
                 
+            }
+        }
+
+        private static void optimizeData(IntPtr ctx, IntPtr pmac, ushort us, ushort ux, ushort uy, float width, float speed)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+            if (rbtNetThis != null)
+            {
+                if (rbtNetThis.deviceOptimizeDataEvt_!= null)
+                {
+                    rbtNetThis.deviceOptimizeDataEvt_(ctx, pmac, us, ux, uy, width, speed);
+                }
             }
         }
 
@@ -382,6 +397,8 @@ namespace robotpenetdevice_cs
             rbt_win_set_error_cb(onerror);
             onclearcanvas = new onClearCanvas(deviceClearCanvas);
             rbt_win_set_clearcanvas_cb(onclearcanvas);
+            onoptimizedata = new onOptimizeData(optimizeData);
+            rbt_win_set_optimizedata_cb(onoptimizedata);
         }
 
         // 反初始化

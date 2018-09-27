@@ -32,6 +32,8 @@ namespace robotpenetdevice_cs
 
     public delegate void onClearCanvas(IntPtr ctx, String pmac);
 
+    public delegate void onOptimizeData(IntPtr ctx, IntPtr pmac,ushort us, ushort ux, ushort uy, float width, float speed);
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Init_Param
     {

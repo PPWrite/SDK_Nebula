@@ -36,6 +36,7 @@ namespace rbt_win32_2_demo
             rbtnet_ = new RbtNet();
             // 初始化
             Init_Param param = new Init_Param();
+            //param.optimize = true;
             rbtnet_.init(ref param);
 
 
@@ -47,7 +48,7 @@ namespace rbt_win32_2_demo
             /*
             * 所有事件响应接口都是在内部SDK线程中上报出来
             */
-           rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
+            rbtnet_.deviceMacEvt_ += Rbtnet__deviceMacEvt_;
 
             rbtnet_.deviceNameEvt_ += Rbtnet__deviceNameEvt_;
             rbtnet_.deviceNameResult_ += Rbtnet__eviceNameResultEvt_;
@@ -148,6 +149,33 @@ namespace rbt_win32_2_demo
                     npenStatus = 0;
                 }
                 dicMac2DrawForm_[sMac].recvData(npenStatus, ux, uy, up);
+            }
+        }
+
+        /// <summary>
+        /// 优化笔记
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="strDeviceMac"></param>
+        /// <param name="us"></param>
+        /// <param name="ux"></param>
+        /// <param name="uy"></param>
+        /// <param name="up"></param>
+        private void Rbtnet__deviceOptimizeDataEvt_(IntPtr ctx, IntPtr pmac, ushort us, ushort ux, ushort uy, float width, float speed)
+        {
+            string sMac = Marshal.PtrToStringAnsi(pmac);
+            if (dicMac2DrawForm_.ContainsKey(sMac))
+            {
+                int npenStatus = Convert.ToInt32(us);
+                if (width>0)
+                {
+                    npenStatus = 17;
+                }
+                if (npenStatus != 17 && npenStatus != 33)
+                {
+                    npenStatus = 0;
+                }
+                dicMac2DrawForm_[sMac].recvData(npenStatus, ux, uy, 0);
             }
         }
 
@@ -632,34 +660,6 @@ namespace rbt_win32_2_demo
             }
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            foreach (var item in dicMac2DrawForm_)
-            {
-                item.Value.NotExit = false;
-                item.Value.Close();
-            }
-            dicMac2DrawForm_.Clear();
-            try
-            {
-                rbtnet_.stop();
-                //Thread.Sleep(1000);
-                //rbtnet_.unInit();
-
-            }
-            catch (Exception)
-            {
-
-                Environment.Exit(0);
-            }
-            finally
-            {
-                Environment.Exit(0);
-            }
-        
-            
-        }
-
         private void button_test_Click(object sender, EventArgs e)
         {
             SettingPanel sp = new SettingPanel(this);
@@ -741,6 +741,7 @@ namespace rbt_win32_2_demo
             }
         }
 
+        private int delayClose = 2;
         private void timer1_Tick(object sender, EventArgs e)
         {
             try
@@ -762,6 +763,26 @@ namespace rbt_win32_2_demo
                 if(string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
                 {
                     this.IpComboBox.Text=this.IpComboBox.Items[0].ToString();
+                }
+
+                int nItemCount = this.listView1.Items.Count;
+                int count = 0;
+                for (int i = 0; i < nItemCount; ++i)
+                {
+                    if (this.listView1.Items[i].SubItems[2].Text == "在线")
+                    {
+                        count++;
+                    }
+                }
+                this.label5.Text = count.ToString();
+
+                if (isClosing)
+                {
+                    delayClose--;
+                    if(delayClose<=0)
+                    {
+                        this.Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -822,6 +843,40 @@ namespace rbt_win32_2_demo
             {
                 _lable.Text = Text;
             }
+        }
+
+        private bool isClosing = false;
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach (var item in dicMac2DrawForm_)
+            {
+                item.Value.NotExit = false;
+                item.Value.Close();
+            }
+            dicMac2DrawForm_.Clear();
+            try
+            {
+                if(!isClosing)
+                {
+                    rbtnet_.stop();
+                    e.Cancel = true;
+                    isClosing = true;
+                }
+                
+                
+            }
+            catch (Exception)
+            {
+                //Environment.Exit(0);
+            }
+            finally
+            {
+                //Environment.Exit(0);
+            }
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //Thread.Sleep(3000);
         }
     }
 }
