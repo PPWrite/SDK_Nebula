@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.WifiSetting = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -39,10 +40,11 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.SleepTimeGroup = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.WifiSetting.SuspendLayout();
             this.SleepTimeGroup.SuspendLayout();
             this.SuspendLayout();
@@ -165,6 +167,16 @@
             this.SleepTimeGroup.TabStop = false;
             this.SleepTimeGroup.Text = "睡眠时间";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Red;
+            this.label7.Location = new System.Drawing.Point(295, 35);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "*分钟*";
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(204, 67);
@@ -193,15 +205,9 @@
             this.label6.TabIndex = 9;
             this.label6.Text = "时间：";
             // 
-            // label7
+            // timer1
             // 
-            this.label7.AutoSize = true;
-            this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(295, 35);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 12);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "*分钟*";
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // SettingPanel
             // 
@@ -242,5 +248,6 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Timer timer1;
     }
 }

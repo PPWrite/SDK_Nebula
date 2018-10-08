@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
+using rbt_win32_2_demo.Helper;
 
 namespace rbt_win32_2_demo
 {
@@ -125,6 +126,7 @@ namespace rbt_win32_2_demo
             this.listView1.Columns.Add("答题提交通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("按键通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("页码通知", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("学生姓名", 120, HorizontalAlignment.Left);
         }
         /// <summary>
         /// 接收到设备坐标点数据
@@ -331,6 +333,7 @@ namespace rbt_win32_2_demo
                 this.listView1.Items.Add(strMac);
                 this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("在线");
+                this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("");
@@ -666,30 +669,43 @@ namespace rbt_win32_2_demo
             sp.ShowDialog();
         }
 
+        private bool startConfigNet = false;
         private void button_switch_Click(object sender, EventArgs e)
         {
             string strIP = this.IpComboBox.Text;
-            if(!string.IsNullOrEmpty(strIP))
+            if(!startConfigNet)
             {
-                rbtnet_.configNet(strIP, 6001, false, true, "");
+                if (!string.IsNullOrEmpty(strIP))
+                {
+                    startConfigNet = true;
+                    this.button2.Text = "停止切换";
+                }
             }
+            else
+            {
+                startConfigNet = false;
+                this.button2.Text = "切换";
+            }
+            
         }
 
         /// <summary>
         /// 获取listview选中的MAC地址
         /// </summary>
         /// <returns></returns>
-        private bool GetListViewSelectMac(out string strMac,out string strName)
+        private bool GetListViewSelectMac(out string strMac,out string strNum,out string strName)
         {
             var items = this.listView1.SelectedItems;
             strMac = string.Empty;
+            strNum = string.Empty;
             strName = string.Empty;
             if (items.Count>0)
             {
                 foreach (ListViewItem item in items)
                 {
                     strMac = item.SubItems[0].Text;
-                    strName = item.SubItems[1].Text;
+                    strNum = item.SubItems[1].Text;
+                    strName = item.SubItems[6].Text;
                 }
                 return true;
             }
@@ -706,10 +722,11 @@ namespace rbt_win32_2_demo
         private void TSMI_SetStu_Click(object sender, EventArgs e)
         {
             string macStr = string.Empty;
+            string numStr = string.Empty;
             string nameStr = string.Empty;
-            if(GetListViewSelectMac(out macStr,out nameStr))
+            if(GetListViewSelectMac(out macStr,out numStr, out nameStr))
             {
-                SetStuName ssN = new SetStuName(false, macStr, nameStr, this);
+                SetStuName ssN = new SetStuName(false, macStr, numStr, nameStr, this);
                 ssN.ShowDialog();
             }
         }
@@ -721,10 +738,11 @@ namespace rbt_win32_2_demo
         private void TSMI_SetBmpStu_Click(object sender, EventArgs e)
         {
             string macStr = string.Empty;
+            string numStr = string.Empty;
             string nameStr = string.Empty;
-            if (GetListViewSelectMac(out macStr, out nameStr))
+            if (GetListViewSelectMac(out macStr, out numStr, out nameStr))
             {
-                SetStuName ssN = new SetStuName(true, macStr, nameStr, this);
+                SetStuName ssN = new SetStuName(true, macStr, numStr, nameStr, this);
                 ssN.ShowDialog();
             }
         }
@@ -732,12 +750,16 @@ namespace rbt_win32_2_demo
         /// 更新修改后的学生姓名
         /// </summary>
         /// <param name="name"></param>
-        public void UpdateListViewSelectedStuName(string name)
+        public void UpdateListViewSelectedStuName(string stuNum, string stuName = "")
         {
             var items = this.listView1.SelectedItems;
             foreach (ListViewItem item in items)
             {
-                item.SubItems[1].Text = name;
+                item.SubItems[1].Text = stuNum;
+                if (!string.IsNullOrEmpty(stuName))
+                {
+                    item.SubItems[6].Text = stuName;
+                }
             }
         }
 
@@ -760,7 +782,16 @@ namespace rbt_win32_2_demo
                         //rbtnet_.configNet(IpEntry.AddressList[i].ToString(), 6001, false, true, "");
                     }
                 }
-                if(string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
+                if (startConfigNet)
+                {
+                    string strIP = this.IpComboBox.Text;
+                    if (!string.IsNullOrEmpty(strIP))
+                    {
+                        rbtnet_.configNet(strIP, 6001, false, true, "");
+                    }
+                }
+
+                if (string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
                 {
                     this.IpComboBox.Text=this.IpComboBox.Items[0].ToString();
                 }
@@ -877,6 +908,66 @@ namespace rbt_win32_2_demo
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             //Thread.Sleep(3000);
+        }
+
+        List<DeviceSettingInfo> deviceSettingInfos = new List<DeviceSettingInfo>();
+        private void button5_Click(object sender, EventArgs e)
+        {
+            int nItemCount = this.listView1.Items.Count;
+            for (int i = 0; i < nItemCount; ++i)
+            {
+                DeviceSettingInfo dsInfo = new DeviceSettingInfo()
+                {
+                    DeviceNum = this.listView1.Items[i].SubItems[0].Text,
+                    StudentNum = this.listView1.Items[i].SubItems[1].Text,
+                    StudentName = this.listView1.Items[i].SubItems[6].Text,
+                };
+                deviceSettingInfos.Add(dsInfo);
+            }
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = @"CSV文件|*.csv";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                string file = sfd.FileName;
+                FileHelper fh = new FileHelper();
+                fh.FileWriteForDeviceInfo(file, deviceSettingInfos);
+            }
+            deviceSettingInfos = new List<DeviceSettingInfo>();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = false;
+            fileDialog.Title = "请选择文件";
+            fileDialog.Filter = "CSV文件|*.csv";
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = fileDialog.FileName;
+                FileHelper fh = new FileHelper();
+                List<DeviceSettingInfo> dic = fh.FileReadForDeviceInfo(filePath);
+
+                foreach (var item in dic)
+                {
+                    rbtnet_.configBmpStu(item.DeviceNum, item.StudentNum, item.StudentName);
+                    updateListStuName(item.DeviceNum, item.StudentName);
+                }
+
+            }
+        }
+
+        private void updateListStuName(string mac, string stuName)
+        {
+            int nItemCount = this.listView1.Items.Count;
+            for (int i = 0; i < nItemCount; ++i)
+            {
+                string strAMac = this.listView1.Items[i].SubItems[0].Text;
+                if (strAMac == mac)
+                {
+                    this.listView1.Items[i].SubItems[6].Text = stuName;
+                }
+            }
         }
     }
 }
