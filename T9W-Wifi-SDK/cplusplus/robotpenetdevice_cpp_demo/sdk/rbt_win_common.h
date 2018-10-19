@@ -41,8 +41,8 @@ typedef void __stdcall onDeviceAnswerResult(rbt_win_context* context, const char
 typedef void __stdcall onDeviceShowPage(rbt_win_context* context, const char* pMac, int nNoteId, int nPageId, int nPageInfo);
 //错误回调
 typedef void __stdcall onError(rbt_win_context* context, const char* pmac, int cmd, const char *msg);
-//清楚画布回调
-typedef void __stdcall onClearCanvas(rbt_win_context* context, const char* pmac);
+//画布ID回调
+typedef void __stdcall onCanvasID(rbt_win_context* context, const char* pmac, int type, int canvasID);
 //优化笔记回调
 typedef void __stdcall onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed);
 
@@ -57,7 +57,7 @@ void rbt_win_set_devivedisconnect_cb(onDeviceDisConnect* arg);
 void rbt_win_set_deviceshowpage_cb(onDeviceShowPage* arg);
 void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult* arg);
 void rbt_win_set_error_cb(onError *arg);
-void rbt_win_set_clearcanvas_cb(onClearCanvas *arg);
+void rbt_win_set_canvasid_cb(onCanvasID *arg);
 void rbt_win_set_optimizedata_cb(onOptimizeData *arg);
 
 #pragma pack(1)

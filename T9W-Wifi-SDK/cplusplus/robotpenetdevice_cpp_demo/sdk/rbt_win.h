@@ -53,6 +53,10 @@ extern "C" {
 	void rbt_win_open_module(bool open);
 	//设置打开悬浮点
 	void rbt_win_open_suspension(bool open);
+	//获取画布ID
+	void rbt_win_get_canvas_id(int canvasID = 0);
+	//设置刷新时间 1-5秒
+	void rbt_win_set_screen_freq(int seconds);
 
 #ifdef __cplusplus
 }
