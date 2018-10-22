@@ -12,13 +12,15 @@ namespace robotpenetdevice_cs
     // 设备MAC地址上报
     public delegate void onDeviceMac(IntPtr ctx, string strDeviceMac);
     // 原点数据上报
-    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len);
+    public delegate void onOriginData(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up);
+    public delegate void onOriginDataNew(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len);
     //
     public delegate void onDeviceDisconnect(IntPtr ctx, IntPtr strDeviceMac);
     //
     public delegate void onDeviceKeyPress(IntPtr ctx, IntPtr strDeviceMac, int keyValue);
     // 
-    public delegate void onDeviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo);
+    public delegate void onDeviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId);
+    public delegate void onDeviceShowPageNew(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo);
     //
     public delegate void onDeviceAnswerResult(IntPtr ctx, IntPtr strDeviceMac, int resID, IntPtr result, int nResultSize);
 
@@ -29,6 +31,8 @@ namespace robotpenetdevice_cs
     public delegate void onError(IntPtr ctx, String pmac, int cmd, String msg);
 
     public delegate void onClearCanvas(IntPtr ctx, String pmac);
+
+    public delegate void onOptimizeData(IntPtr ctx, IntPtr pmac,ushort us, ushort ux, ushort uy, float width, float speed);
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Init_Param

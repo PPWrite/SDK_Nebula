@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using RobotpenGateway;
 using System.Runtime.InteropServices;
 using System.Threading;
+using RobotPenTestDll.ClassHelper;
 
 namespace RobotPenTestDll
 {
@@ -66,6 +67,10 @@ namespace RobotPenTestDll
         /// </summary>
         private eDeviceType eDeviceTy;
 
+        private string user_id = string.Empty;
+        private string secret = string.Empty;
+        private int source = 0;
+
         public Form1()
         {
             CheckIsOem();
@@ -103,6 +108,7 @@ namespace RobotPenTestDll
             this.listView1.Columns.Add("VID", 100, HorizontalAlignment.Center);
             this.listView1.Columns.Add("PID", 100, HorizontalAlignment.Center);
             loadDevice();
+            GetRecognitionKey();
 
             Point pt = this.listView1.Location;
             int nSubWinStartX = pt.X + this.listView1.Width + 50;
@@ -132,7 +138,16 @@ namespace RobotPenTestDll
             }
         }
 
-
+        private void GetRecognitionKey()
+        {
+            user_id = System.Configuration.ConfigurationSettings.AppSettings["user_id"].ToString();
+            secret = System.Configuration.ConfigurationSettings.AppSettings["secret"].ToString();
+            string source_ = System.Configuration.ConfigurationSettings.AppSettings["source"].ToString();
+            if(!string.IsNullOrEmpty(source_))
+            {
+                source = int.Parse(source_);
+            }
+        }
 
         /// <summary>
         /// 初始化事件
@@ -205,6 +220,28 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().syncNoteDataEvt += new robotpenController.syncNoteData(Form1_syncNoteDataEvt);
             robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
             robotpenController.GetInstance().getOfflineNoteDataEvt += new robotpenController.getOfflineNoteData(Form1_getOfflineNoteDataEvt);
+
+            robotpenController.GetInstance().resultCallback_tEvt += new robotpenController.ResultCallback_t(rCall);
+            robotpenController.GetInstance().SetOnResultCallback();
+            robotpenController.GetInstance().SetUserInfo(user_id, secret, source);
+            robotpenController.GetInstance().SetSyncTimeout();
+            
+            robotpenController.GetInstance().SetCacheStatus(true);
+            //robotpenController.GetInstance().setSyncTimeout();
+        }
+
+        public void rCall(int i, string s, IntPtr IntPtr)
+        {
+            string result = string.Empty;
+            if(i==2)
+            {
+                result=Base64.DecodeBase64(s);
+            }
+            else
+            {
+                result = s;
+            }
+            MessageBox.Show(result);
         }
 
         private void CheckIsOem()
@@ -2225,7 +2262,9 @@ namespace RobotPenTestDll
         /// </summary>
         private void Thread_NodeActive()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
+            int t= robotpenController.GetInstance().OpenRecog(3000, true);
+            Console.WriteLine("OpenRecog:"+t);
             SetDeviceHW();
             ReSetScreen();
         }
@@ -2234,7 +2273,7 @@ namespace RobotPenTestDll
         /// </summary>
         private void Thread_NodeSTANDBY()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             SetDeviceHW();
             ReSetScreen();
             SetDevicePen();
@@ -2316,6 +2355,26 @@ namespace RobotPenTestDll
                 // 是否开启压感
                 robotpenController.GetInstance().setPressStatus(false);
             }
+        }
+
+        string note_key = string.Empty;
+
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            note_key = Guid.NewGuid().ToString();
+            Console.WriteLine(note_key);
+            int t= robotpenController.GetInstance().CreateRecogNote(note_key,0,0);
+            Console.WriteLine(t);
+            
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("key"+note_key);
+            int t2 = robotpenController.GetInstance().AppendNote(note_key);
+            int t = robotpenController.GetInstance().RecogNote(user_id, note_key);
+            Console.WriteLine(t);
         }
     }
 }

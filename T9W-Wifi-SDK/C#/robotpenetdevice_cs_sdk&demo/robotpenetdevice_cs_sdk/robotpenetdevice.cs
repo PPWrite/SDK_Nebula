@@ -70,7 +70,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_origindata_cb(onOriginData arg);   // 设备坐标上报函数地址
+        internal static extern void rbt_win_set_origindata_cb(onOriginDataNew arg);   // 设备坐标上报函数地址
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devivedisconnect_cb(onDeviceDisconnect arg);   // 设备断开连接函数地址
@@ -79,7 +79,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_devicekeypress_cb(onDeviceKeyPress arg);   // 设备按键函数地址
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_deviceshowpage_cb(onDeviceShowPage arg);   // 设备页码识别函数地址
+        internal static extern void rbt_win_set_deviceshowpage_cb(onDeviceShowPageNew arg);   // 设备页码识别函数地址
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult arg);   // 设备选择题结果函数地址
@@ -103,7 +103,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_clearcanvas_cb(onClearCanvas arg);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_optimizedata_cb(onClearCanvas arg);
+        internal static extern void rbt_win_set_optimizedata_cb(onOptimizeData arg);
 
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -115,14 +115,17 @@ namespace robotpenetdevice_cs
 
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
+        public event onOriginDataNew deviceOriginDataNewEvt_;
         public event onDeviceDisconnect deviceDisconnectEvt_;
         public event onDeviceKeyPress deviceKeyPressEvt_;
         public event onDeviceShowPage deviceShowPageEvt_;
+        public event onDeviceShowPageNew deviceShowPageNewEvt_;
         public event onDeviceAnswerResult deviceAnswerResultEvt_;
         public event onDeviceName deviceNameEvt_;
         public event onDeviceNameResult deviceNameResult_;
         public event onError deviceError_ = null;
         public event onClearCanvas deviceClearCanvas_ = null;
+        public event onOptimizeData deviceOptimizeDataEvt_ = null;
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
         // 用于存储this对象主要保证该变量的生命周期
@@ -130,14 +133,17 @@ namespace robotpenetdevice_cs
         private IntPtr iPtrThis_ = IntPtr.Zero;
         private static onDeviceMac ondevicemac;
         private static onOriginData onorigindata;
+        private static onOriginDataNew onorigindatanew;
         private static onDeviceAnswerResult ondeviceanswerresult;
         private static onDeviceKeyPress ondevicekeyPress = null;
         private static onDeviceShowPage ondeviceshowpage = null;
+        private static onDeviceShowPageNew ondeviceshowpagenew = null;
         private static onDeviceNameResult ondevicenameresult = null;
         private static onDeviceName ondevicename = null;
         private static onDeviceDisconnect ondevicedisconnect = null;
         private static onError onerror = null;
         private static onClearCanvas onclearcanvas = null;
+        private static onOptimizeData onoptimizedata = null;
 
 
         // 构造函数
@@ -156,13 +162,35 @@ namespace robotpenetdevice_cs
         /// <param name="up"></param>
         /// <param name="buffer"></param>
         /// <param name="len"></param>
-        private static void originDataNotify(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len)
+        private static void originDataNotifyNew(IntPtr ctx, IntPtr strDeviceMac, ushort us, ushort ux, ushort uy, ushort up, IntPtr buffer, int len)
         {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
-            if (rbtNetThis != null && rbtNetThis.deviceOriginDataEvt_ != null)
+            if (rbtNetThis != null)
             {
-                rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up, buffer, len);
+                if(rbtNetThis.deviceOriginDataNewEvt_ != null)
+                {
+                    rbtNetThis.deviceOriginDataNewEvt_(ctx, strDeviceMac, us, ux, uy, up, buffer, len);
+                }
+                else if(rbtNetThis.deviceOriginDataEvt_ != null)
+                {
+                    string bufferStr = Marshal.PtrToStringAnsi(buffer);
+                    rbtNetThis.deviceOriginDataEvt_(ctx, strDeviceMac, us, ux, uy, up);
+                }
+                
+            }
+        }
+
+        private static void optimizeData(IntPtr ctx, IntPtr pmac, ushort us, ushort ux, ushort uy, float width, float speed)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+            if (rbtNetThis != null)
+            {
+                if (rbtNetThis.deviceOptimizeDataEvt_!= null)
+                {
+                    rbtNetThis.deviceOptimizeDataEvt_(ctx, pmac, us, ux, uy, width, speed);
+                }
             }
         }
 
@@ -255,14 +283,22 @@ namespace robotpenetdevice_cs
         /// <param name="strDeviceMac"></param>
         /// <param name="nNoteId"></param>
         /// <param name="nPageId"></param>
-        private static void deviceShowPage(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
+        private static void deviceShowPageNew(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
         {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
-            if (rbtNetThis != null && rbtNetThis.deviceShowPageEvt_ != null)
+            if (rbtNetThis != null)
             {
-                rbtNetThis.deviceShowPageEvt_(ctx, strDeviceMac, nNoteId, nPageId, nPageInfo);
+                if(rbtNetThis.deviceShowPageNewEvt_ != null)
+                {
+                    rbtNetThis.deviceShowPageNewEvt_(ctx, strDeviceMac, nNoteId, nPageId, nPageInfo);
+                }
+                else if(rbtNetThis.deviceShowPageEvt_ != null)
+                {
+                    rbtNetThis.deviceShowPageEvt_(ctx, strDeviceMac, nNoteId, nPageId);
+                }
+                
             }
         }
 
@@ -341,14 +377,14 @@ namespace robotpenetdevice_cs
             /*int size = Marshal.SizeOf(typeof(Init_Param));
             System.Diagnostics.Debug.WriteLine(size);//*/
 
-            onorigindata = new onOriginData(originDataNotify);
-            rbt_win_set_origindata_cb(onorigindata);
+            onorigindatanew = new onOriginDataNew(originDataNotifyNew);
+            rbt_win_set_origindata_cb(onorigindatanew);
             ondevicemac = new onDeviceMac(deviceMacNotify);
             rbt_win_set_devicemac_cb(ondevicemac);
             ondevicekeyPress = new onDeviceKeyPress(deviceKeyPress);
             rbt_win_set_devicekeypress_cb(ondevicekeyPress);
-            ondeviceshowpage = new onDeviceShowPage(deviceShowPage);
-            rbt_win_set_deviceshowpage_cb(ondeviceshowpage);
+            ondeviceshowpagenew = new onDeviceShowPageNew(deviceShowPageNew);
+            rbt_win_set_deviceshowpage_cb(ondeviceshowpagenew);
             ondevicedisconnect = new onDeviceDisconnect(deviceDisconnect);
             rbt_win_set_devivedisconnect_cb(ondevicedisconnect);
             ondeviceanswerresult = new onDeviceAnswerResult(deviceAnswerResult);
@@ -361,6 +397,8 @@ namespace robotpenetdevice_cs
             rbt_win_set_error_cb(onerror);
             onclearcanvas = new onClearCanvas(deviceClearCanvas);
             rbt_win_set_clearcanvas_cb(onclearcanvas);
+            onoptimizedata = new onOptimizeData(optimizeData);
+            rbt_win_set_optimizedata_cb(onoptimizedata);
         }
 
         // 反初始化
@@ -393,7 +431,7 @@ namespace robotpenetdevice_cs
         /// <param name="nTotalTopic"></param>
         /// <param name="strTopicType"></param>
         /// <returns></returns>
-        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType, string mac)
+        public bool sendStartAnswer(int type, int totalTopic, IntPtr pTopicType,string mac="")
         {
             return rbt_win_send_startanswer(type, totalTopic, pTopicType, mac);
         }
@@ -401,15 +439,15 @@ namespace robotpenetdevice_cs
         /// <summary>
         /// 发送结束答题命令
         /// </summary>
-        public void sendStopAnswer(string mac)
+        public void sendStopAnswer(string mac = "")
         {
-            rbt_win_send_stopanswer(mac);
+            rbt_win_send_endanswer(mac);
         }
 
         /// <summary>
         /// 发送结束答题命令
         /// </summary>
-        public void sendEndAnswer(string mac)
+        public void sendEndAnswer(string mac = "")
         {
             rbt_win_send_endanswer(mac);
         }

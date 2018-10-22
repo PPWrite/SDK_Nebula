@@ -13,6 +13,9 @@ namespace rbt_win32_2_demo
     public partial class SettingPanel : Form
     {
         private Form1 form;
+
+        private bool isStartConfigWifi = false;
+        private bool isStartConfigSleep = false;
         public SettingPanel(Form1 _from)
         {
             form = _from;
@@ -51,6 +54,7 @@ namespace rbt_win32_2_demo
                 int t = form.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
                 if (t == 0)
                 {
+                    isStartConfigWifi = true;
                     MessageBox.Show("配网成功");
                 }
             }
@@ -67,10 +71,25 @@ namespace rbt_win32_2_demo
             {
                 num = int.Parse(this.textBox4.Text);
                 form.rbtnet_.configSleep(num);
+                isStartConfigSleep = true;
             }
             else
             {
                 MessageBox.Show("时间不能为空");
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(this.textBox1.Text)&& isStartConfigWifi)
+            {
+                int t = form.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
+            }
+            if (!string.IsNullOrEmpty(this.textBox4.Text)&& isStartConfigSleep)
+            {
+                int num = 0;
+                num = int.Parse(this.textBox4.Text);
+                form.rbtnet_.configSleep(num);
             }
         }
     }

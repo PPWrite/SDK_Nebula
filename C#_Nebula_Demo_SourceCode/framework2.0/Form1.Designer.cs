@@ -71,6 +71,7 @@
             this.labelnote = new System.Windows.Forms.Label();
             this.label_sync_offline_tip = new System.Windows.Forms.Label();
             this.BaseGroup = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.DeviceSize = new System.Windows.Forms.Label();
             this.SwichModeBtn = new System.Windows.Forms.Button();
             this.mode_label = new System.Windows.Forms.Label();
@@ -88,7 +89,8 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.BaseGroup.SuspendLayout();
             this.BLEGroup.SuspendLayout();
             this.GATEWAYGroup.SuspendLayout();
@@ -600,6 +602,17 @@
             this.BaseGroup.TabStop = false;
             this.BaseGroup.Text = "BaseGroup";
             // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button3.Location = new System.Drawing.Point(392, 76);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(93, 28);
+            this.button3.TabIndex = 41;
+            this.button3.Text = "开启优化笔记";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // DeviceSize
             // 
             this.DeviceSize.AutoSize = true;
@@ -754,6 +767,8 @@
             // 
             // USBOfflineGroup
             // 
+            this.USBOfflineGroup.Controls.Add(this.button5);
+            this.USBOfflineGroup.Controls.Add(this.button4);
             this.USBOfflineGroup.Controls.Add(this.StartSyncBtn);
             this.USBOfflineGroup.Controls.Add(this.label_sync_offline_tip);
             this.USBOfflineGroup.Controls.Add(this.EndSyncBtn);
@@ -807,16 +822,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "2.4GSetting";
             // 
-            // button3
+            // button4
             // 
-            this.button3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(392, 76);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(93, 28);
-            this.button3.TabIndex = 41;
-            this.button3.Text = "开启优化笔记";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button4.Location = new System.Drawing.Point(392, 22);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(93, 28);
+            this.button4.TabIndex = 38;
+            this.button4.Text = "开始记录";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click_1);
+            // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button5.Location = new System.Drawing.Point(392, 56);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(93, 28);
+            this.button5.TabIndex = 39;
+            this.button5.Text = "识别内容";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Form1
             // 
@@ -913,6 +939,8 @@
         private System.Windows.Forms.Button SwichModeBtn;
         private System.Windows.Forms.Label DeviceSize;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button4;
     }
 }
 
