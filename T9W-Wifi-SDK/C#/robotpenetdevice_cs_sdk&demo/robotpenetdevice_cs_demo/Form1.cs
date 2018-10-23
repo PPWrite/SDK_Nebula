@@ -19,12 +19,13 @@ namespace rbt_win32_2_demo
     public partial class Form1 : Form
     {
         public RbtNet rbtnet_ = null;
+        
 
         public Form1()
         {
             InitializeComponent();
         }
-
+        private bool _optimize = false;
         /// <summary>
         /// 窗口加载过程函数
         /// </summary>
@@ -37,7 +38,10 @@ namespace rbt_win32_2_demo
             rbtnet_ = new RbtNet();
             // 初始化
             Init_Param param = new Init_Param();
-            //param.optimize = true;
+
+            _optimize = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["optimize"]);
+
+            param.optimize = _optimize;
             rbtnet_.init(ref param);
 
 
@@ -55,6 +59,8 @@ namespace rbt_win32_2_demo
             rbtnet_.deviceNameResult_ += Rbtnet__eviceNameResultEvt_;
             rbtnet_.deviceDisconnectEvt_ += Rbtnet__deviceDisconnectEvt_;
             rbtnet_.deviceOriginDataEvt_ += Rbtnet__deviceOriginDataEvt_;
+            rbtnet_.deviceOptimizeDataEvt_ += Rbtnet__deviceOptimizeDataEvt_;
+
             rbtnet_.deviceShowPageEvt_ += Rbtnet__deviceShowPageEvt_;
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
@@ -143,6 +149,10 @@ namespace rbt_win32_2_demo
             ushort uy, 
             ushort up)
         {
+            if(_optimize)
+            {
+                return;
+            }
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             if (dicMac2DrawForm_.ContainsKey(sMac)) {
                 int npenStatus = Convert.ToInt32(us);
@@ -163,21 +173,21 @@ namespace rbt_win32_2_demo
         /// <param name="ux"></param>
         /// <param name="uy"></param>
         /// <param name="up"></param>
-        private void Rbtnet__deviceOptimizeDataEvt_(IntPtr ctx, IntPtr pmac, ushort us, ushort ux, ushort uy, float width, float speed)
+        private void Rbtnet__deviceOptimizeDataEvt_(IntPtr ctx, IntPtr pmac, ushort us, ushort ux, ushort uy, float fPenWidthF, float speed)
         {
+            if (!_optimize)
+            {
+                return;
+            }
             string sMac = Marshal.PtrToStringAnsi(pmac);
             if (dicMac2DrawForm_.ContainsKey(sMac))
             {
                 int npenStatus = Convert.ToInt32(us);
-                if (width>0)
-                {
-                    npenStatus = 17;
-                }
-                if (npenStatus != 17 && npenStatus != 33)
+                if (fPenWidthF == 0)
                 {
                     npenStatus = 0;
                 }
-                dicMac2DrawForm_[sMac].recvData(npenStatus, ux, uy, 0);
+                dicMac2DrawForm_[sMac].recvOptimizeData(npenStatus, ux, uy, fPenWidthF*2);
             }
         }
 
@@ -914,6 +924,9 @@ namespace rbt_win32_2_demo
         private void button5_Click(object sender, EventArgs e)
         {
             int nItemCount = this.listView1.Items.Count;
+            StringBuilder sqlList = new StringBuilder();
+            StringBuilder sqlLIst2 = new StringBuilder();
+
             for (int i = 0; i < nItemCount; ++i)
             {
                 DeviceSettingInfo dsInfo = new DeviceSettingInfo()
@@ -923,6 +936,16 @@ namespace rbt_win32_2_demo
                     StudentName = this.listView1.Items[i].SubItems[6].Text,
                 };
                 deviceSettingInfos.Add(dsInfo);
+
+                string sql1 = string.Format(@"insert into device_tb(device_mac,device_state)values('{0}',0);
+", dsInfo.DeviceNum);
+                string sql2 = string.Format(@"
+insert into stu_tb(stu_name,stu_sex,stu_num,class_id,device_id)
+select '学生'+device_id,0,001,14,device_id from device_tb
+where device_mac = '{0}';
+", dsInfo.DeviceNum);
+                sqlList.Append(sql1);
+                sqlLIst2.Append(sql2);
             }
 
             SaveFileDialog sfd = new SaveFileDialog();
@@ -932,6 +955,22 @@ namespace rbt_win32_2_demo
                 string file = sfd.FileName;
                 FileHelper fh = new FileHelper();
                 fh.FileWriteForDeviceInfo(file, deviceSettingInfos);
+            }
+            SaveFileDialog sfd2 = new SaveFileDialog();
+            sfd2.Filter = @"TXT文件|*.TXT";
+            if (sfd2.ShowDialog() == DialogResult.OK)
+            {
+                string file = sfd2.FileName;
+                FileHelper fh = new FileHelper();
+                fh.FileWriteStr(file, sqlList.ToString());
+            }
+            SaveFileDialog sfd3 = new SaveFileDialog();
+            sfd3.Filter = @"TXT文件|*.TXT";
+            if (sfd3.ShowDialog() == DialogResult.OK)
+            {
+                string file = sfd3.FileName;
+                FileHelper fh = new FileHelper();
+                fh.FileWriteStr(file, sqlLIst2.ToString());
             }
             deviceSettingInfos = new List<DeviceSettingInfo>();
         }

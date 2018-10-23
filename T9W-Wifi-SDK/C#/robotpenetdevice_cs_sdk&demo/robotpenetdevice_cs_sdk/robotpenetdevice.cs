@@ -112,6 +112,15 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_errorpacket_cb(onErrorPacket arg);
 
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_open_suspension(bool open);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_get_canvas_id(int canvasID = 0);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_screen_freq(int seconds);
+
 
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
@@ -508,6 +517,22 @@ namespace robotpenetdevice_cs
         public void configSleep(int mins)
         {
             rbt_win_config_sleep(mins);
+        }
+
+        /// <summary>
+        /// 获取画布ID
+        /// </summary>
+        public void getCanvasID(int canvasID)
+        {
+            rbt_win_get_canvas_id(canvasID);
+        }
+
+        /// <summary>
+        /// 获取画布ID
+        /// </summary>
+        public void setScreenFreq(int seconds)
+        {
+            rbt_win_set_screen_freq(seconds);
         }
     }
 }
