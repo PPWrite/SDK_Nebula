@@ -96,8 +96,9 @@ namespace RobotPenTestDll
             {
                 eDeviceTy = eDeviceType.T7E_TS;
             }
-
+            GetRecognitionKey();
             initEvt();
+            
             this.comboBox2.SelectedIndex = 0;
 
         }
@@ -108,7 +109,7 @@ namespace RobotPenTestDll
             this.listView1.Columns.Add("VID", 100, HorizontalAlignment.Center);
             this.listView1.Columns.Add("PID", 100, HorizontalAlignment.Center);
             loadDevice();
-            GetRecognitionKey();
+            
 
             Point pt = this.listView1.Location;
             int nSubWinStartX = pt.X + this.listView1.Width + 50;
@@ -2364,7 +2365,7 @@ namespace RobotPenTestDll
         {
             note_key = Guid.NewGuid().ToString();
             Console.WriteLine(note_key);
-            int t= robotpenController.GetInstance().CreateRecogNote(note_key,0,0);
+            int t= robotpenController.GetInstance().CreateRecogNote(note_key,3,0);
             Console.WriteLine(t);
             
         }

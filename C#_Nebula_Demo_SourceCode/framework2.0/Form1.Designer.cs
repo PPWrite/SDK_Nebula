@@ -85,12 +85,12 @@
             this.slave_version_label = new System.Windows.Forms.Label();
             this.GATEWAYGroup = new System.Windows.Forms.GroupBox();
             this.USBOfflineGroup = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.BaseGroup.SuspendLayout();
             this.BLEGroup.SuspendLayout();
             this.GATEWAYGroup.SuspendLayout();
@@ -781,6 +781,30 @@
             this.USBOfflineGroup.TabStop = false;
             this.USBOfflineGroup.Text = "USBOfflineGroup";
             // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button5.Location = new System.Drawing.Point(392, 56);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(93, 28);
+            this.button5.TabIndex = 39;
+            this.button5.Text = "识别内容";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button4
+            // 
+            this.button4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button4.Location = new System.Drawing.Point(392, 22);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(93, 28);
+            this.button4.TabIndex = 38;
+            this.button4.Text = "开始记录";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click_1);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -821,28 +845,6 @@
             this.groupBox1.TabIndex = 43;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "2.4GSetting";
-            // 
-            // button4
-            // 
-            this.button4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(392, 22);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(93, 28);
-            this.button4.TabIndex = 38;
-            this.button4.Text = "开始记录";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click_1);
-            // 
-            // button5
-            // 
-            this.button5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button5.Location = new System.Drawing.Point(392, 56);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(93, 28);
-            this.button5.TabIndex = 39;
-            this.button5.Text = "识别内容";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Form1
             // 
