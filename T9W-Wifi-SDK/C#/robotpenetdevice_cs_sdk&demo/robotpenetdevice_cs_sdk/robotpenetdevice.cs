@@ -100,7 +100,7 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_error_cb(onError arg);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_set_clearcanvas_cb(onClearCanvas arg);
+        internal static extern void rbt_win_set_canvasid_cb(onCanvasID arg);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_optimizedata_cb(onOptimizeData arg);
@@ -133,7 +133,7 @@ namespace robotpenetdevice_cs
         public event onDeviceName deviceNameEvt_;
         public event onDeviceNameResult deviceNameResult_;
         public event onError deviceError_ = null;
-        public event onClearCanvas deviceClearCanvas_ = null;
+        public event onCanvasID deviceCanvasID_ = null;
         public event onOptimizeData deviceOptimizeDataEvt_ = null;
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
@@ -151,7 +151,7 @@ namespace robotpenetdevice_cs
         private static onDeviceName ondevicename = null;
         private static onDeviceDisconnect ondevicedisconnect = null;
         private static onError onerror = null;
-        private static onClearCanvas onclearcanvas = null;
+        private static onCanvasID oncanvasid = null;
         private static onOptimizeData onoptimizedata = null;
 
 
@@ -352,14 +352,14 @@ namespace robotpenetdevice_cs
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="pmac"></param>
-        private static void deviceClearCanvas(IntPtr ctx, String pmac)
+        private static void deviceClearCanvas(IntPtr ctx, String pmac, int type, int canvasID)
         {
             GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
             RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
 
             if (rbtNetThis != null && rbtNetThis.deviceError_ != null)
             {
-                rbtNetThis.deviceClearCanvas_(ctx, pmac);
+                rbtNetThis.deviceCanvasID_(ctx, pmac, type, canvasID);
             }
         }
 
@@ -404,8 +404,8 @@ namespace robotpenetdevice_cs
             rbt_win_set_devicenameresult_cb(ondevicenameresult);
             onerror = new onError(deviceError);
             rbt_win_set_error_cb(onerror);
-            onclearcanvas = new onClearCanvas(deviceClearCanvas);
-            rbt_win_set_clearcanvas_cb(onclearcanvas);
+            oncanvasid = new onCanvasID(deviceClearCanvas);
+            rbt_win_set_canvasid_cb(oncanvasid);
             onoptimizedata = new onOptimizeData(optimizeData);
             rbt_win_set_optimizedata_cb(onoptimizedata);
         }
