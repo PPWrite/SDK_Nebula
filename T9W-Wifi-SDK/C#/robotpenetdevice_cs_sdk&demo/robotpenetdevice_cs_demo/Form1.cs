@@ -66,7 +66,7 @@ namespace rbt_win32_2_demo
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
 
             rbtnet_.deviceError_ += Rbtnet__deviceEvt;
-            rbtnet_.deviceClearCanvas_ += Rbtnet__deviceClearCanvas;
+            //rbtnet_.deviceClearCanvas_ += Rbtnet__deviceClearCanvas;
         }
         public void Rbtnet__deviceEvt(IntPtr ctx, String pmac, int cmd, String msg)
         {

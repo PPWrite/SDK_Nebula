@@ -30,7 +30,7 @@ namespace robotpenetdevice_cs
 
     public delegate void onError(IntPtr ctx, String pmac, int cmd, String msg);
 
-    public delegate void onClearCanvas(IntPtr ctx, String pmac);
+    public delegate void onCanvasID(IntPtr ctx, String pmac, int type, int canvasID);
 
     public delegate void onOptimizeData(IntPtr ctx, IntPtr pmac,ushort us, ushort ux, ushort uy, float width, float speed);
 
