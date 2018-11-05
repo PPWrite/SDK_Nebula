@@ -20,13 +20,13 @@ bool compare(const PAGE_INFO & a,const PAGE_INFO &b)
 
 IMPLEMENT_DYNAMIC(CWBDlg, CDialog)
 
-CWBDlg::CWBDlg(CWnd* pParent /*=NULL*/)
+	CWBDlg::CWBDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CWBDlg::IDD, pParent)
 	, m_bDrawing(FALSE)
 	, m_nPenStatus(0)
 	, m_nDevStatus(0)
 	, m_bMouseDraw(FALSE)
-	, m_nFlags(0)
+	, m_bTrack(false)
 	, m_nWidth(DEV_WIDTH)
 	, m_nHeight(DEV_HEIGHT)
 	, m_nState(0)
@@ -79,7 +79,7 @@ BOOL CWBDlg::OnInitDialog()
 	nCompress = (double)m_nWidth/width;
 	int height = m_nHeight/nCompress;
 
-	
+
 	CRect rect;
 	if (m_nState == 90 || m_nState == 270)
 	{
@@ -321,6 +321,7 @@ void CWBDlg::doDrawing( const CPoint& pos )
 	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
 
 	graphics.DrawLine(&pen, m_lastPoint.x, m_lastPoint.y, pos.x, pos.y);
+
 	m_lastPoint = pos;
 	//delete pdc;
 	DeleteObject(pdc->m_hDC);
@@ -370,6 +371,7 @@ void CWBDlg::endTrack( bool bSave /*= true*/ )
 
 void CWBDlg::Clear()
 {
+	TRACE("CWBDlg::Clear()\n");
 	m_currentItem.lstPoint.clear();
 	m_listItems.clear();
 	Invalidate();
@@ -421,23 +423,14 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 		point.SetPoint(penInfo.nX, penInfo.nY);
 
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
-	
-	if (penInfo.nPress  == 0)// 笔离开板子
-	{
-#ifdef USE_FILE
-		if (m_pageInfo.page_num > 0)
-			SaveData(m_pageInfo,m_vecPenInfo);
-		m_vecPenInfo.clear();
-#endif
-		endTrack(true);
-		m_nFlags = 0;
-	}
-	else
+	//TRACE(_T("x:%d-y:%d\n"),point.x,point.y);
+
+	if (penInfo.nStatus == 0x11)
 	{
 		// 笔接触到板子
-		if (m_nFlags == 0)
+		if (!m_bTrack)
 		{
-			m_nFlags = 1;
+			m_bTrack = true;
 			compressPoint(point);
 			onbegin(point);
 		}
@@ -449,6 +442,17 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 			moveCursor(point);
 		}
 	}
+	else
+	{
+#ifdef USE_FILE
+		if (m_pageInfo.page_num > 0)
+			SaveData(m_pageInfo,m_vecPenInfo);
+		m_vecPenInfo.clear();
+#endif
+		m_bTrack = false;
+		endTrack(true);
+	}
+
 }
 
 
@@ -566,7 +570,7 @@ void CWBDlg::ResetWindow()
 		nColumn = nID/nRow;
 		nRow = (nID-1)%nRow;
 	}
-	
+
 	CRect rect(nRow*width,nColumn*height,nRow*width+width,nColumn*height+height);
 	//AdjustWindowRect(rect, GetStyle(), FALSE);
 	MoveWindow(rect);
@@ -818,4 +822,9 @@ void CWBDlg::OnBnClickedButtonRight()
 			}
 		}
 	}
+}
+
+void CWBDlg::SetText(const CString &str)
+{
+	GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(str);
 }

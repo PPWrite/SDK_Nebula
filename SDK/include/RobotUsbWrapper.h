@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <windows.h>
 
 #ifdef DLL_EXPORT
@@ -43,210 +43,219 @@ enum eRbtType
 	SearchStorage,
 };
 
-//»Øµ÷º¯Êı
+//å›è°ƒå‡½æ•°
 typedef void (CALLBACK *UsbDataCallback_t)(const unsigned char*,int,void*);
-//Ê¶±ğ»Øµ÷
+//è¯†åˆ«å›è°ƒ
 typedef void (CALLBACK *ResultCallback_t)(int,char*,void*);
 
 class IRobotEventHandler
 {
 public:
 	virtual ~IRobotEventHandler() {}
-	//Éè±¸²å°ÎÊÂ¼ş
+	//è®¾å¤‡æ’æ‹”äº‹ä»¶
 	virtual void onDeviceChanged(eDeviceStatus status,int pid) {
 		(void)status;
 		(void)pid;
 	}
-	//Éè±¸²å°ÎÊÂ¼ş
+	//è®¾å¤‡æ’æ‹”äº‹ä»¶
 	virtual void onDeviceChanged(eDeviceStatus status,eDeviceType type) {
 		(void)status;
 		(void)type;
 	}
-	//Íø¹Ø×´Ì¬ÊÂ¼ş
+	//ç½‘å…³çŠ¶æ€äº‹ä»¶
 	virtual void onGatewayStatus(eGatewayStatus status){
 		(void)status;
 	}
-	//node×´Ì¬ÊÂ¼ş
+	//nodeçŠ¶æ€äº‹ä»¶
 	virtual void onNodeStatus(const NODE_STATUS &status){
 		(void)status;
 	}
-	//°æ±¾ÊÂ¼ş
+	//ç‰ˆæœ¬äº‹ä»¶
 	virtual void onDeviceInfo(const ST_DEVICE_INFO &info) {
 		(void)info;
 	}
-	//ÔÚÏß×´Ì¬ÊÂ¼ş
+	//åœ¨çº¿çŠ¶æ€äº‹ä»¶
 	virtual void onOnlineStatus(uint8_t *status) {
 		(void)status;
 	}
-	//µ¥Ñ¡½áÊøÊÂ¼ş
+	//å•é€‰ç»“æŸäº‹ä»¶
 	virtual void onExitVote(uint8_t *status) {
 		(void)status;
 	}
-	//¶àÑ¡½áÊøÊÂ¼ş
+	//å¤šé€‰ç»“æŸäº‹ä»¶
 	virtual void onExitVoteMulit(const ST_OPTION_PACKET &packet) {
 		(void)packet;
 	}
-	//´óÊı¾İ×ø±êÊı¾İÊÂ¼ş
+	//å¤§æ•°æ®åæ ‡æ•°æ®äº‹ä»¶
 	virtual void onMassData(int index,const PEN_INFO &penInfo) {
 		(void)index;
 		(void)penInfo;
 	}
-	//Íø¹Ø´íÎóÊÂ¼ş
+	//ç½‘å…³é”™è¯¯äº‹ä»¶
 	virtual void onGatewayError(eNebulaError error) {
 		(void)error;
 	}
-	//ÉèÖÃÉè±¸½á¹ûÊÂ¼ş
+	//è®¾ç½®è®¾å¤‡ç»“æœäº‹ä»¶
 	virtual void onSetDeviceNum(int result,int customid, int classid, int deviceid) {
 		(void)result;
 		(void)customid;
 		(void)classid;
 		(void)deviceid;
 	}
-	//Éı¼¶½ø¶ÈÊÂ¼ş
+	//å‡çº§è¿›åº¦äº‹ä»¶
 	virtual void onFirmwareData(int progress) {
 		(void)progress;
 	}
-	//Éı¼¶½á¹ûÊÂ¼ş
+	//å‡çº§ç»“æœäº‹ä»¶
 	virtual void onRawResult(int result) {
 		(void)result;
 	}
-	//ÖØÆôÊÂ¼ş
+	//é‡å¯äº‹ä»¶
 	virtual void onGatewayReboot() {
 	}
-	//×ø±êÔ­Ê¼Êı¾İÊÂ¼ş
+	//åæ ‡åŸå§‹æ•°æ®äº‹ä»¶
 	virtual void onDataPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
-	//×ø±êÊı¾İÊÂ¼ş
+	//åæ ‡æ•°æ®äº‹ä»¶
 	virtual void onOriginalPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
-	//nodeÄ£Ê½ÊÂ¼ş
+	//nodeæ¨¡å¼äº‹ä»¶
 	virtual void onNodeMode(eNodeMode mode) {
 		(void)mode;
 	}
-	//ÉèÖÃrtcÊÂ¼ş
+	//è®¾ç½®rtcäº‹ä»¶
 	virtual void onSetRtc(int result) {
 		(void)result;
 	}
-	//°´¼ü°´ÏÂÊÂ¼ş
+	//æŒ‰é”®æŒ‰ä¸‹äº‹ä»¶
 	virtual void onKeyPress(int result) {
 		(void)result;
 	}
-	//Ò³ÃæÏÔÊ¾ÊÂ¼ş
+	//é¡µé¢æ˜¾ç¤ºäº‹ä»¶
 	virtual void onShowPage(const PAGE_INFO &pageInfo) {
 		(void)pageInfo;
 	}
-	//ÀëÏß±Ê¼Ç×ø±êÊı¾İÊÂ¼ş
+	//ç¦»çº¿ç¬”è®°åæ ‡æ•°æ®äº‹ä»¶
 	virtual void onSyncPacket(const PEN_INFO &penInfo) {
 		(void)penInfo;
 	}
-	//ÀëÏß±Ê¼Ç¿ªÊ¼
+	//ç¦»çº¿ç¬”è®°å¼€å§‹
 	virtual void onSyncBegin(int leftNum,int noteNum,const ST_RTC_INFO &rtcInfo){
 		(void)leftNum;
 		(void)noteNum;
 		(void)rtcInfo;
 	}
-	//ÀëÏß±Ê¼Ç½áÊø
-	virtual void onSyncEnd(int result){
-		(void)result;
+
+	//ç¦»çº¿ç¬”è®°å¼€å§‹KZ
+	virtual void onSyncBegin(int leftNum,int subject,int topic,const ST_RTC_INFO &rtc,int useTimes){
+		(void)leftNum;
+		(void)subject;
+		(void)topic;
+		(void)rtc;
+		(void)useTimes;
 	}
-	//ÉÏ±¨Ò³Âë
+	//ç¦»çº¿ç¬”è®°ç»“æŸ
+	virtual void onSyncEnd(bool exit){
+		(void)exit;
+	}
+	//ä¸ŠæŠ¥é¡µç 
 	virtual void onMassShowPage(int index,const PAGE_INFO &pageInfo){
 		(void)index;
 		(void)pageInfo;
 	}
-	//ÇÀ´ğÊÂ¼ş
+	//æŠ¢ç­”äº‹ä»¶
 	virtual void onVoteAnswer(int index,int answer){
 		(void)index;
 		(void)answer;
 	}
-	//x8 macÊÂ¼ş
+	//x8 macäº‹ä»¶
 	virtual void onX8Mac(uint8_t *mac){
 		(void)mac;
 	}
-	//2.4g macÊÂ¼ş
+	//2.4g macäº‹ä»¶
 	virtual void onMassMac(int index,uint8_t *mac){
 		(void)index;
 		(void)mac;
 	}
 	//////////////////////////////dongle//////////////////////
-	//Dongle×´Ì¬ÊÂ¼ş
+	//DongleçŠ¶æ€äº‹ä»¶
 	virtual void onDongleStatus(eDongleStatus status,int mode) {
 		(void)status;
 		(void)mode;
 	}
-	//Dongle°æ±¾ÊÂ¼ş
+	//Dongleç‰ˆæœ¬äº‹ä»¶
 	virtual void onDongleVersion(const ST_VERSION &version) {
 		(void)version;
 	}
-	//DongleÉ¨ÃèÊÂ¼ş
+	//Dongleæ‰«æäº‹ä»¶
 	virtual void onDongleScanRes(const ST_BLE_DEVICE &device) {
 		(void)device;
 	}
-	//slave°æ±¾ÊÂ¼ş
+	//slaveç‰ˆæœ¬äº‹ä»¶
 	virtual void onSlaveVersion(eDeviceType type,const ST_VERSION &version) {
 		(void)type;
 		(void)version;
 	}
-	//slave×´Ì¬ÊÂ¼ş
+	//slaveçŠ¶æ€äº‹ä»¶
 	virtual void onSlaveStatus(const NODE_STATUS &status) {
 		(void)status;
 	}
-	//ÉèÖÃÃû³ÆÊÂ¼ş
+	//è®¾ç½®åç§°äº‹ä»¶
 	virtual void onSetName(int result) {
 		(void)result;
 	}
-	//slave´íÎóÊÂ¼ş
+	//slaveé”™è¯¯äº‹ä»¶
 	virtual void onSlaveError(eSlaveError error) {
 		(void)error;
 	}
-	//Ä£×é°æ±¾ÊÂ¼ş
+	//æ¨¡ç»„ç‰ˆæœ¬äº‹ä»¶
 	virtual void onModuleVersion(const ST_MODULE_VERSION &version) {
 		(void)version;
 	}
-	//½øÈëÄ£×éĞ£×¼ÊÂ¼ş
+	//è¿›å…¥æ¨¡ç»„æ ¡å‡†äº‹ä»¶
 	virtual void onAjdustMode() {
 	}
-	//Ä£×éĞ£×¼½á¹ûÊÂ¼ş
+	//æ¨¡ç»„æ ¡å‡†ç»“æœäº‹ä»¶
 	virtual void onAjdustResult(int result) {
 		(void)result;
 	}
-	//Ä£Ê½×´Ì¬
+	//æ¨¡å¼çŠ¶æ€
 	virtual void onDeviceMode(eDeviceMode mode) {
 		(void)mode;
 	}
 
-	//ÉèÖÃ°à¼¶SSID
+	//è®¾ç½®ç­çº§SSID
 	virtual void onSetClassSSID(int result,unsigned char *ssid) {
 		(void)result;
 		(void)ssid;
 	}
-	//ÉèÖÃ°à¼¶ÃÜÂë
+	//è®¾ç½®ç­çº§å¯†ç 
 	virtual void onSetClassPwd(int result,unsigned char *pwd) {
 		(void)result;
 		(void)pwd;
 	}
-	//ÉèÖÃÑ§ÉúID
+	//è®¾ç½®å­¦ç”ŸID
 	virtual void onSetStudentID(int result,unsigned char *id) {
 		(void)result;
 		(void)id;
 	}
-	//ÉèÖÃÃÜÂë
+	//è®¾ç½®å¯†ç 
 	virtual void onSetPwd(int result,unsigned char *pwd) {
 		(void)result;
 		(void)pwd;
 	}
-	//ÉèÖÃÃÜÂë
+	//è®¾ç½®å¯†ç 
 	virtual void onSetSecret(int result,unsigned char *secret) {
 		(void)result;
 		(void)secret;
 	}
-	//ÇĞ»»Ä£Ê½
+	//åˆ‡æ¢æ¨¡å¼
 	virtual void onSwitchMode(eDeviceMode mode) {
 		(void)mode;
 	}
-	//±Ê¼ÇÓÅ»¯Êä³ö
+	//ç¬”è®°ä¼˜åŒ–è¾“å‡º
 	virtual void onOut(float x,float y,float width,float speed,int status){
 		(void)x;
 		(void)y;
@@ -259,191 +268,244 @@ public:
 class RobotPenController
 {
 public:
-	//³õÊ¼»¯ »Øµ÷
+	//åˆå§‹åŒ– å›è°ƒ
 	virtual void ConnectInitialize(eDeviceType nDeviceType,UsbDataCallback_t pCallback = NULL, void *pContext = NULL) = 0;
-	//³õÊ¼»¯ ÊÂ¼ş
+	//åˆå§‹åŒ– äº‹ä»¶
 	virtual void ConnectInitialize(eDeviceType nDeviceType,IRobotEventHandler *pEventHander = NULL) = 0;
-	//¿ªÆôÉè±¸Á¬½Ó£¬³É¹¦ºó½«×Ô¶¯¿ªÆôÊı¾İ½ÓÊÕ
+	//å¼€å¯è®¾å¤‡è¿æ¥ï¼ŒæˆåŠŸåå°†è‡ªåŠ¨å¼€å¯æ•°æ®æ¥æ”¶
 	virtual int  ConnectOpen() = 0;
-	//¹Ø±ÕÉè±¸Á¬½Ó£¬³É¹¦ºó½«×Ô¶¯¹Ø±ÕÊı¾İ½ÓÊÕ
+	//å…³é—­è®¾å¤‡è¿æ¥ï¼ŒæˆåŠŸåå°†è‡ªåŠ¨å…³é—­æ•°æ®æ¥æ”¶
 	virtual void ConnectDispose() = 0;
-	//ÅĞ¶ÏÉè±¸ÊÇ·ñ´¦ÓÚÁ¬½Ó×´Ì¬
+	//åˆ¤æ–­è®¾å¤‡æ˜¯å¦å¤„äºè¿æ¥çŠ¶æ€
 	virtual bool IsConnected() = 0;
-	//·¢ËÍÃüÁî
+	//å‘é€å‘½ä»¤
 	virtual void Send(int nCmd) = 0;
-	//Éı¼¶
+	//å‡çº§
 	virtual bool Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow) = 0;
-	//ÉèÖÃ
+	//è®¾ç½®
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
-	//»ñÈ¡¿ÉÓÃÉè±¸×ÜÊı
+	//è·å–å¯ç”¨è®¾å¤‡æ€»æ•°
 	virtual int GetDeviceCount() = 0;
-	//»ñÈ¡¿ÉÓÃÉè±¸
+	//è·å–å¯ç”¨è®¾å¤‡
 	virtual DWORD GetAvailableDevice() = 0;
 	virtual bool GetDeviceInfo(int index,USB_INFO &usbInfo) = 0;
 	virtual bool GetDeviceInfo(int index,DEVICE_INFO &devInfo) = 0;
-	//¸ù¾İPIDºÍVID´ò¿ªÉè±¸
+	//æ ¹æ®PIDå’ŒVIDæ‰“å¼€è®¾å¤‡
 	virtual int Open(int nVid,int nPid,bool bAll = true) = 0;
-	//Á¬½ÓÀ¶ÑÀÉè±¸
+	//è¿æ¥è“ç‰™è®¾å¤‡
 	virtual void ConnectSlave(int nID) = 0;
-	//°ó¶¨
+	//ç»‘å®š
 	virtual void Bind(unsigned char *mac) = 0;
-	//ÉèÖÃÀ¶ÑÀÃû³Æ
+	//è®¾ç½®è“ç‰™åç§°
 	virtual void SetSlaveName(const char *name) = 0;
-	//ÉèÖÃÉè±¸ÀàĞÍ
+	//è®¾ç½®è®¾å¤‡ç±»å‹
 	virtual void SetDeviceType(eDeviceType nDeviceType) = 0;
-	//ÉèÖÃÖĞĞÄÆ«ÒÆ
+	//è®¾ç½®ä¸­å¿ƒåç§»
 	virtual void SetOffset(int nOffsetX,int nOffsetY) = 0;
-	//ÉèÖÃÊúÆÁ
+	//è®¾ç½®ç«–å±
 	virtual void SetIsHorizontal(bool bHorizontal) = 0;
-	//»ñÈ¡Éè±¸¿í
+	//è·å–è®¾å¤‡å®½
 	virtual int Width() = 0;
-	//»ñÈ¡Éè±¸¸ß
+	//è·å–è®¾å¤‡é«˜
 	virtual int Height() = 0;
-	//Ğı×ª½Ç¶È
+	//æ—‹è½¬è§’åº¦
 	virtual void Rotate(int nAngle = 0) = 0;
-	//¿ªÊ¼Í¶Æ±
+	//å¼€å§‹æŠ•ç¥¨
 	virtual void VoteMulit(bool bMulit = true) = 0;
-	//ÉèÖÃ±Ê¿í¶È
+	//è®¾ç½®ç¬”å®½åº¦
 	virtual void SetPenWidth(float nPenWidth = 0) = 0;
-	//ÉèÖÃ»­²¼´óĞ¡
+	//è®¾ç½®ç”»å¸ƒå¤§å°
 	virtual void SetCanvasSize(int nWidth,int nHeight) = 0;
-	//±Ê¼ÇÓÅ»¯
+	//ç¬”è®°ä¼˜åŒ–
 	virtual void In(const PEN_INFO &penInfo) = 0;
-	//ÊÇ·ñ¿ªÆôÑ¹¸Ğ
+	//æ˜¯å¦å¼€å¯å‹æ„Ÿ
 	virtual void SetPressStatus(bool bPress) = 0;
-	//ÊÇ·ñ¿ªÆô±Ê¼ÇÓÅ»¯
+	//æ˜¯å¦å¼€å¯ç¬”è®°ä¼˜åŒ–
 	virtual void SetOptimizeStatus(bool bOptimize) = 0;
-	//ÉèÖÃÒ³Âë
+	//è®¾ç½®é¡µç 
 	virtual void SetPage(int nPage) = 0;
-	//ÉèÖÃÍÏÎ²ãĞÖµ£¬ÉèÖÃµÄÔ½Ğ¡£¬ÍÏÎ²Ô½³¤(0~1) Ä¬ÈÏ0.4
+	//è®¾ç½®æ‹–å°¾é˜ˆå€¼ï¼Œè®¾ç½®çš„è¶Šå°ï¼Œæ‹–å°¾è¶Šé•¿(0~1) é»˜è®¤0.4
 	virtual void SetPointDelay(float delay) = 0;
-	//ÉèÖÃ´ÖÏ¸±ä»¯ãĞÖµ£¬ÉèÖÃµÄÔ½Ğ¡£¬´ÖÏ¸±ä»¯Ô½Ğ¡ Ä¬ÈÏ0.026
+	//è®¾ç½®ç²—ç»†å˜åŒ–é˜ˆå€¼ï¼Œè®¾ç½®çš„è¶Šå°ï¼Œç²—ç»†å˜åŒ–è¶Šå° é»˜è®¤0.026
 	virtual void SetPointDamping(float damping) = 0;
-	//»ñÈ¡µ±Ç°Éè±¸ÀàĞÍ
+	//è·å–å½“å‰è®¾å¤‡ç±»å‹
 	virtual eDeviceType GetDeviceType(bool bSlave = false) = 0;
-	//ÉèÖÃ°à¼¶SSID
+	//è®¾ç½®ç­çº§SSID
 	virtual void SetClassSSID(unsigned char *ssid,int len) = 0;
-	//ÉèÖÃ°à¼¶ÃÜÂë
+	//è®¾ç½®ç­çº§å¯†ç 
 	virtual void SetClassPwd(unsigned char *pwd,int len) = 0;
-	//ÉèÖÃÑ§ÉúID
+	//è®¾ç½®å­¦ç”ŸID
 	virtual void SetStudentID(unsigned char *id,int len) = 0;
-	//ÉèÖÃMQTTÃÜÂë
+	//è®¾ç½®MQTTå¯†ç 
 	virtual void SetPwd(unsigned char *pwd) = 0;
-	//ÉèÖÃSecret
+	//è®¾ç½®Secret
 	virtual void SetSecret(unsigned char *sercet) = 0;
-	//Éı¼¶×ÖÌå
+	//å‡çº§å­—ä½“
 	virtual void UpdateFont(const char *fileFont) = 0;
-	//ÉèÖÃKey
+	//è®¾ç½®Key
 	virtual void SetKey(const char *key) = 0;
-	//ÉèÖÃbmp
+	//è®¾ç½®bmp
 	virtual void SetBmp(unsigned char *buffer,int len) = 0;
-	//Éı¼¶Ä£×é
+	//å‡çº§æ¨¡ç»„
 	virtual bool UpdateEmr(const char *file) = 0;
-	//ÉèÖÃmac
+	//è®¾ç½®mac
 	virtual void SetMac(int type,unsigned char *mac,int len) = 0;
-	//ÉèÖÃ±ÊÀàĞÍ
+	//è®¾ç½®ç¬”ç±»å‹
 	virtual void SetPenType(ePenType type) = 0;
-	//////////////////////////////////////////////±Ê¼ÇÊ¶±ğ½Ó¿Ú//////////////////////////////////////////////
-	//ÉèÖÃÊ¶±ğ»Øµ÷º¯Êı
+	//////////////////////////////////////////////ç¬”è®°è¯†åˆ«æ¥å£//////////////////////////////////////////////
+	//è®¾ç½®è¯†åˆ«å›è°ƒå‡½æ•°
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;
-	//ÉèÖÃÓÃ»§ĞÅÏ¢
+	//è®¾ç½®ç”¨æˆ·ä¿¡æ¯
 	virtual void SetUserInfo(const char *user_id,const char *secret, int source) = 0;
-	//ÉèÖÃ³¬Ê± ºÁÃë
+	//è®¾ç½®è¶…æ—¶ æ¯«ç§’
 	virtual void SetSyncTimeout(int ms = 5000) = 0;
-	//´ò¿ªÊ¶±ğ½Ó¿Ú »º´æ×î´óµãÊı
+	//æ‰“å¼€è¯†åˆ«æ¥å£ ç¼“å­˜æœ€å¤§ç‚¹æ•°
 	virtual int OpenRecog(int maxSize = 3000,bool autoAppend = false) = 0;
-	//ÉèÖÃ»º´æ×´Ì¬
+	//è®¾ç½®ç¼“å­˜çŠ¶æ€
 	virtual void SetCacheStatus(bool cache) = 0;
-	//´´½¨Ê¶±ğ±Ê¼Ç,language,1Ó¢Óï 2ÖĞÎÄ 3ÊıÑ§¹«Ê½,direct,0ÎªÊúÆÁ,1ÎªºáÆÁ
+	//åˆ›å»ºè¯†åˆ«ç¬”è®°,language,1è‹±è¯­ 2ä¸­æ–‡ 3æ•°å­¦å…¬å¼,direct,0ä¸ºç«–å±,1ä¸ºæ¨ªå±
 	virtual int CreateRecogNote(char *note_key,int language, int direct = 0) = 0;
-	//×·¼Ó±Ê¼Ç
+	//è¿½åŠ ç¬”è®°
 	virtual int AppendNote(void *pen_array,int array_size,const char *note_key,int draw = 0) = 0;
 	virtual int AppendNote(const char *note_key,int draw = 0) = 0;
-	//Ê¶±ğ±Ê¼Ç
+	//è¯†åˆ«ç¬”è®°
 	virtual int RecogNote(const char *user_id,const char *note_key) = 0;
-	//¹Ø±ÕÊ¶±ğ½Ó¿Ú
+	//è·å–åŸå§‹ç¬”è¿¹
+	virtual int getOriginalTrails(const char *user_id, const char *note_key) = 0;
+	//å…³é—­è¯†åˆ«æ¥å£
 	virtual void CloseRecog() = 0;
+	/**************************   äº‘ç¬”è¿¹API   **********************************/
+	//åˆ›å»ºç¬”è®°
+	virtual int createCloudNote(char *note_key, const char *user_id, const char *title, int direct = 0) = 0;
+	//åˆ†é¡µè·å–ç¬”è¿¹é˜Ÿåˆ—
+	virtual int getCloudNoteList(const char *user_id, int offset = 0, int limit = 50) = 0;
+	//æœç´¢ç¬”è¿¹é˜Ÿåˆ—ï¼ˆæ ¹æ®å…³é”®å­—æŸ¥è¯¢ç¬”è¿¹ï¼‰
+	virtual int searchCloudNoteList(const char *search_key , const char *user_id, int offset = 0, int limit = 50) = 0;
+	//è·å–ç¬”è¿¹åˆ†é¡µä¿¡æ¯
+	virtual int getPagingInfo(const char *note_key, const char *user_id) = 0;
+	//åˆ›å»ºç¬”è¿¹åˆ†é¡µä¿¡æ¯
+	virtual int createPagingInfo(const char *note_key, const char *user_id, const char *last_key) = 0;
+	//æ–°å¢å•æ¡è½¨è¿¹ï¼ˆåœ¨æŒ‡å®šåˆ†â»šé¡µä¸‹æ–°å¢ä¸€æ¡è½¨è¿¹ï¼‰
+	virtual int addSingleTrails(const char *trails_key, const char *user_id, const char *block_key, const char *data, const char *start_at, const char *end_at, const char *ext, int color, int type = 0) = 0;
+	//æ‰¹é‡æ–°å¢è½¨è¿¹
+	virtual int addBatchTrails(const char *block_key, const char *user_id, const char *trails) = 0;
+	//è·å–åˆ†é¡µè½¨è¿¹é›†åˆï¼ˆè·å–åˆ†é¡µä¸‹çš„è½¨è¿¹åˆ—é˜Ÿï¼‰
+	virtual int getCurrentBlockTrailsList(const char *user_id, const char *note_key, const char *block_key, int offset = 0, int limit = 50) = 0;
+	//åˆ›å»ºç¬”è¿¹åˆ†é¡µå¹¶å¢åŠ è¯†åˆ«ç›®æ ‡ï¼ˆåœ¨æŒ‡å®šç¬”è®°ä¸‹åˆ›å»ºåˆ†é¡µï¼Œå¹¶è®¾ç½®è¯†åˆ«ç›®æ ‡ï¼‰
+	virtual int createAndAddTarget(const char *note_key, const char *user_id, const char *last_key, int language = 0, int follow = 0) = 0;
+	//è·å–è¯†åˆ«ç»“æœ(åŒæ­¥) æ ¹æ®notekeyè·å–è¯†åˆ«ç»“æœ
+	virtual int getBlockNoteRecog(const char *block_key, const char *user_id) = 0;
+	//ä¸»åŠ¨è¯†åˆ«åˆ†é¡µï¼ˆæ ¹æ®block_keyä¸»åŠ¨å¼€å§‹è¯†åˆ«ä»»åŠ¡ï¼‰
+	virtual int startRecog(const char *block_key, const char *user_id) = 0;
 };
 
-//³õÊ¼»¯ »Øµ÷
+//åˆå§‹åŒ– å›è°ƒ
 extern "C" ROBOT_API void  ConnectInitialize(eDeviceType nDeviceType, IN UsbDataCallback_t pCallback, void *pContext);
-//³õÊ¼»¯ ÊÂ¼ş
+//åˆå§‹åŒ– äº‹ä»¶
 extern "C" ROBOT_API void  ConnectInitialize2(eDeviceType nDeviceType, IN IRobotEventHandler *pEventHander);
-//¿ªÆôÉè±¸Á¬½Ó£¬³É¹¦ºó½«×Ô¶¯¿ªÆôÊı¾İ½ÓÊÕ
+//å¼€å¯è®¾å¤‡è¿æ¥ï¼ŒæˆåŠŸåå°†è‡ªåŠ¨å¼€å¯æ•°æ®æ¥æ”¶
 extern "C" ROBOT_API int   ConnectOpen();
-//¹Ø±ÕÉè±¸Á¬½Ó£¬³É¹¦ºó½«×Ô¶¯¹Ø±ÕÊı¾İ½ÓÊÕ
+//å…³é—­è®¾å¤‡è¿æ¥ï¼ŒæˆåŠŸåå°†è‡ªåŠ¨å…³é—­æ•°æ®æ¥æ”¶
 extern "C" ROBOT_API void  ConnectDispose();
-//ÅĞ¶ÏÉè±¸ÊÇ·ñ´¦ÓÚÁ¬½Ó×´Ì¬
+//åˆ¤æ–­è®¾å¤‡æ˜¯å¦å¤„äºè¿æ¥çŠ¶æ€
 extern "C" ROBOT_API bool  IsConnected();
-//·¢ËÍÃüÁî
+//å‘é€å‘½ä»¤
 extern "C" ROBOT_API void  Send(int nCmd);
-//Éı¼¶
+//å‡çº§
 extern "C" ROBOT_API void  Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow);
-//ÉèÖÃ
+//è®¾ç½®
 extern "C" ROBOT_API void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
-//»ñÈ¡¿ÉÓÃÉè±¸×ÜÊı
+//è·å–å¯ç”¨è®¾å¤‡æ€»æ•°
 extern "C" ROBOT_API int GetDeviceCount();
-//»ñÈ¡¿ÉÓÃÉè±¸
+//è·å–å¯ç”¨è®¾å¤‡
 extern "C" ROBOT_API bool GetDeviceInfo(int index,USB_INFO &usbInfo);
-//»ñÈ¡¿ÉÓÃÉè±¸
+//è·å–å¯ç”¨è®¾å¤‡
 extern "C" ROBOT_API bool GetDeviceInfo2(int index,DEVICE_INFO &devInfo);
-//¸ù¾İPIDºÍVID´ò¿ªÉè±¸
+//æ ¹æ®PIDå’ŒVIDæ‰“å¼€è®¾å¤‡
 extern "C" ROBOT_API int  Open(int nVid,int nPid,bool bAll = true);
-//Á¬½ÓÀ¶ÑÀÉè±¸
+//è¿æ¥è“ç‰™è®¾å¤‡
 extern "C" ROBOT_API void ConnectSlave(int nID);
-//ÉèÖÃÀ¶ÑÀÃû³Æ
+//è®¾ç½®è“ç‰™åç§°
 extern "C" ROBOT_API void SetSlaveName(const char *name);
-//ÉèÖÃ»­²¼´óĞ¡
+//è®¾ç½®ç”»å¸ƒå¤§å°
 extern "C" ROBOT_API void SetCanvasSize(int nWidth,int nHeight);
-//ÉèÖÃÉè±¸ÀàĞÍ
+//è®¾ç½®è®¾å¤‡ç±»å‹
 extern "C" ROBOT_API void SetDeviceType(eDeviceType nDeviceType);
-//ÉèÖÃÖĞĞÄÆ«ÒÆ
+//è®¾ç½®ä¸­å¿ƒåç§»
 extern "C" ROBOT_API void SetOffset(int nOffsetX,int nOffsetY);
-//ÉèÖÃÊúÆÁ
+//è®¾ç½®ç«–å±
 extern "C" ROBOT_API void SetIsHorizontal(bool bHorizontal);
-//»ñÈ¡Éè±¸¿í
+//è·å–è®¾å¤‡å®½
 extern "C" ROBOT_API int Width();
-//»ñÈ¡Éè±¸¸ß
+//è·å–è®¾å¤‡é«˜
 extern "C" ROBOT_API int Height();
-//Ğı×ª½Ç¶È
+//æ—‹è½¬è§’åº¦
 extern "C" ROBOT_API void Rotate(int nAngle);
-//¹ıÂË×ø±ê
+//è¿‡æ»¤åæ ‡
 extern "C" ROBOT_API void SetPenWidth(float nPenWidth);
-//¿ªÊ¼Í¶Æ±
+//å¼€å§‹æŠ•ç¥¨
 extern "C" ROBOT_API void VoteMulit(bool bMulit);
-//±Ê¼ÇÓÅ»¯
+//ç¬”è®°ä¼˜åŒ–
 extern "C" ROBOT_API void In(const PEN_INFO &penInfo);
-//ÊÇ·ñ¿ªÆôÑ¹¸Ğ
+//æ˜¯å¦å¼€å¯å‹æ„Ÿ
 extern "C" ROBOT_API void SetPressStatus(bool bPress);
-//ÊÇ·ñ¿ªÆô±Ê¼ÇÓÅ»¯
+//æ˜¯å¦å¼€å¯ç¬”è®°ä¼˜åŒ–
 extern "C" ROBOT_API void SetOptimizeStatus(bool bOptimize);
-//ÉèÖÃÒ³Âë
+//è®¾ç½®é¡µç 
 extern "C" ROBOT_API void SetPage(int nPage);
-//ÉèÖÃÍÏÎ²ãĞÖµ£¬ÉèÖÃµÄÔ½Ğ¡£¬ÍÏÎ²Ô½³¤(0~1) Ä¬ÈÏ0.4
+//è®¾ç½®æ‹–å°¾é˜ˆå€¼ï¼Œè®¾ç½®çš„è¶Šå°ï¼Œæ‹–å°¾è¶Šé•¿(0~1) é»˜è®¤0.4
 extern "C" ROBOT_API void SetPointDelay(float delay);
-//ÉèÖÃ´ÖÏ¸±ä»¯ãĞÖµ£¬ÉèÖÃµÄÔ½Ğ¡£¬´ÖÏ¸±ä»¯Ô½Ğ¡ Ä¬ÈÏ0.026
+//è®¾ç½®ç²—ç»†å˜åŒ–é˜ˆå€¼ï¼Œè®¾ç½®çš„è¶Šå°ï¼Œç²—ç»†å˜åŒ–è¶Šå° é»˜è®¤0.026
 extern "C" ROBOT_API void SetPointDamping(float damping);
-//ÉèÖÃ°à¼¶SSID
+//è®¾ç½®ç­çº§SSID
 extern "C" ROBOT_API void SetClassSSID(unsigned char *ssid,int len);
-//ÉèÖÃ°à¼¶ÃÜÂë
+//è®¾ç½®ç­çº§å¯†ç 
 extern "C" ROBOT_API void SetClassPwd(unsigned char *pwd,int len);
-//ÉèÖÃÑ§ÉúID
+//è®¾ç½®å­¦ç”ŸID
 extern "C" ROBOT_API void SetStudentID(unsigned char *id,int len);
-//ÉèÖÃÃÜÂë
+//è®¾ç½®å¯†ç 
 extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
-//ÉèÖÃSecret
+//è®¾ç½®Secret
 extern "C" ROBOT_API void SetSecret(unsigned char *sercet);
-//»ñÈ¡µ±Ç°Éè±¸ÀàĞÍ
+//è·å–å½“å‰è®¾å¤‡ç±»å‹
 extern "C" ROBOT_API eDeviceType GetDeviceType(bool bSlave = false);
-//ÉèÖÃKey
+//è®¾ç½®Key
 extern "C" ROBOT_API void SetKey(const char *key);
-//ÉèÖÃbmp
+//è®¾ç½®bmp
 extern "C" ROBOT_API void SetBmp(unsigned char *buffer,int len);
+//å‡çº§æ¨¡ç»„
+extern "C" ROBOT_API bool UpdateEmr(const char *file);
+//è®¾ç½®mac
+extern "C" ROBOT_API void SetMac(int type,unsigned char *mac,int len);
+//è®¾ç½®ç¬”ç±»å‹
+extern "C" ROBOT_API void SetPenType(ePenType type);
+//////////////////////////////////////////////ç¬”è®°è¯†åˆ«æ¥å£//////////////////////////////////////////////
+//è®¾ç½®è¯†åˆ«å›è°ƒå‡½æ•°
+extern "C" ROBOT_API void setOnResultCallback(ResultCallback_t pCallBack,void *pContext);
+//è®¾ç½®ç”¨æˆ·ä¿¡æ¯
+extern "C" ROBOT_API void setUserInfo(const char *user_id,const char *secret, int source);
+//è®¾ç½®è¶…æ—¶ æ¯«ç§’
+extern "C" ROBOT_API void setSyncTimeout(int ms = 5000);
+//æ‰“å¼€è¯†åˆ«æ¥å£ ç¼“å­˜æœ€å¤§ç‚¹æ•°
+extern "C" ROBOT_API int openRecog(int maxSize = 3000,bool autoAppend = false);
+//è®¾ç½®ç¼“å­˜çŠ¶æ€
+extern "C" ROBOT_API void setCacheStatus(bool cache);
+//åˆ›å»ºè¯†åˆ«ç¬”è®°,language,1è‹±è¯­ 2ä¸­æ–‡ 3æ•°å­¦å…¬å¼,direct,0ä¸ºç«–å±,1ä¸ºæ¨ªå±
+extern "C" ROBOT_API int createRecogNote(char *note_key,int language, int direct = 0);
+//è¿½åŠ ç¬”è®°
+extern "C" ROBOT_API int appendNote(void *pen_array,int array_size,const char *note_key,int draw = 0);
+extern "C" ROBOT_API int appendNote2(const char *note_key,int draw = 0);
+//è¯†åˆ«ç¬”è®°
+extern "C" ROBOT_API int recogNote(const char *user_id,const char *note_key);
+//è·å–åŸå§‹ç¬”è¿¹
+extern "C" ROBOT_API int getOriginalTrails(const char *user_id, const char *note_key);
+//å…³é—­è¯†åˆ«æ¥å£
+extern "C" ROBOT_API void closeRecog();
 
 extern "C" 
 {
-	//»ñÈ¡ÊµÀı 
+	//è·å–å®ä¾‹ 
 	ROBOT_API RobotPenController* GetInstance();
-	//Ïú»ÙÊµÀı
+	//é”€æ¯å®ä¾‹
 	ROBOT_API void DestroyInstance();
 };

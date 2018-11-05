@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CUpdateDlg, CDialog)
 
-CUpdateDlg::CUpdateDlg(CWnd* pParent /*=NULL*/)
+	CUpdateDlg::CUpdateDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUpdateDlg::IDD, pParent)
 	, m_nDeviceType(FALSE)
 {
@@ -69,19 +69,20 @@ void CUpdateDlg::OnBnClickedButton4Update()
 		GetDlgItem(IDC_EDIT_BT)->GetWindowText(str);
 		this->GetParent()->SendMessage(WM_UPDATE,(WPARAM)str.GetBuffer(),SET_BLE);
 
-		if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == K7_HW
-			|| m_nDeviceType == T9E || m_nDeviceType == T8B || m_nDeviceType == T9B_YD || m_nDeviceType == K8
-			|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY
-			|| T9B_YD2 == m_nDeviceType || J7B_HF == m_nDeviceType || J7B_ZY == m_nDeviceType || J7B == m_nDeviceType 
-			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T7PL_CL == m_nDeviceType)
-			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
-		else if(m_nDeviceType == Gateway)
+		if(m_nDeviceType == Gateway)
 			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_GATEWAY);
-		else
+		else if(m_nDeviceType == Dongle)
 		{
 			int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_TYPE))->GetCurSel();
 			this->GetParent()->SendMessage(WM_UPDATE,nIndex,START_UPADTE_DONGLE);
 		}
+		else
+			this->GetParent()->SendMessage(WM_UPDATE,NULL,START_UPADTE_NODE);
+
+	}
+	else
+	{
+		AfxMessageBox(_T("固件版本过低！"));
 	}
 }
 
@@ -100,15 +101,11 @@ void CUpdateDlg::OnBnClickedButtonBrower()
 			GetDlgItem(IDC_EDIT_MCU)->SetWindowText(dlg.GetPathName());
 			return;
 		}
-		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
-			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
+
+		if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 		{
-			if(strFileName.MakeLower().Find(_T("mcu")) < 0)
-			{
-				AfxMessageBox(_T("固件类型不匹配！"));
-				return;
-			}
+			AfxMessageBox(_T("固件类型不匹配！"));
+			return;
 		}
 
 		GetDlgItem(IDC_EDIT_MCU)->SetWindowText(dlg.GetPathName());
@@ -154,15 +151,11 @@ void CUpdateDlg::OnBnClickedButtonBrower2()
 	if(dlg.DoModal() == IDOK)  
 	{  
 		CString strFileName = dlg.GetFileName();
-		if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
-			|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-			|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
+
+		if(strFileName.MakeLower().Find(_T("ble")) < 0)
 		{
-			if(strFileName.MakeLower().Find(_T("ble")) < 0)
-			{
-				AfxMessageBox(_T("固件类型不匹配！"));
-				return;
-			}
+			AfxMessageBox(_T("固件类型不匹配！"));
+			return;
 		}
 
 		GetDlgItem(IDC_EDIT_BT)->SetWindowText(dlg.GetPathName());
@@ -267,17 +260,13 @@ BOOL CUpdateDlg::OnInitDialog()
 void CUpdateDlg::OnBnClickedButton4Stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
-		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
-		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
-	else if(m_nDeviceType == Gateway)
-		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
-	else
-	{
-		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_DONGLE);
 
-	}
+	if(m_nDeviceType == Gateway)
+		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_GATEWAY);
+	else if (m_nDeviceType == Dongle)
+		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_DONGLE);
+	else
+		this->GetParent()->SendMessage(WM_UPDATE,NULL,STOP_UPDATE_NODE);
 
 }
 
@@ -367,7 +356,8 @@ void CUpdateDlg::SetUpgradeType(int nDeviceType)
 	m_nDeviceType = nDeviceType;
 	bool bNode = (m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == X8 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
 		|| m_nDeviceType == X8E_A5 || m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType) ? TRUE : FALSE;
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T9W_WX == m_nDeviceType || m_nDeviceType == T8B_DH2 
+		|| T9W_B_KZ == m_nDeviceType || C5 == m_nDeviceType || T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType || T8B_D2 == m_nDeviceType) ? TRUE : FALSE;
 	GetDlgItem(IDC_STATIC_BLE)->ShowWindow(bNode);
 	GetDlgItem(IDC_EDIT_BT)->ShowWindow(bNode);
 	GetDlgItem(IDC_BUTTON_BROWER2)->ShowWindow(bNode);
@@ -467,15 +457,11 @@ void CUpdateDlg::AutoSetPath()
 		strFileName = ff.GetFileName();
 	}
 
-	if (m_nDeviceType == T8A ||m_nDeviceType == T9A || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD 
-		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
+
+	if(strFileName.MakeLower().Find(_T("mcu")) < 0)
 	{
-		if(strFileName.MakeLower().Find(_T("mcu")) < 0)
-		{
-			AfxMessageBox(_T("固件类型不匹配！"));
-			return;
-		}
+		AfxMessageBox(_T("固件类型不匹配！"));
+		return;
 	}
 
 	GetDlgItem(IDC_EDIT_MCU)->SetWindowText(strFilePath);

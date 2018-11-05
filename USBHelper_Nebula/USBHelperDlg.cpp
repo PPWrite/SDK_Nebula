@@ -32,7 +32,7 @@
 //#define USE_OPTIMIZE
 //#define _HF
 
-static std::vector<PEN_INFO> vecPenInfo[MAX_NOTE];
+const char *szSubjectArray[] = { "未选","语文","数学","英语","物理","化学","生物","历史","地理","政治","自然","科一" ,"科二","科三","科四","科五","科六","科七","科八","科九","科十"};
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -481,6 +481,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetInstance()->SetPointDelay(0.4);
 #endif
 
+	//GetInstance()->Rotate(360);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -732,7 +734,9 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	else if(m_nDeviceType == T8A || m_nDeviceType == T9A || m_nDeviceType == T9_J0  || m_nDeviceType == J0_A4_P 
 		|| m_nDeviceType == T9E || m_nDeviceType == J0_T9 || m_nDeviceType == T8B ||m_nDeviceType == T9B_YD
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
-		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType)
+		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T9W_WX == m_nDeviceType || m_nDeviceType == T8B_DH2
+		|| T9W_B_KZ == m_nDeviceType || C5 == m_nDeviceType || T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType
+		|| T8B_D2 == m_nDeviceType)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -804,7 +808,7 @@ void CUSBHelperDlg::OnDestroy()		//--by zlp 2016/9/26
 
 	// TODO: 在此处添加消息处理程序代码
 
-	resetDevice();
+	//resetDevice();
 
 	for(int i=0;i<m_list.size();i++)
 	{
@@ -874,6 +878,12 @@ void CUSBHelperDlg::resetDevice()
 	{
 		m_queueData.pop();
 	}
+
+	mapSyncInfo.clear();
+	((CComboBox*)GetDlgItem(IDC_COMBO1))->ResetContent();
+	m_pWBDlg->Clear();
+	mapRtc.clear();
+
 }
 
 UINT CUSBHelperDlg::ThreadProc(LPVOID lpParam)
@@ -1379,7 +1389,7 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
-		|| m_nDeviceType == T7PL_CL)
+		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T8B_D2)
 	{
 		GetInstance()->Send(SwitchMode);
 		Sleep(100);
@@ -1611,9 +1621,9 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		{
 			PAGE_INFO pageInfo = {0};
 			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
-			int id = 0;
-			memcpy(&id,&pageInfo,sizeof(pageInfo));
-			TRACE("note_num:%d,page_num:%d,ROBOT_SHOW_PAGE:%02x",id,pageInfo.note_num,pageInfo.page_num);
+			int pageTotalID = 0;
+			memcpy(&pageTotalID,&pageInfo,sizeof(pageInfo));
+			TRACE("ROBOT_SHOW_PAGE:%d,note_num:%d,page_num:%d",pageTotalID,pageInfo.note_num,pageInfo.page_num);
 
 			if (report.reserved >= m_list.size())
 			{
@@ -1797,6 +1807,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				|| J7B_HF	==	m_nDeviceType
 				|| J7B_ZY	==	m_nDeviceType
 				|| T8S      ==	m_nDeviceType
+				|| T8B_D2 == m_nDeviceType
 				)
 			{
 				switch(penInfo.nStatus)
@@ -1931,20 +1942,52 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_SYNC_TRANS_BEGIN:
 		{
-			ST_NOTE_HEADER_INFO info = {0};
-			memcpy(&info,report.payload,sizeof(ST_NOTE_HEADER_INFO));
+			CString strID;
+			if (T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType)
+			{
+				ST_T9_NOTE_HEADER_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_T9_NOTE_HEADER_INFO));
 
-			m_nCurNoteNum = info.note_number;
+				memcpy(&m_nCurNoteNum,&info.note_number,sizeof(info.note_number));
 
-			int nCount = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount();
-			CString str,strID;
-			strID.Format(_T("%d"),info.note_number);
+				strID.Format(_T("%d"),info.note_number);
+			}
+			else if (T9W_B_KZ == m_nDeviceType)
+			{
+				ST_KZ_NOTE_HEADER_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_KZ_NOTE_HEADER_INFO));
+
+				m_nCurNoteNum = ((info.note_current_subject << 8) | info.note_current_topic);
+
+				strID.Format(_T("%d"),m_nCurNoteNum);
+
+				RTC_INFO rtc = {0};
+				rtc.useTimes = info.note_use_times;
+				memcpy(&rtc.rtc,&info.rtc,sizeof(ST_RTC_INFO));
+
+				TRACE(_T("note_current_subject:%d,note_current_topic:%d,useTimes:%d>>>>>>>%d:%d:%d:%d:%d\n"),info.note_current_subject,info.note_current_topic,info.note_use_times
+					,rtc.rtc.note_time_year,rtc.rtc.note_time_month,rtc.rtc.note_time_day,rtc.rtc.note_time_hour,rtc.rtc.note_time_min);
+
+				mapRtc[m_nCurNoteNum].vecRtcInfo.push_back(rtc);
+			}
+			else
+			{
+				ST_NOTE_HEADER_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_NOTE_HEADER_INFO));
+
+				m_nCurNoteNum = info.note_number;
+
+				strID.Format(_T("%d"),info.note_number);
+			}
+
 
 			bool bExist = false;
+			int nCount = ((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCount();
 			for (int i=0;i<nCount;i++)
 			{
-				((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(i,str);
-				if (str == strID)
+				CString strTemp;
+				((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(i,strTemp);
+				if (strTemp == strID)
 				{
 					bExist = true;
 					break;
@@ -1955,6 +1998,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 
 			((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->StepIt();
 
+			CString str;
 			str.Format(_T("离线笔记:%d条"),report.reserved);
 			GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(str);
 		}
@@ -1973,13 +2017,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
 			//T9A
-			if (m_nCurNoteNum < MAX_NOTE)
-			{
-				vecPenInfo[m_nCurNoteNum].push_back(penInfo);
-			}
+			mapSyncInfo[m_nCurNoteNum].vecPenInfo.push_back(penInfo);
 
 			//m_list[0]->AddData(penInfo);
 		}
@@ -2046,7 +2087,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			else
 				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Mouse"));
 
-			GetInstance()->Send(GetNodeInfo);
+			//GetInstance()->Send(GetNodeInfo);
 		}
 		break;
 	case ROBOT_SET_PASSWORD:
@@ -2640,12 +2681,30 @@ void CUSBHelperDlg::OnCbnSelchangeCombo1()
 	m_pWBDlg->Clear();
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->GetLBText(nIndex,str);
 	int nNoteNum = atoi(WideCharToMultichar(str.GetBuffer()).c_str());
-	if (nNoteNum < MAX_NOTE)
+	if (T9W_B_KZ == m_nDeviceType)
 	{
-		for(int j=0;j<vecPenInfo[nNoteNum].size();j++)
+		PAGE_INFO pageInfo = {0};
+		memcpy(&pageInfo,&nNoteNum,sizeof(pageInfo));
+		CString strText;
+		strText.Format(_T("subject:%s,topic:%d"),GetSubject(pageInfo.note_num),pageInfo.page_num);
+		m_pWBDlg->SetText(strText);
+		int nRow = mapRtc[nNoteNum].vecRtcInfo.size();
+		for (int i=0;i<nRow;i++)
 		{
-			m_pWBDlg->onRecvData(vecPenInfo[nNoteNum][j]);
+			CString strText;
+			const ST_RTC_INFO &rtc = mapRtc[nNoteNum].vecRtcInfo[i].rtc;
+			int useTimes = mapRtc[nNoteNum].vecRtcInfo[i].useTimes;
+
+			strText.Format(_T("note_current_subject:%d,note_current_topic:%d,useTimes:%d>>>>>>>%d:%d:%d:%d:%d\n"),pageInfo.note_num,pageInfo.page_num,useTimes
+				,rtc.note_time_year,rtc.note_time_month,rtc.note_time_day,rtc.note_time_hour,rtc.note_time_min);
+
+			OutputDebugStringW(strText.GetBuffer());
 		}
+	}
+
+	for(int j=0;j<mapSyncInfo[nNoteNum].vecPenInfo.size();j++)
+	{
+		m_pWBDlg->onRecvData(mapSyncInfo[nNoteNum].vecPenInfo[j]);
 	}
 #endif
 }
@@ -2869,4 +2928,11 @@ void CUSBHelperDlg::OnBnClickedButtonSerPen()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(GetPenType);
+}
+
+CString CUSBHelperDlg::GetSubject(int subject)
+{
+	CString str = MultiCharToWideChar(szSubjectArray[subject]).c_str();
+
+	return str;
 }

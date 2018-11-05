@@ -62,6 +62,7 @@ BOOL CUSBHelperApp::InitInstance()
 
 
 	AfxEnableControlContainer();
+
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 

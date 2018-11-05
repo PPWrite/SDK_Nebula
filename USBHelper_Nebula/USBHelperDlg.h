@@ -17,9 +17,19 @@ using namespace std;
 
 typedef struct sync_info
 {
-	int note_num;
 	std::vector<PEN_INFO> vecPenInfo;
 }SYNC_INFO;
+
+typedef struct rtc_info
+{
+	ST_RTC_INFO rtc;
+	int useTimes;
+}RTC_INFO;
+
+typedef struct rtc_note_info
+{
+	std::vector<RTC_INFO> vecRtcInfo;
+}RTC_NOTE_INFO;
 
 typedef struct device_mac
 {
@@ -152,4 +162,7 @@ public:
 	afx_msg void OnBnClickedButtonSet6();
 	afx_msg void OnCbnSelchangeComboPen();
 	afx_msg void OnBnClickedButtonSerPen();
+	std::map<int,RTC_NOTE_INFO> mapRtc;
+	std::map<int,SYNC_INFO> mapSyncInfo;
+	static CString GetSubject(int subject);
 };

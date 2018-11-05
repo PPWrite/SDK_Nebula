@@ -35,7 +35,7 @@ private:
 	int m_nDevStatus;
 	double nCompress;
 	bool m_bMouseDraw;
-	int m_nFlags;
+	bool m_bTrack;
 	int	m_nPenWidth;
 protected:
 	void onbegin(const CPoint& pos);
@@ -65,6 +65,7 @@ public:
 	void ReadData();
 	void SaveData(const PAGE_INFO &pageInfo,const std::vector<PEN_INFO> &vecPenInfo);
 	std::vector<PAGE_INFO> m_vecPageNum;
+	void SetText(const CString &str);
 private:
 	PAGE_INFO m_pageInfo;
 	PAGE_INFO m_canvasPageInfo;

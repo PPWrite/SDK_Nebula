@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.0"
+#define FILEVERSION "1.1.6.1"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -46,6 +46,13 @@ enum eDevicePid
 	K7W_PID		=	0x6035,
 	T9W_YJ_PID	=	0x6037,
 	T7PL_CL_PID =	0x6038,
+	T9W_WX_PID  =   0x6039,
+	T8B_DH2_PID =	0x603a,
+	T9W_B_KZ_PID=	0x603b,
+	C5_PID		=	0x603c,
+	T9B_PID		=	0x603d,
+	T9B_ZXB_PID  =	0x603e,
+	T8B_D2_PID  =	0x603f,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -109,6 +116,13 @@ enum eDeviceType
 	T7C_BN,
 	T9W_YJ,
 	T7PL_CL,
+	T9W_WX,
+	T8B_DH2,
+	T9W_B_KZ,
+	C5,
+	T9B,
+	T9B_ZXB,
+	T8B_D2,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -208,13 +222,29 @@ typedef struct st_note_header_info
 typedef struct st_t9_note_header_info
 {
 	uint16_t note_identifier;
-	uint8_t note_number[3];  //值占用21bit 数组三最高位用做flag_erase_flag 标志位，原来2字节 uint8_t flash_erase_flag
+	uint32_t note_number;
+	uint8_t flash_erase_flag;
 	uint8_t note_head_start;
 	uint16_t note_start_sector;
 	uint32_t note_len;
 	ST_RTC_INFO note_time;
 
 } ST_T9_NOTE_HEADER_INFO;
+
+//笔记头
+typedef struct ST_KZ_NOTE_HEADER_INFO
+{
+	uint16_t note_identifier;
+	uint16_t note_start_sector;
+	uint32_t note_len;
+	/****新添离线笔记的科目和题号***/
+	uint8_t note_current_subject;
+	uint8_t note_current_topic;
+	/****新添开始时间上位机计算离线笔记作答时间***/
+	ST_RTC_INFO rtc;
+	uint16_t note_use_times;
+
+} st_kz_note_header_info;
 
 typedef struct st_note_number_info
 {
@@ -238,8 +268,90 @@ typedef struct page_info
 		return false;
 	}
 }PAGE_INFO;
+// 笔数据信息
+typedef struct pen_info
+{
+	uint8_t nStatus;		// 笔状态
+	uint16_t nX;			// 笔x轴坐标
+	uint16_t nY;			// 笔y轴坐标
+	uint16_t nPress;		// 笔压力
+	bool operator==(pen_info &penInfo) const
+	{
+		if (penInfo.nX == this->nX
+			&& penInfo.nY == this->nY
+			&& penInfo.nPress == this->nPress
+			&& penInfo.nStatus == this->nStatus)
+		{
+			return true;
+		}
+		return false;
+	}
+}PEN_INFO;  
+// 优化笔数据信息
+typedef struct pen_infof
+{
+	uint8_t nStatus;		// 笔状态
+	uint16_t nX;			// 笔x轴坐标8
+	uint16_t nY;			// 笔y轴坐标
+	float fWidth;			// 笔宽度
+	float fSpeed;			// 速度
+}PEN_INFOF;  
+//设备信息
+typedef struct usb_info
+{
+	char szDevPath[260];
+	char szDevName[260];
+	unsigned short nVendorNum;    
+	unsigned short nProductNum;         
+}USB_INFO;
+//设备信息
+typedef struct device_info
+{
+	char szDevName[260];
+	eDeviceType type;
+}DEVICE_INFO;
+//扇区信息
+typedef struct storage_info
+{
+	uint16_t total;
+	uint16_t free;
+
+}STORAGE_INFO;
 
 #pragma pack()
+
+enum eKeyPress
+{
+	CLICK			= 0x01,
+	DBCLICK,
+	PAGEUP,
+	PAGEDOWN,
+	CREATEPAGE,
+	KEY_A			= 0x06,
+	KEY_B,
+	KEY_C,
+	KEY_D,
+	KEY_E,
+	KEY_F,
+	KEY_UP			= 0x10,
+	KEY_DOWN,
+	KEY_YES,			
+	KEY_NO,
+	KEY_CANCEL,
+	KEY_OK,
+	PAGEUPCLICK		= 0x20,
+	PAGEUPDBCLICK,
+	PAGEUPPRESS,
+	PAGEDOWNCLICK,
+	PAGEDOWNDBCLICK,
+	PAGEDOWNPRESS,
+	SELF1CLICK		= 0x26,
+	SELF1DBCLICK,		
+	SELF1PRESS,	
+	SELF2CLICK,
+	SELF2DBCLICK,		
+	SELF2PRESS,	
+};
 
 enum eNebulaError
 {
@@ -366,90 +478,7 @@ enum eRobotCmd
 	ROBOT_PEN_TYPE,								//笔类型
 	ROBOT_SEARCH_STORAGE,						//查询设备容量
 };
-// 笔数据信息
-typedef struct pen_info
-{
-	uint8_t nStatus;		// 笔状态
-	uint16_t nX;			// 笔x轴坐标
-	uint16_t nY;			// 笔y轴坐标
-	uint16_t nPress;		// 笔压力
-	bool operator==(pen_info &penInfo) const
-	{
-		if (penInfo.nX == this->nX
-			&& penInfo.nY == this->nY
-			&& penInfo.nPress == this->nPress
-			&& penInfo.nStatus == this->nStatus)
-		{
-			return true;
-		}
-		return false;
-	}
-}PEN_INFO;  
-// 优化笔数据信息
-typedef struct pen_infof
-{
-	uint8_t nStatus;		// 笔状态
-	uint16_t nX;			// 笔x轴坐标8
-	uint16_t nY;			// 笔y轴坐标
-	float fWidth;			// 笔宽度
-	float fSpeed;			// 速度
-}PEN_INFOF;  
 
-//设备信息
-typedef struct usb_info
-{
-	char szDevPath[260];
-	char szDevName[260];
-	unsigned short nVendorNum;    
-	unsigned short nProductNum;         
-}USB_INFO;
-
-//设备信息
-typedef struct device_info
-{
-	char szDevName[260];
-	eDeviceType type;
-}DEVICE_INFO;
-
-enum eKeyPress
-{
-	CLICK			= 0x01,
-	DBCLICK,
-	PAGEUP,
-	PAGEDOWN,
-	CREATEPAGE,
-	KEY_A			= 0x06,
-	KEY_B,
-	KEY_C,
-	KEY_D,
-	KEY_E,
-	KEY_F,
-	KEY_UP			= 0x10,
-	KEY_DOWN,
-	KEY_YES,			
-	KEY_NO,
-	KEY_CANCEL,
-	KEY_OK,
-	PAGEUPCLICK		= 0x20,
-	PAGEUPDBCLICK,
-	PAGEUPPRESS,
-	PAGEDOWNCLICK,
-	PAGEDOWNDBCLICK,
-	PAGEDOWNPRESS,
-	SELF1CLICK		= 0x26,
-	SELF1DBCLICK,		
-	SELF1PRESS,	
-	SELF2CLICK,
-	SELF2DBCLICK,		
-	SELF2PRESS,	
-};
-//扇区信息
-typedef struct storage_info
-{
-	uint16_t total;
-	uint16_t free;
-
-}STORAGE_INFO;
 
 ////////////////////////////DONGLE////////////////////////////////
 #pragma pack(1)
@@ -523,7 +552,6 @@ enum ePenType
 	M3K,
 	M3,
 };
-
 //笔状态
 enum ePenStatus
 {
@@ -554,3 +582,6 @@ enum ePenStatus
 
 #define WIDTH_K7W	21260
 #define HEIGHT_K7W	13842
+
+#define WIDTH_C5	800
+#define HEIGHT_C5	480
