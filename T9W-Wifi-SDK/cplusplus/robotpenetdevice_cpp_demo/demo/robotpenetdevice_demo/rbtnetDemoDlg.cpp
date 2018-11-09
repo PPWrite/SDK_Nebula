@@ -19,6 +19,8 @@
 
 //#define USE_OPT
 
+#define USE_KDXF //科大讯飞
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -106,6 +108,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_IMPORT, &CrbtnetDemoDlg::OnBnClickedButtonImport)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT, &CrbtnetDemoDlg::OnBnClickedButtonExport)
 	ON_BN_CLICKED(IDC_BUTTON_POINT, &CrbtnetDemoDlg::OnBnClickedButtonPoint)
+	ON_BN_CLICKED(IDC_BUTTON_CVS, &CrbtnetDemoDlg::OnBnClickedButtonCvs)
 END_MESSAGE_MAP()
 
 
@@ -149,7 +152,7 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 #else
 	param.optimize = false;
 #endif // USE_OPT
-	param.listenCount = 60;
+	param.listenCount = 128;
 
 	rbt_win_init(&param);
 	initCbFunction();
@@ -188,6 +191,13 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 #ifdef _TEST
 	SetTimer(0, 100, NULL);
 #endif
+
+#ifdef USE_KDXF
+	GetDlgItem(IDC_COMBO_TIME)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_CLOSE_MODULE)->ShowWindow(SW_SHOW);
+	((CComboBox*)GetDlgItem(IDC_COMBO_TIME))->SetCurSel(0);
+#endif // USE_KDXF
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -449,7 +459,7 @@ void CrbtnetDemoDlg::initCbFunction()
 
 	rbt_win_set_error_cb(onError);
 
-	rbt_win_set_clearcanvas_cb(onClearCanvas);
+	rbt_win_set_canvasid_cb(onCanvasID);
 
 	rbt_win_set_optimizedata_cb(onOptimizeData);
 }
@@ -525,9 +535,9 @@ void CrbtnetDemoDlg::onError(rbt_win_context* context, const char* pMac, int cmd
 	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
 	::PostMessage(pThis->m_hWnd, WM_SHOW_ERROR, cmd, (LPARAM)strMac.AllocSysString());
 }
-void CrbtnetDemoDlg::onClearCanvas(rbt_win_context* context, const char* pMac)
+ void CrbtnetDemoDlg::onCanvasID(rbt_win_context* context, const char* pMac, int type, int canvasID)
 {
-	TRACE("Mac:%d ClearCanvas\n", pMac);
+	 TRACE("Mac:%d onCanvasID,type:%d,canvasID:%d\n", pMac, type, canvasID);
 }
 
 void CrbtnetDemoDlg::onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed)
@@ -702,7 +712,7 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 		pListCtrl->SetItemText(nRowIndex, 4, csValue);
 	}
 }
-
+//resID 第几题，pResult 答案，nSize 长度
 CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int nSize)
 {
 	CString csValue(_T(""));
@@ -772,6 +782,7 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		int nCount = nSize / 8;
 		for (size_t i = 0; i < nCount; i++)
 		{
+			//8 字节 {题类型，长度，0，1，2，3，4，5，6}
 			uint8_t buf[8] = { 0 };
 			memcpy(buf, pResult + i * 8, 8);
 			CString str = GetAnswerResult(i + 1/*buf[0]*/, buf + 2, buf[1]);
@@ -1045,9 +1056,19 @@ void CrbtnetDemoDlg::OnBnClickedOpenModule()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//rbt_win_start();
-
-	rbt_win_open_module(true);
-
+	CString str;
+	GetDlgItem(IDC_OPEN_MODULE)->GetWindowText(str);
+	if (_T("关闭模组") == str)
+	{
+		rbt_win_open_module(false);
+		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("打开模组"));
+	}
+	else
+	{
+		rbt_win_open_module(true);
+		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("关闭模组"));
+	}
+	
 }
 
 //关闭模组
@@ -1068,13 +1089,22 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 	}
 	m_device2draw.clear();//*/
 
-	rbt_win_open_module(false);
+	CString str;
+	GetDlgItem(IDC_COMBO_TIME)->GetWindowText(str);
+	rbt_win_set_screen_freq(_wtoi(str.GetBuffer()));
 }
 
 //开始答题
 void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	/*CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nCount = pListCtrl->GetItemCount();
+	for (size_t i = 0; i < nCount; i++)
+	{
+		pListCtrl->SetItemText(i, 5, _T(""));
+	}//*/
+
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 
 	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
@@ -1301,4 +1331,11 @@ void CrbtnetDemoDlg::OnBnClickedButtonPoint()
 		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("打开悬浮点"));
 		rbt_win_open_suspension(false);
 	}
+}
+
+
+void CrbtnetDemoDlg::OnBnClickedButtonCvs()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	rbt_win_get_canvas_id();
 }

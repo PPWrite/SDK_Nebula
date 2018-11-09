@@ -22,8 +22,9 @@ CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
 {
 	m_nPenWidth = 2;
 	m_nState = 270;
-	m_nWidth = 22600;
-	m_nHeight = 16650;
+
+	m_nWidth = GetPrivateProfileInt(_T("General"), _T("Width"), 22600, GetAppPath() + _T("\\robotpenetdevice_demo.ini"));
+	m_nHeight = GetPrivateProfileInt(_T("General"), _T("Height"), 16650, GetAppPath() + _T("\\robotpenetdevice_demo.ini"));
 }
 
 CDrawDlg::~CDrawDlg()
