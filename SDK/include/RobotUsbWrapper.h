@@ -352,6 +352,8 @@ public:
 	virtual void SetMac(int type,unsigned char *mac,int len) = 0;
 	//设置笔类型
 	virtual void SetPenType(ePenType type) = 0;
+	//设置纸张类型
+	virtual void SetPaperType(ePaperType type) = 0;
 	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;

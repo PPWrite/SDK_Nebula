@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.1"
+#define FILEVERSION "1.1.6.2"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -51,8 +51,9 @@ enum eDevicePid
 	T9W_B_KZ_PID=	0x603b,
 	C5_PID		=	0x603c,
 	T9B_PID		=	0x603d,
-	T9B_ZXB_PID  =	0x603e,
+	T9B_ZXB_PID =	0x603e,
 	T8B_D2_PID  =	0x603f,
+	T9W_A_TY_PID= 	0x6040,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -123,6 +124,7 @@ enum eDeviceType
 	T9B,
 	T9B_ZXB,
 	T8B_D2,
+	T9W_A_TY, 
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -562,6 +564,12 @@ enum ePenStatus
 	PEN_SIDE_WRITE		= 0x21,		//侧键按压书写
 };
 
+//纸张类型
+enum ePaperType {
+	eDefult = 0,
+	eA4,
+	eA5,
+};
 #define WIDTH_T7P	22015
 #define HEIGHT_T7P	15359
 
