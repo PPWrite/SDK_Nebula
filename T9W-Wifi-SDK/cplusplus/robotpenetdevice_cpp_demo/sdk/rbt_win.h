@@ -45,18 +45,20 @@ extern "C" {
 	int rbt_win_config_wifi_net(const char *ssid, const char *pwd, const char *ip, int port, bool mqtt, bool tcp, const char *source = "");
 	//设置报点频率 
 	//freq范围为0-4，0为最高，4为最低
-	void rbt_win_config_freq(int freq);
+	int rbt_win_config_freq(int freq, const char* mac = "");
 	//设置休眠时间 
 	//mins 分钟
-	void rbt_win_config_sleep(int mins);
+	int rbt_win_config_sleep(int mins, const char* mac = "");
 	//设置打开模组
-	void rbt_win_open_module(bool open);
+	int rbt_win_open_module(bool open, const char* mac = "");
 	//设置打开悬浮点
 	void rbt_win_open_suspension(bool open);
 	//获取画布ID
 	void rbt_win_get_canvas_id(int canvasID = 0);
 	//设置刷新时间 1-5秒
 	void rbt_win_set_screen_freq(int seconds);
+	//设置心跳(测试)
+	void rbt_win_set_keepalive(int channel, int enable, int keepintvl, int keepcnt);
 
 #ifdef __cplusplus
 }

@@ -58,4 +58,6 @@ private:
 	int m_nHeight;
 	int m_nState;
 	int m_nID;
+public:
+	CString m_strValue = _T("");
 };

@@ -49,12 +49,12 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 
-	afx_msg HRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT rcvMac(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT recvName(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT showPage(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT onShowError(WPARAM wParam, LPARAM lParam);
-	afx_msg HRESULT onDisconnect(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT rcvMac(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT recvName(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT showPage(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onShowError(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onDisconnect(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnClose();
 
 	DECLARE_MESSAGE_MAP()
@@ -127,4 +127,6 @@ public:
 	void ShowOnlineCount();
 	afx_msg void OnBnClickedButtonPoint();
 	afx_msg void OnBnClickedButtonCvs();
+	afx_msg void OnBnClickedButtonSetKeepalive();
+	afx_msg void OnNMClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
 };
