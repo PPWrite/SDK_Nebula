@@ -222,12 +222,12 @@ namespace RobotPenTestDll
             robotpenController.GetInstance().endSyncNoteDataEvt += new robotpenController.endSyncNoteData(Form1_endSyncNoteDataEvt);
             robotpenController.GetInstance().getOfflineNoteDataEvt += new robotpenController.getOfflineNoteData(Form1_getOfflineNoteDataEvt);
 
-            robotpenController.GetInstance().resultCallback_tEvt += new robotpenController.ResultCallback_t(rCall);
-            robotpenController.GetInstance().SetOnResultCallback();
-            robotpenController.GetInstance().SetUserInfo(user_id, secret, source);
-            robotpenController.GetInstance().SetSyncTimeout();
-            
-            robotpenController.GetInstance().SetCacheStatus(true);
+            //robotpenController.GetInstance().resultCallback_tEvt += new robotpenController.ResultCallback_t(rCall);
+            //robotpenController.GetInstance().SetOnResultCallback();
+            //robotpenController.GetInstance().SetUserInfo(user_id, secret, source);
+            //robotpenController.GetInstance().SetSyncTimeout();
+
+            //robotpenController.GetInstance().SetCacheStatus(true);
             //robotpenController.GetInstance().setSyncTimeout();
         }
 
@@ -1402,8 +1402,12 @@ namespace RobotPenTestDll
                 }
                 if (nodeCanvasWindow == null || nodeCanvasWindow.IsDisposed)
                     return;
-
-                nodeCanvasWindow.recvData(Convert.ToInt32(bPress), Convert.ToInt32(bx), Convert.ToInt32(by), 0);
+                Console.WriteLine("sPress={0} | sx={1} | y={2} | status={3}", bPress, bx, by, bPenStatus);
+                if(bPenStatus!=17&& bPenStatus!=33)
+                {
+                    bPenStatus = 0;
+                }
+                nodeCanvasWindow.recvData(bPenStatus, Convert.ToInt32(bx), Convert.ToInt32(by), bPress);
             }
             else if (demo_type == demoEnum.T7E_DEMO)
             {
@@ -2264,8 +2268,8 @@ namespace RobotPenTestDll
         private void Thread_NodeActive()
         {
             Thread.Sleep(200);
-            int t= robotpenController.GetInstance().OpenRecog(3000, true);
-            Console.WriteLine("OpenRecog:"+t);
+            //int t = robotpenController.GetInstance().OpenRecog(3000, true);
+            //Console.WriteLine("OpenRecog:" + t);
             SetDeviceHW();
             ReSetScreen();
         }
