@@ -149,8 +149,10 @@ public:
 	}
 
 	//离线笔记开始KZ
-	virtual void onSyncBegin(int leftNum,int subject,int topic,const ST_RTC_INFO &rtc,int useTimes){
+	virtual void onSyncBegin(int leftNum,int noteStart,int noteLen,int subject,int topic,const ST_RTC_INFO &rtc,int useTimes){
 		(void)leftNum;
+		(void)noteStart;
+		(void)noteLen;
 		(void)subject;
 		(void)topic;
 		(void)rtc;
@@ -354,6 +356,8 @@ public:
 	virtual void SetPenType(ePenType type) = 0;
 	//设置纸张类型
 	virtual void SetPaperType(ePaperType type) = 0;
+	//设置设备模式
+	virtual void SetDeviceMode(eDeviceMode type) = 0;
 	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.2"
+#define FILEVERSION "1.1.6.3"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -16,6 +16,7 @@ enum eDevicePid
 	GATEWAY_PID	=	0x6001,
 	T8A_PID		=	0x6002,
 	T9A_PID		=	0x6003,
+	W5E_PID		=	0x6007,
 	X8_PID		=	0x600d,
 	T7PL_PID	=   0x600e,
 	T7E_TS_PID	=	0x600f,
@@ -54,6 +55,8 @@ enum eDevicePid
 	T9B_ZXB_PID =	0x603e,
 	T8B_D2_PID  =	0x603f,
 	T9W_A_TY_PID= 	0x6040,
+	T9W_A_XF_PID=	0x6041,
+	W9_XF_PID	=	0x6042,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -67,7 +70,7 @@ enum eDeviceType
 	RobotPen_P1,
 	Elite_Plus_New,
 	T8A,
-	Elite_XY,
+	W5E,
 	J0_A5,
 	Gateway,
 	Dongle,
@@ -125,6 +128,8 @@ enum eDeviceType
 	T9B_ZXB,
 	T8B_D2,
 	T9W_A_TY, 
+	T9W_A_XF, 
+	W9_XF,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -135,6 +140,8 @@ typedef struct node_status
 	uint8_t  battery_level;
 	uint8_t  note_num;
 	uint8_t  note_percent;
+	uint8_t	 feature;
+	uint8_t  note_num_h;
 
 }NODE_STATUS;
 //±¨¸æ
@@ -576,8 +583,8 @@ enum ePaperType {
 #define WIDTH_P1	17407
 #define HEIGHT_P1	10751
 
-#define WIDTH_A4	22600
-#define HEIGHT_A4	16650
+#define WIDTH_A4	22600/*29700*/
+#define HEIGHT_A4	16650/*21000*/
 
 #define WIDTH_A5	14335
 #define HEIGHT_A5	8191
@@ -593,3 +600,9 @@ enum ePaperType {
 
 #define WIDTH_C5	800
 #define HEIGHT_C5	480
+
+#define WIDTH_W5E	21349
+#define HEIGHT_W5E	13932
+
+#define WIDTH_K8	21050
+#define HEIGHT_K8	14700
