@@ -423,7 +423,7 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 		point.SetPoint(penInfo.nX, penInfo.nY);
 
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
-	//TRACE(_T("x:%d-y:%d\n"),point.x,point.y);
+	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),point.x,point.y,penInfo.nPress,penInfo.nStatus);
 
 	if (penInfo.nStatus == 0x11)
 	{

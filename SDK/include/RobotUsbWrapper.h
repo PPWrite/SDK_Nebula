@@ -217,7 +217,10 @@ public:
 		(void)version;
 	}
 	//进入模组校准事件
-	virtual void onAjdustMode() {
+	virtual void onAjdustMode(int ret,int low,int high) {
+		(void)ret;
+		(void)low;
+		(void)high;
 	}
 	//模组校准结果事件
 	virtual void onAjdustResult(int result) {
@@ -264,6 +267,10 @@ public:
 		(void)width;
 		(void)speed;
 		(void)status;
+	}
+	//按钮生效
+	virtual void onButtonActive(bool active){
+		(void)active;
 	}
 };
 
@@ -358,6 +365,8 @@ public:
 	virtual void SetPaperType(ePaperType type) = 0;
 	//设置设备模式
 	virtual void SetDeviceMode(eDeviceMode type) = 0;
+	//设置按钮生效
+	virtual void SetButtonActive(bool active) = 0;
 	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;
@@ -469,7 +478,7 @@ extern "C" ROBOT_API void SetClassSSID(unsigned char *ssid,int len);
 extern "C" ROBOT_API void SetClassPwd(unsigned char *pwd,int len);
 //设置学生ID
 extern "C" ROBOT_API void SetStudentID(unsigned char *id,int len);
-//设置密码
+//设置密
 extern "C" ROBOT_API void SetPwd(unsigned char *pwd);
 //设置Secret
 extern "C" ROBOT_API void SetSecret(unsigned char *sercet);

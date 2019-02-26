@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.5.7")
+#define _VERSION  _T("版本号:1.1.6.1")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -33,6 +33,8 @@
 //#define _HF
 
 const char *szSubjectArray[] = { "未选","语文","数学","英语","物理","化学","生物","历史","地理","政治","自然","科一" ,"科二","科三","科四","科五","科六","科七","科八","科九","科十"};
+
+#define B2S(b) (((b[0] & 0xff) << 8) | (b[1] & 0xff)) 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -148,6 +150,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_nCurNoteNum(0)
 	, m_bMouse(false)
 	, m_bConnect(FALSE)
+	, m_DeviceMode(DEVICE_MOUSE)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -665,6 +668,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 			GetInstance()->Send(DongleDisconnect);
 			Sleep(300);
 		}
+		else if (T8B_D2 == m_nDeviceType)
+		{
+			GetInstance()->SetDeviceMode(DEVICE_MOUSE);
+			Sleep(300);
+		}
 #endif
 		/*else if (X8 == m_nDeviceType)
 		{
@@ -736,7 +744,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
 		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T9W_WX == m_nDeviceType || m_nDeviceType == T8B_DH2
 		|| T9W_B_KZ == m_nDeviceType || C5 == m_nDeviceType || T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType
-		|| T8B_D2 == m_nDeviceType)
+		|| T8B_D2 == m_nDeviceType || m_nDeviceType == X9)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -779,7 +787,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
-		|| m_nDeviceType == T7PL_CL)
+		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -796,6 +804,10 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		//OnBnClickedButtonStatus();
 		SetTimer(0,500,NULL);
 	}
+
+	//GetInstance()->Rotate(180);
+
+	//GetInstance()->SetPaperType(eA4);
 
 	/*if (m_nDeviceType == X8 || m_nDeviceType == T7B_HF || m_nDeviceType == J7B_ZY)
 	GetInstance()->Send(GetMac);//*/
@@ -1389,9 +1401,19 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
-		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T8B_D2)
+		|| m_nDeviceType == T7PL_CL)
 	{
 		GetInstance()->Send(SwitchMode);
+		//GetInstance()->SetDeviceMode(DEVICE_HAND);
+		Sleep(100);
+	}
+	else if (m_nDeviceType == T8B_D2  || m_nDeviceType == J7B_ZY)
+	{
+		if (DEVICE_MOUSE == m_DeviceMode)
+			m_DeviceMode = DEVICE_HAND;
+		else
+			m_DeviceMode = DEVICE_MOUSE;
+		GetInstance()->SetDeviceMode(m_DeviceMode);
 		Sleep(100);
 	}
 	else
@@ -1554,7 +1576,11 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				break;
 			}
 			CString str;
-			str.Format(_T("离线笔记:%d条"),status.note_num);
+			unsigned char szByte[2] = {0};
+			szByte[0] = status.note_num_h;
+			szByte[1] = status.note_num;
+			int noteNum = B2S(szByte);
+			str.Format(_T("离线笔记:%d条"),noteNum);
 			GetDlgItem(IDC_STATIC_NOTE2)->SetWindowText(str);
 
 			((CProgressCtrl*)GetDlgItem(IDC_PROGRESS2))->SetRange(0,status.note_num);
@@ -1799,7 +1825,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			TRACE(_T("ROBOT_ORIGINAL_PACKET X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 			if (T7B_HF		==	m_nDeviceType
 				|| T7E		==	m_nDeviceType
 				|| S1_DE	==	m_nDeviceType
@@ -1831,6 +1857,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 					break;
 				}
 			}//*/
+
+			/*CString str;
+			str.Format(_T("Press:%d"),penInfo.nPress);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);*/
 
 			m_list[0]->AddData(penInfo);
 		}
@@ -2037,7 +2067,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		}
 		break;
 	case ROBOT_ENTER_ADJUST_MODE:
-		GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("进入校准模式"));
+		{
+			//GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(_T("进入校准模式"));
+			CString str;
+			str.Format(_T("ret:%d,L;%d,H:%d\n"),report.payload[0],report.payload[1],report.payload[2]);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
 		break;
 	case ROBOT_MODULE_ADJUST_RESULT:
 		{
@@ -2712,6 +2747,13 @@ void CUSBHelperDlg::OnCbnSelchangeCombo1()
 void CUSBHelperDlg::OnBnClickedButtonSyncOpen()
 {
 	// TODO: 在此添加控件通知处理程序代码
+
+	if (DEVICE_MOUSE == m_DeviceMode)
+		m_DeviceMode = DEVICE_HAND;
+	else
+		m_DeviceMode = DEVICE_MOUSE;
+	GetInstance()->SetDeviceMode(m_DeviceMode);
+	return;
 	m_pWBDlg->ShowWindow(SW_SHOW);
 }
 
@@ -2728,6 +2770,7 @@ void CUSBHelperDlg::OnBnClickedButtonAdjust()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	GetInstance()->Send(AdjustMode);
+	//GetInstance()->SetButtonActive(true);
 }
 
 void CUSBHelperDlg::DeleteDir(CString str)

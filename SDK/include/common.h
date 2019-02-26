@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.3"
+#define FILEVERSION "1.1.6.4"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -44,7 +44,7 @@ enum eDevicePid
 	T9W_QX_PID	=	0x6032,
 	K7_HW_PID	=   0x6033,
 	K8_PID		=	0x6034,
-	K7W_PID		=	0x6035,
+	K7_C5_PID	=	0x6035,
 	T9W_YJ_PID	=	0x6037,
 	T7PL_CL_PID =	0x6038,
 	T9W_WX_PID  =   0x6039,
@@ -57,6 +57,9 @@ enum eDevicePid
 	T9W_A_TY_PID= 	0x6040,
 	T9W_A_XF_PID=	0x6041,
 	W9_XF_PID	=	0x6042,
+	T9W_TAL_PID	=	0x6046,
+	X9_PID		=	0x6047,
+	X9_TAL_PID	=	0x6049,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -116,7 +119,7 @@ enum eDeviceType
 	T9W_QX,
 	K7_HW,
 	K8,
-	K7W,
+	K7_C5,
 	T7C_BN,
 	T9W_YJ,
 	T7PL_CL,
@@ -130,6 +133,13 @@ enum eDeviceType
 	T9W_A_TY, 
 	T9W_A_XF, 
 	W9_XF,
+	S7_TY_A,
+	S7_TY_B,
+	T7C,
+	T9W_TAL,
+	X9,
+	T7A_QX,
+	X9_TAL,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -486,6 +496,8 @@ enum eRobotCmd
 	ROBOT_SEARCH_MODE,							//查询模式
 	ROBOT_PEN_TYPE,								//笔类型
 	ROBOT_SEARCH_STORAGE,						//查询设备容量
+	ROBOT_SET_MAC,								//设置mac结果
+	ROBOT_BUTTON_ACTIVE,						//设置按钮生效
 };
 
 
@@ -583,8 +595,8 @@ enum ePaperType {
 #define WIDTH_P1	17407
 #define HEIGHT_P1	10751
 
-#define WIDTH_A4	22600/*29700*/
-#define HEIGHT_A4	16650/*21000*/
+#define WIDTH_A4	22600
+#define HEIGHT_A4	16650
 
 #define WIDTH_A5	14335
 #define HEIGHT_A5	8191
@@ -595,8 +607,8 @@ enum ePaperType {
 #define WIDTH_K7	22016
 #define HEIGHT_K7	14787
 
-#define WIDTH_K7W	21260
-#define HEIGHT_K7W	13842
+#define WIDTH_K7_C5	20200
+#define HEIGHT_K7_C5 14328
 
 #define WIDTH_C5	800
 #define HEIGHT_C5	480
@@ -606,3 +618,6 @@ enum ePaperType {
 
 #define WIDTH_K8	21050
 #define HEIGHT_K8	14700
+
+#define WIDTH_A4_X9  29700
+#define HEIGHT_A4_X9 21000

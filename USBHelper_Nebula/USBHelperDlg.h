@@ -102,6 +102,8 @@ private:
 	int m_nDongleUpdateType;
 	int m_nSlaveType;
 	bool m_bMouse;
+
+	eDeviceMode m_DeviceMode;
 public:
 	afx_msg void OnBnClickedButton3Update();
 	afx_msg LRESULT OnUpdate(WPARAM wParam, LPARAM lParam);
