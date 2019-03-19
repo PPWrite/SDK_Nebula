@@ -24,7 +24,7 @@ typedef void __stdcall onAccept(rbt_win_context* context, const char* pClientIpA
 //错误包回调
 typedef void __stdcall onErrorPacket(rbt_win_context* context);
 //笔迹数据回调
-typedef void __stdcall onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
+typedef void __stdcall onOriginData(rbt_win_context* ctx, const char* pMac, int currentPage, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
 //Mac地址回调
 typedef void __stdcall onDeviceMac(rbt_win_context* context, const char* pMac);
 //设备名称回调
@@ -44,7 +44,9 @@ typedef void __stdcall onError(rbt_win_context* context, const char* pmac, int c
 //画布ID回调
 typedef void __stdcall onCanvasID(rbt_win_context* context, const char* pmac, int type, int canvasID);
 //优化笔记回调
-typedef void __stdcall onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed);
+typedef void __stdcall onOptimizeData(rbt_win_context* ctx, const char* pMac, int currentPage, ushort us, ushort ux, ushort uy, float width, float speed);
+//打开模组回调
+typedef void __stdcall onOpenModule(rbt_win_context* ctx, const char* pMac, bool isOpen);
 
 void rbt_win_set_accept_cb(onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
@@ -59,6 +61,7 @@ void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult* arg);
 void rbt_win_set_error_cb(onError *arg);
 void rbt_win_set_canvasid_cb(onCanvasID *arg);
 void rbt_win_set_optimizedata_cb(onOptimizeData *arg);
+void rbt_win_set_openmodule_cb(onOpenModule *arg);
 
 #pragma pack(1)
 typedef struct _Init_Param

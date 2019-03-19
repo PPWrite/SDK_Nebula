@@ -14,7 +14,7 @@ extern "C" {
 	void rbt_win_send(int cmdId);
 	//开始答题
 	//type 0为主观题 1为客观题
-	//pTopicType 题目总数
+	//totalTopic 题目总数
 	//pTopicType 题目类型 1判断 2单选 3多选 4抢答
 	//mac 为空时，发送命令到所有设备，否则为当前mac设备
 	bool rbt_win_send_startanswer(int type, int totalTopic, char* pTopicType, const char* mac = "");
@@ -32,6 +32,10 @@ extern "C" {
 	int rbt_win_config_stu(const char *mac, const char *stu);
 	//设置学生中文姓名
 	int rbt_win_config_bmp_stu(const char *mac, const char *stuNo, const char *stuName);
+	//设置学生中文姓名 超过3个...显示
+	int rbt_win_config_bmp_stu_more(const char *mac, const char *stuNo, const char *stuName);
+	//设置学生中文姓名2
+	int rbt_win_config_bmp_stu2(const char *mac, const char *stuName);
 	//配网
 	//source 默认为空,暂时无效
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *source = "");
