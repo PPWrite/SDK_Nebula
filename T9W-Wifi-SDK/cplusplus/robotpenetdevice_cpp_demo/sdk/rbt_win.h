@@ -14,10 +14,16 @@ extern "C" {
 	void rbt_win_send(int cmdId);
 	//开始答题
 	//type 0为主观题 1为客观题
-	//totalTopic 题目总数
+	//pTopicType 题目总数
 	//pTopicType 题目类型 1判断 2单选 3多选 4抢答
 	//mac 为空时，发送命令到所有设备，否则为当前mac设备
 	bool rbt_win_send_startanswer(int type, int totalTopic, char* pTopicType, const char* mac = "");
+	//开始答题(若支持多主观题用此接口)
+	//type 0为主观题 1为客观题
+	//pTopicType 题目总数
+	//pTopicType 题目类型 1判断 2单选 3多选 4抢答
+	//mac 为空时，发送命令到所有设备，否则为当前mac设备
+	bool rbt_win_send_startanswerEx(int type, int totalTopic, char* pTopicType, const char* mac = "");
 	//停止答题
 	//mac 为空时，发送命令到所有设备，否则为当前mac设备
 	bool rbt_win_send_stopanswer(const char* mac = "");
@@ -63,6 +69,8 @@ extern "C" {
 	void rbt_win_set_screen_freq(int seconds);
 	//设置心跳(测试)
 	void rbt_win_set_keepalive(int channel, int enable, int keepintvl, int keepcnt);
+	//设置中心点偏移
+	void rbt_win_set_offset_center(int x = 0, int y = 0);
 
 #ifdef __cplusplus
 }
