@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.4"
+#define FILEVERSION "1.1.6.5"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -43,7 +43,7 @@ enum eDevicePid
 	J7B_PID		=	0x6031,
 	T9W_QX_PID	=	0x6032,
 	K7_HW_PID	=   0x6033,
-	K8_PID		=	0x6034,
+	K8_ZM_PID	=	0x6034,
 	K7_C5_PID	=	0x6035,
 	T9W_YJ_PID	=	0x6037,
 	T7PL_CL_PID =	0x6038,
@@ -60,6 +60,12 @@ enum eDevicePid
 	T9W_TAL_PID	=	0x6046,
 	X9_PID		=	0x6047,
 	X9_TAL_PID	=	0x6049,
+	T9W_H_PID	=	0x604a,
+	T10_PID		=	0x604b,
+	T7PL_XDF_PID=	0x604c,
+	K8_HF_PID	=	0x604d,
+	K8_PID		=	0x604e,
+	J7B_XY_PID	=	0x604f,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 };
@@ -118,7 +124,7 @@ enum eDeviceType
 	J7B,
 	T9W_QX,
 	K7_HW,
-	K8,
+	K8_ZM,
 	K7_C5,
 	T7C_BN,
 	T9W_YJ,
@@ -140,6 +146,12 @@ enum eDeviceType
 	X9,
 	T7A_QX,
 	X9_TAL,
+	T9W_H,
+	T10,
+	T7PL_XDF,
+	K8_HF,
+	K8,
+	J7B_XY,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -336,6 +348,17 @@ typedef struct storage_info
 	uint16_t free;
 
 }STORAGE_INFO;
+//笔记数据
+typedef struct position_packet
+{
+	uint8_t x_l;
+	uint8_t x_h;
+	uint8_t y_l;
+	uint8_t y_h;
+	uint8_t flag : 3;
+	uint8_t press : 5;
+
+}POSITION_PACKET;
 
 #pragma pack()
 
@@ -457,7 +480,7 @@ enum eRobotCmd
 	ROBOT_SYNC_TRANS_END,						//笔记传输命令结束
 	ROBOT_VOTE_ANSWER,							//抢答模式
 	ROBOT_OPTIMIZE_PACKET,						//优化笔记
-	ROBOT_SET_PASSWORD,							//设置密码
+	ROBOT_SET_ANALOG_VALUE,						//设置密码
 	ROBOT_SET_CLASS_SSID,						//设置班级ssid
 	ROBOT_SET_CLASS_PWD,						//设置班级password
 	ROBOT_SET_STUDENT_ID,						//设置学生id
@@ -498,6 +521,8 @@ enum eRobotCmd
 	ROBOT_SEARCH_STORAGE,						//查询设备容量
 	ROBOT_SET_MAC,								//设置mac结果
 	ROBOT_BUTTON_ACTIVE,						//设置按钮生效
+	ROBOT_GET_PROPERTY,							//获取设备属性
+	ROBOT_SET_FEATURE,							//设置新特性
 };
 
 
@@ -601,8 +626,8 @@ enum ePaperType {
 #define WIDTH_A5	14335
 #define HEIGHT_A5	8191
 
-#define WIDTH_X8	22100
-#define HEIGHT_X8	14650
+#define WIDTH_X8	22100 //22500
+#define HEIGHT_X8	14650 //14880
 
 #define WIDTH_K7	22016
 #define HEIGHT_K7	14787
@@ -610,14 +635,17 @@ enum ePaperType {
 #define WIDTH_K7_C5	20200
 #define HEIGHT_K7_C5 14328
 
-#define WIDTH_C5	800
-#define HEIGHT_C5	480
+#define WIDTH_C5	10485
+#define HEIGHT_C5	6327
 
 #define WIDTH_W5E	21349
 #define HEIGHT_W5E	13932
 
-#define WIDTH_K8	21050
-#define HEIGHT_K8	14700
+#define WIDTH_K8	21100
+#define HEIGHT_K8	13500
 
-#define WIDTH_A4_X9  29700
-#define HEIGHT_A4_X9 21000
+#define WIDTH_A4_X9  29700 //28348
+#define HEIGHT_A4_X9 21000 //20924
+
+#define WIDTH_T10	29758
+#define HEIGHT_T10	18934

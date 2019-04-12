@@ -41,6 +41,8 @@ enum eRbtType
 	DeleteSync,
 	GetPenType,
 	SearchStorage,
+	GetProperty,
+	SlaveStatus,
 };
 
 //回调函数
@@ -246,10 +248,10 @@ public:
 		(void)result;
 		(void)id;
 	}
-	//设置密码
-	virtual void onSetPwd(int result,unsigned char *pwd) {
+	//设置模拟值
+	virtual void onSetAnalogValue(int result,uint8_t *value) {
 		(void)result;
-		(void)pwd;
+		(void)value;
 	}
 	//设置密码
 	virtual void onSetSecret(int result,unsigned char *secret) {
@@ -271,6 +273,15 @@ public:
 	//按钮生效
 	virtual void onButtonActive(bool active){
 		(void)active;
+	}
+	//设备属性
+	virtual void onDeviceProperty(uint8_t *data,int len){
+		(void)data;
+		(void)len;
+	}
+	//设备特性
+	virtual void onFeature(int type){
+		(void)type;
 	}
 };
 
@@ -345,8 +356,8 @@ public:
 	virtual void SetClassPwd(unsigned char *pwd,int len) = 0;
 	//设置学生ID
 	virtual void SetStudentID(unsigned char *id,int len) = 0;
-	//设置MQTT密码
-	virtual void SetPwd(unsigned char *pwd) = 0;
+	//设置模拟值
+	virtual void SetAnalogValue(bool write, int value) = 0;
 	//设置Secret
 	virtual void SetSecret(unsigned char *sercet) = 0;
 	//升级字体
@@ -367,6 +378,8 @@ public:
 	virtual void SetDeviceMode(eDeviceMode type) = 0;
 	//设置按钮生效
 	virtual void SetButtonActive(bool active) = 0;
+	//设置特性
+	virtual void SetFeature(int type) = 0;
 	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
 	virtual void SetOnResultCallback(ResultCallback_t pCallBack,void *pContext) = 0;
