@@ -3,12 +3,18 @@
 #include <list>
 // CDrawDlg 对话框
 
+enum ePenType {
+	PEN = 0x11,
+	SIDE_PEN = 0x21,
+	ERASER = 0x31,
+};
+
 class CDrawDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CDrawDlg)
 
 public:
-	CDrawDlg(CWnd* pParent = NULL);   // 标准构造函数
+	CDrawDlg(int deviceType = 42, CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CDrawDlg();
 
 	void onRecvData(const PEN_INFO& penInfo);
@@ -16,7 +22,7 @@ public:
 	void Clear();
 	void Clear(const CPoint& pt);
 
-
+	void setDeviceType(int type) { m_nDeviceType = type; }
 // 对话框数据
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DRAWDLG };
@@ -31,9 +37,9 @@ protected:
 
 protected:
 	void onbegin(const CPoint& pos);
-	void onDrawing(const CPoint& pos, bool bRed = false);
+	void onDrawing(const CPoint& pos, ePenType type = PEN);
 	void onEnd();
-	void doDrawing(const CPoint& pos,bool bRed = false);
+	void doDrawing(const CPoint& pos, ePenType type = PEN);
 	void endTrack(bool bSave = true);
 	void compressPoint(CPoint& point);
 	bool pointIsInvalid(int nPenStatus, CPoint& pointValue);
@@ -58,6 +64,8 @@ private:
 	int m_nHeight;
 	int m_nState;
 	int m_nID;
+	int m_nDeviceType;
 public:
 	CString m_strValue = _T("");
+	virtual BOOL OnInitDialog();
 };

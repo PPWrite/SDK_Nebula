@@ -4,6 +4,12 @@
 #define DEV_WIDTH	14335
 #define DEV_HEIGHT	8191
 
+enum ePenMode {
+	PEN = 0x11,
+	SIDE_PEN = 0x21,
+	ERASER = 0x31,
+};
+
 class CWBDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CWBDlg)
@@ -39,9 +45,9 @@ private:
 	int	m_nPenWidth;
 protected:
 	void onbegin(const CPoint& pos);
-	void onDrawing(const CPoint& pos);
+	void onDrawing(const CPoint& pos, ePenMode type = PEN);
 	void onEnd();
-	void doDrawing(const CPoint& pos);
+	void doDrawing(const CPoint& pos, ePenMode type = PEN);
 	void endTrack(bool bSave = true);
 
 	void compressPoint(CPoint& point);

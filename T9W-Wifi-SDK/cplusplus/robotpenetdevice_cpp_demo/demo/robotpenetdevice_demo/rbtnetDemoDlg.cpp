@@ -1,5 +1,5 @@
-
-// rbtnetDemoDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿
+// rbtnetDemoDlg.cpp : å®ç°æ–‡ä»¶
 //
 #include "stdafx.h"
 #include "rbtnetDemo.h"
@@ -9,7 +9,7 @@
 #include "StuDlg.h"
 #include <locale> 
 #include <Iphlpapi.h>
-#pragma comment(lib,"Iphlpapi.lib") //ĞèÒªÌí¼ÓIphlpapi.lib¿â
+#pragma comment(lib,"Iphlpapi.lib") //éœ€è¦æ·»åŠ Iphlpapi.libåº“
 
 // #ifdef _DEBUG
 // #define new DEBUG_NEW
@@ -19,26 +19,26 @@
 
 //#define USE_OPT
 
-//#define USE_KDXF 
+#define USE_KDXF 
 
 //#define USE_TEST_KEEPALIVE
 
-// ÓÃÓÚÓ¦ÓÃ³ÌĞò¡°¹ØÓÚ¡±²Ëµ¥ÏîµÄ CAboutDlg ¶Ô»°¿ò
+// ç”¨äºåº”ç”¨ç¨‹åºâ€œå…³äºâ€èœå•é¡¹çš„ CAboutDlg å¯¹è¯æ¡†
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-	// ¶Ô»°¿òÊı¾İ
+	// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -56,7 +56,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CrbtnetDemoDlg ¶Ô»°¿ò
+// CrbtnetDemoDlg å¯¹è¯æ¡†
 
 
 
@@ -71,7 +71,7 @@ CrbtnetDemoDlg::CrbtnetDemoDlg(CWnd* pParent /*=NULL*/)
 		m_hEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
 	}
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	::InitializeCriticalSectionAndSpinCount(&m_sectionLock, 4000);
 }
 
@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_MESSAGE(WM_SHOW_PAGE, &CrbtnetDemoDlg::showPage)
 	ON_MESSAGE(WM_SHOW_ERROR, &CrbtnetDemoDlg::onShowError)
 	ON_MESSAGE(WM_DISCONNECT, &CrbtnetDemoDlg::onDisconnect)
+	ON_MESSAGE(WM_RCV_TYPE, &CrbtnetDemoDlg::rcvDeviceType)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMDblclkListConnect)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_CONFIG, &CrbtnetDemoDlg::OnBnClickedButtonConfig)
@@ -113,17 +114,18 @@ BEGIN_MESSAGE_MAP(CrbtnetDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CVS, &CrbtnetDemoDlg::OnBnClickedButtonCvs)
 	ON_BN_CLICKED(IDC_BUTTON_SET_KEEPALIVE, &CrbtnetDemoDlg::OnBnClickedButtonSetKeepalive)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_CONNECT, &CrbtnetDemoDlg::OnNMClickListConnect)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_NOTES, &CrbtnetDemoDlg::OnBnClickedButtonDelNotes)
 END_MESSAGE_MAP()
 
 
-// CrbtnetDemoDlg ÏûÏ¢´¦Àí³ÌĞò
+// CrbtnetDemoDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL CrbtnetDemoDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -141,12 +143,12 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// TODO: ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–ä»£ç 
 	Init_Param param;
 	param.ctx = this;
 	param.port = 6001;
@@ -166,27 +168,27 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	m_bRun = true;
 	AfxBeginThread(ThreadProc, this);
 
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("Ö÷¹ÛÌâ"));
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("¿Í¹ÛÌâ"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(0, _T("ä¸»è§‚é¢˜"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(1, _T("å®¢è§‚é¢˜"));
 #ifdef USE_KDXF
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(2, _T("Í¶Æ±"));
-	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(3, _T("²»¶¨Ñ¡Ôñ"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(2, _T("æŠ•ç¥¨"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(3, _T("ä¸å®šé€‰æ‹©"));
 #endif
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 
-	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(0, _T("ÅĞ¶Ï"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(1, _T("µ¥Ñ¡"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(2, _T("¶àÑ¡"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(3, _T("ÇÀ´ğ"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(0, _T("åˆ¤æ–­"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(1, _T("å•é€‰"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(2, _T("å¤šé€‰"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(3, _T("æŠ¢ç­”"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->SetCurSel(0);
 
 	GetLocalAddress();
 
-	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(0, _T("²»Å×µã"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(1, _T("Å×Ò»¸öµã"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(2, _T("Å×Á½¸öµã"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(3, _T("Å×Èı¸öµã"));
-	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("Å×ËÄ¸öµã"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(0, _T("ä¸æŠ›ç‚¹"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(1, _T("æŠ›ä¸€ä¸ªç‚¹"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(2, _T("æŠ›ä¸¤ä¸ªç‚¹"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(3, _T("æŠ›ä¸‰ä¸ªç‚¹"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->InsertString(4, _T("æŠ›å››ä¸ªç‚¹"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->SetCurSel(0);
 
 	GetDlgItem(IDC_EDIT_NUM)->SetWindowText(_T("1"));
@@ -217,8 +219,9 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 
 	GetDlgItem(IDC_EDIT_KEEPALIVE)->SetWindowText(_T("0,0,0,0"));
 
+	((CComboBox*)GetDlgItem(IDC_COMBO_DEL_NOTES))->SetCurSel(0);
 
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CrbtnetDemoDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -234,19 +237,19 @@ void CrbtnetDemoDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚  å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CrbtnetDemoDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -254,7 +257,7 @@ void CrbtnetDemoDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -263,20 +266,20 @@ void CrbtnetDemoDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CrbtnetDemoDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-// ½ÓÊÕµ½ÓĞÉè±¸Á¬½Ó
+// æ¥æ”¶åˆ°æœ‰è®¾å¤‡è¿æ¥
 LRESULT CrbtnetDemoDlg::rcvAccept(WPARAM wParam, LPARAM lParam)
 {
 	return 0L;
 }
 
-// ÊÕµ½macµØÖ·ÈÏÎªÉÏÏß
+// æ”¶åˆ°macåœ°å€è®¤ä¸ºä¸Šçº¿
 LRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 {
 	BSTR b = (BSTR)lParam;
@@ -292,13 +295,13 @@ LRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1)
 	{
-		pListCtrl->SetItemText(nRowIndex, 2, _T("ÔÚÏß"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("åœ¨çº¿"));
 	}
 	else
 	{
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, strMac);
-		pListCtrl->SetItemText(nItemTotal, 2, _T("ÔÚÏß"));
+		pListCtrl->SetItemText(nItemTotal, 2, _T("åœ¨çº¿"));
 		if (m_device2draw.find(strMac) != m_device2draw.end()) {
 			if (m_device2draw[strMac])
 			{
@@ -317,6 +320,33 @@ LRESULT CrbtnetDemoDlg::rcvMac(WPARAM wParam, LPARAM lParam)
 	}
 
 	ShowOnlineCount();
+
+	return 0L;
+}
+//æ”¶åˆ°è®¾å¤‡ç±»å‹
+LRESULT CrbtnetDemoDlg::rcvDeviceType(WPARAM wParam, LPARAM lParam)
+{
+	BSTR b = (BSTR)lParam;
+	CString strMac(b);
+	SysFreeString(b);
+
+
+	int type = wParam;
+	m_device2draw[strMac]->setDeviceType(type);
+
+	CString strType;
+	strType.Format(_T("%d"), type);
+
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = strMac;
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex != -1) {
+		pListCtrl->SetItemText(nRowIndex, 6, strType);
+	}
 
 	return 0L;
 }
@@ -341,7 +371,7 @@ LRESULT CrbtnetDemoDlg::recvName(WPARAM wParam, LPARAM lParam)
 	if (nRowIndex == -1) {
 		int nItemTotal = pListCtrl->GetItemCount();
 		pListCtrl->InsertItem(nItemTotal, strMac);
-		pListCtrl->SetItemText(nItemTotal, 2, _T("ÔÚÏß"));
+		pListCtrl->SetItemText(nItemTotal, 2, _T("åœ¨çº¿"));
 	}
 
 	pListCtrl->SetItemText(nRowIndex, 1, strName);
@@ -404,7 +434,7 @@ LRESULT CrbtnetDemoDlg::onDisconnect(WPARAM wParam, LPARAM lParam)
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1)
 	{
-		pListCtrl->SetItemText(nRowIndex, 2, _T("ÀëÏß"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("ç¦»çº¿"));
 
 #ifdef USE_TEST_KEEPALIVE
 		CString str = pListCtrl->GetItemText(nRowIndex, 6);
@@ -418,25 +448,25 @@ LRESULT CrbtnetDemoDlg::onDisconnect(WPARAM wParam, LPARAM lParam)
 	ShowOnlineCount();
 }
 
-// ¿ªÊ¼Æô¶¯
+// å¼€å§‹å¯åŠ¨
 void CrbtnetDemoDlg::OnBnClickedStartOrStop()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(_T(""));
 	CString csBtnText;
 	GetDlgItemText(IDC_START_STOP, csBtnText);
-	if (csBtnText == _T("¿ªÊ¼")) {
+	if (csBtnText == _T("å¼€å§‹")) {
 		bool bStartRes = rbt_win_start();
 		if (!bStartRes) {
-			MessageBox(_T("¿ªÊ¼Ê§°Ü"));
+			MessageBox(_T("å¼€å§‹å¤±è´¥"));
 			return;
 		}
 
-		SetDlgItemText(IDC_START_STOP, _T("Í£Ö¹"));
+		SetDlgItemText(IDC_START_STOP, _T("åœæ­¢"));
 	}
 	else {
 		rbt_win_stop();
-		SetDlgItemText(IDC_START_STOP, _T("¿ªÊ¼"));
+		SetDlgItemText(IDC_START_STOP, _T("å¼€å§‹"));
 		CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 		if (pListCtrl)
 			pListCtrl->DeleteAllItems();
@@ -460,14 +490,15 @@ void CrbtnetDemoDlg::initListControl()
 	dwStyle |= LVS_EX_FULLROWSELECT;
 	dwStyle |= LVS_EX_GRIDLINES;
 	pListCtl->SetExtendedStyle(dwStyle);
-	pListCtl->InsertColumn(0, _T("Éè±¸MACµØÖ·"), LVCFMT_LEFT, 120);
-	pListCtl->InsertColumn(1, _T("Ñ§ºÅ"), LVCFMT_LEFT, 100);
-	pListCtl->InsertColumn(2, _T("×´Ì¬"), LVCFMT_LEFT, 60);
-	pListCtl->InsertColumn(3, _T("Ñ¡ÔñÌâÍ¨Öª"), LVCFMT_LEFT, 100);
-	pListCtl->InsertColumn(4, _T("°´¼üÍ¨Öª"), LVCFMT_LEFT, 100);
-	pListCtl->InsertColumn(5, _T("Ò³ÂëÍ¨Öª"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(0, _T("è®¾å¤‡MACåœ°å€"), LVCFMT_LEFT, 120);
+	pListCtl->InsertColumn(1, _T("å­¦å·"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(2, _T("çŠ¶æ€"), LVCFMT_LEFT, 60);
+	pListCtl->InsertColumn(3, _T("é€‰æ‹©é¢˜é€šçŸ¥"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(4, _T("æŒ‰é”®é€šçŸ¥"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(5, _T("é¡µç é€šçŸ¥"), LVCFMT_LEFT, 100);
+	pListCtl->InsertColumn(6, _T("ç¡¬ä»¶å·"), LVCFMT_LEFT, 50);
 #ifdef USE_TEST_KEEPALIVE
-	pListCtl->InsertColumn(6, _T("ÀëÏß´ÎÊı"), LVCFMT_LEFT, 50);
+	pListCtl->InsertColumn(6, _T("ç¦»çº¿æ¬¡æ•°"), LVCFMT_LEFT, 50);
 #endif
 }
 
@@ -496,6 +527,12 @@ void CrbtnetDemoDlg::initCbFunction()
 	rbt_win_set_canvasid_cb(onCanvasID);
 
 	rbt_win_set_optimizedata_cb(onOptimizeData);
+
+	rbt_win_set_devicetype_cb(onDeviceType);
+
+	rbt_win_set_keyanswer_cb(onKeyAnswer);
+
+	rbt_win_set_deletenotes_cb(onDeleteNotes);
 }
 
 void CrbtnetDemoDlg::onAccept(rbt_win_context* context, const char* pClientIpAddress)
@@ -592,10 +629,31 @@ void CrbtnetDemoDlg::onOptimizeData(rbt_win_context* ctx, const char* pMac, usho
 	pThis->recvOriginData(pMac, us, ux, uy, (width > 0) ? 1 : 0);
 }
 
+void CrbtnetDemoDlg::onDeviceType(rbt_win_context* context, const char* pMac, int type)
+{
+	USES_CONVERSION;
+	CString strMac = A2T(pMac);
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	::PostMessage(pThis->m_hWnd, WM_RCV_TYPE, type, (LPARAM)strMac.AllocSysString());
+}
+
+void CrbtnetDemoDlg::onKeyAnswer(rbt_win_context* context, const char* pMac, int key)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	pThis->recvKeyAnswer(pMac, key);
+}
+
+void CrbtnetDemoDlg::onDeleteNotes(rbt_win_context* context, const char* pMac, int result)
+{
+	CrbtnetDemoDlg *pThis = reinterpret_cast<CrbtnetDemoDlg*>(context);
+	TRACE("%s:result:%d\n", pMac, result);
+	//::PostMessage(pThis->m_hWnd, WM_DEL_TYPE, result, (LPARAM)strMac.AllocSysString());
+}
+
 void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	int nItem = pNMListView->iItem;
@@ -607,7 +665,6 @@ void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	m_device2draw[strMac]->SetWindowText(strMac);
-	m_device2draw[strMac]->ShowWindow(true);
 
 	*pResult = 0;
 }
@@ -671,9 +728,11 @@ void CrbtnetDemoDlg::recvOriginData(const char* pMac,
 	CString strMac = A2T(pMac);
 	CDrawDlg *pDlg = m_device2draw[strMac];
 
-	/*CString str;
-	str.Format(_T("%d,%d,%d,%d\n"), ux, uy, us, up);
-	OutputDebugStringW(str);//*/
+	CString str;
+	str.Format(_T("X:%d,Y:%d,S:%d,P:%d;\n"), ux, uy, us, up);
+	//OutputDebugStringW(str);//*/
+
+	OutputDebugStringW(strMac + _T("==========================>") + str);
 
 	if (NULL != pDlg)
 		pDlg->onRecvData(us, ux, uy, up);
@@ -707,7 +766,7 @@ void CrbtnetDemoDlg::deviceDisconnect(const char* pMac)
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nRowIndex = pListCtrl->FindItem(&info);
 	if (nRowIndex != -1) {
-		pListCtrl->SetItemText(nRowIndex, 2, _T("ÀëÏß"));
+		pListCtrl->SetItemText(nRowIndex, 2, _T("ç¦»çº¿"));
 	}
 
 }
@@ -727,34 +786,34 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 		switch (keyPressValue)
 		{
 		case K_A:
-			csValue.Format(_T("°´ÏÂA"));
+			csValue.Format(_T("æŒ‰ä¸‹A"));
 			break;
 		case K_B:
-			csValue.Format(_T("°´ÏÂB"));
+			csValue.Format(_T("æŒ‰ä¸‹B"));
 			break;
 		case K_C:
-			csValue.Format(_T("°´ÏÂC"));
+			csValue.Format(_T("æŒ‰ä¸‹C"));
 			break;
 		case K_D:
-			csValue.Format(_T("°´ÏÂD"));
+			csValue.Format(_T("æŒ‰ä¸‹D"));
 			break;
 		case K_E:
-			csValue.Format(_T("°´ÏÂE"));
+			csValue.Format(_T("æŒ‰ä¸‹E"));
 			break;
 		case K_F:
-			csValue.Format(_T("°´ÏÂF"));
+			csValue.Format(_T("æŒ‰ä¸‹F"));
 			break;
 		case K_SUCC:
-			csValue.Format(_T("°´ÏÂÕıÈ·"));
+			csValue.Format(_T("æŒ‰ä¸‹æ­£ç¡®"));
 			break;
 		case K_ERROR:
-			csValue.Format(_T("°´ÏÂ´íÎó"));
+			csValue.Format(_T("æŒ‰ä¸‹é”™è¯¯"));
 			break;
 		case K_CACLE:
-			csValue.Format(_T("°´ÏÂÈ¡Ïû"));
+			csValue.Format(_T("æŒ‰ä¸‹å–æ¶ˆ"));
 			break;
 		case K_SURE:
-			csValue.Format(_T("°´ÏÂÈ·ÈÏ"));
+			csValue.Format(_T("æŒ‰ä¸‹ç¡®è®¤"));
 			break;
 		default:
 			break;
@@ -762,11 +821,11 @@ void CrbtnetDemoDlg::recvKeyPress(const char* pMac, void* keyValue)
 		pListCtrl->SetItemText(nRowIndex, 4, csValue);
 	}
 }
-//resID µÚ¼¸Ìâ£¬pResult ´ğ°¸£¬nSize ³¤¶È
+//resID ç¬¬å‡ é¢˜ï¼ŒpResult ç­”æ¡ˆï¼ŒnSize é•¿åº¦
 CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int nSize)
 {
 	CString csValue(_T(""));
-	csValue.Format(_T("%d£º"), resID);
+	csValue.Format(_T("%dï¼š"), resID);
 
 	for (int i = 0; i < nSize; ++i)
 	{
@@ -792,17 +851,17 @@ CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int n
 			csValue.Format(_T("%sF"), csValue);
 			break;
 		case 0x12:
-			csValue.Format(_T("%sÕıÈ·"), csValue);
+			csValue.Format(_T("%sæ­£ç¡®"), csValue);
 			break;
 		case 0x13:
-			csValue.Format(_T("%s´íÎó"), csValue);
+			csValue.Format(_T("%sé”™è¯¯"), csValue);
 			break;
 		case 0x14:
 			break;
 		case 0x15:
 		{
 			if (((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel() == 3)
-				csValue.Format(_T("²ÎÓëÇÀ´ğ"));
+				csValue.Format(_T("å‚ä¸æŠ¢ç­”"));
 		}
 		break;
 		default:
@@ -811,6 +870,121 @@ CString CrbtnetDemoDlg::GetAnswerResult(int resID, unsigned char* pResult, int n
 	}
 
 	return csValue;
+}
+
+void CrbtnetDemoDlg::recvKeyAnswer(const char* pMac, int key)
+{
+	LVFINDINFO info;
+	info.flags = LVFI_PARTIAL | LVFI_STRING;
+	USES_CONVERSION;
+	info.psz = A2T(pMac);
+
+	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
+	int nRowIndex = pListCtrl->FindItem(&info);
+	if (nRowIndex < 0)
+		return;
+
+	switch (m_nCurrentSubject)
+	{
+	case 0: //åˆ¤æ–­
+	{
+		if (key == 0x12 || key == 0x13)
+			pListCtrl->SetItemText(nRowIndex, 3, getValue(key));
+	}
+	break;
+	case 1: //å•é€‰
+	{
+		if (key == 0x06 || key == 0x07 || key == 0x08 || key == 0x09)
+			pListCtrl->SetItemText(nRowIndex, 3, getValue(key));
+	}
+	break;
+	case 2: //å¤šé€‰
+	{
+		CString strAnswer = pListCtrl->GetItemText(nRowIndex, 3);
+		if (key == 0x06 || key == 0x07 || key == 0x08 || key == 0x09 || key == 0x10 || key == 0x11)
+		{
+			CString csValue = getValue(key);
+			if (strAnswer.Find(csValue) >= 0)
+			{
+				strAnswer.Replace(csValue, _T(""));
+			}
+			else
+				strAnswer += csValue;
+
+			pListCtrl->SetItemText(nRowIndex, 3, Asc(strAnswer));
+		}
+	}
+	break;
+	case 3: //æŠ¢ç­”
+	{
+		if (key == 0x15)
+			pListCtrl->SetItemText(nRowIndex, 3, _T("å‚ä¸æŠ¢ç­”"));
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+CString CrbtnetDemoDlg::getValue(int key)
+{
+	CString csValue;
+	switch (key)
+	{
+	case 0x06:
+		csValue.Format(_T("A"), csValue);
+		break;
+	case 0x07:
+		csValue.Format(_T("B"), csValue);
+		break;
+	case 0x08:
+		csValue.Format(_T("C"), csValue);
+		break;
+	case 0x09:
+		csValue.Format(_T("D"), csValue);
+		break;
+	case 0x10:
+		csValue.Format(_T("E"), csValue);
+		break;
+	case 0x11:
+		csValue.Format(_T("F"), csValue);
+		break;
+	case 0x12:
+		csValue.Format(_T("æ­£ç¡®"), csValue);
+		break;
+	case 0x13:
+		csValue.Format(_T("é”™è¯¯"), csValue);
+		break;
+	case 0x14:
+		break;
+	case 0x15:
+		break;
+	default:
+		break;
+	}
+
+	return csValue;
+}
+//å­—ç¬¦ä¸²å†…æ’åº
+CString CrbtnetDemoDlg::Asc(CString strData)
+{
+	std::list<TCHAR> l;
+	CString strAsc = strData;
+	CString strIt;
+	strAsc.MakeUpper();
+	int count = strAsc.GetLength();
+	for (int i = 0; i<count; i++)
+	{
+		TCHAR iChar = strAsc.GetAt(i);
+		l.push_back(iChar);
+	}
+	l.sort();
+	std::list<TCHAR>::iterator it;
+	for (it = l.begin(); it != l.end(); it++)
+	{
+		strIt += *it;
+	}
+	return strIt;
 }
 
 void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize)
@@ -832,7 +1006,7 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		int nCount = nSize / 8;
 		for (size_t i = 0; i < nCount; i++)
 		{
-			//8 ×Ö½Ú {ÌâÀàĞÍ£¬³¤¶È£¬0£¬1£¬2£¬3£¬4£¬5£¬6}
+			//8 å­—èŠ‚ {é¢˜ç±»å‹ï¼Œé•¿åº¦ï¼Œ0ï¼Œ1ï¼Œ2ï¼Œ3ï¼Œ4ï¼Œ5ï¼Œ6}
 			uint8_t buf[8] = { 0 };
 			memcpy(buf, pResult + i * 8, 8);
 			CString str = GetAnswerResult(i + 1/*buf[0]*/, buf + 2, buf[1]);
@@ -843,7 +1017,11 @@ void CrbtnetDemoDlg::recvDeviceAnswerResult(const char* pMac, int resID, unsigne
 		m_device2draw[info.psz]->m_strValue += csValue;
 
 		pListCtrl->SetItemText(nRowIndex, 3, csValue);
-		//pListCtrl->SetItemText(nRowIndex, 3, _T("´ğ°¸"));
+		/*CString strText = info.psz;
+		strText += _T("=====>");
+		strText += csValue;
+		strText += _T("\n");
+		OutputDebugStringW(strText);//*/
 
 	}
 	else
@@ -860,7 +1038,8 @@ void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPage
 	USES_CONVERSION;
 	CString strMac = A2T(pMac);
 	CString strText;
-	strText.Format(_T("×ÜÒ³Êı:%d µ±Ç°Ò³:%d"), nNoteId, nPageId);
+	strText.Format(_T("æ€»é¡µæ•°:%d å½“å‰é¡µ:%d\n"), nNoteId, nPageId);
+	OutputDebugStringW(strMac + _T("==========================>") + strText);
 	PostMessage(WM_SHOW_PAGE, (WPARAM)strText.AllocSysString(), (LPARAM)strMac.AllocSysString());
 	return;
 
@@ -875,7 +1054,7 @@ void CrbtnetDemoDlg::recvDeviceShowpage(const char* pMac, int nNoteId, int nPage
 		return;
 	}
 	CString csValue;
-	csValue.Format(_T("×ÜÒ³Êı:%d µ±Ç°Ò³:%d"), nNoteId, nPageId);
+	csValue.Format(_T("æ€»é¡µæ•°:%d å½“å‰é¡µ:%d"), nNoteId, nPageId);
 	pListCtrl->SetItemText(nRowIndex, 5, csValue);
 }
 
@@ -896,18 +1075,18 @@ void CrbtnetDemoDlg::recvNameResult(const char* pMac, int res, const char* pName
 		CString strMac = A2T(pMac);
 		WriteLog(strName, true);;
 		::PostMessage(m_hWnd, WM_RCV_NAME, (WPARAM)strName.AllocSysString(), (LPARAM)strMac.AllocSysString());
-		AfxMessageBox(_T("ÉèÖÃ³É¹¦"));
+		AfxMessageBox(_T("è®¾ç½®æˆåŠŸ"));
 	}
 	else
 	{
-		AfxMessageBox(_T("ÉèÖÃÊ§°Ü"));
+		AfxMessageBox(_T("è®¾ç½®å¤±è´¥"));
 	}
 #endif
 }
 
 void CrbtnetDemoDlg::OnClose()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	m_bRun = FALSE;
 
 	SetEvent(m_hEvent[1]);
@@ -934,7 +1113,7 @@ void CrbtnetDemoDlg::OnClose()
 
 void CrbtnetDemoDlg::OnBnClickedButtonConfig()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (m_pDlg)
 	{
 		m_pDlg->ShowWindow(SW_SHOW);
@@ -946,7 +1125,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonConfig()
 void CrbtnetDemoDlg::OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (pNMItemActivate->iItem != -1)
 	{
 		DWORD dwPos = GetMessagePos();
@@ -961,10 +1140,10 @@ void CrbtnetDemoDlg::OnNMRClickListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-//ÅäÍøÉèÖÃ
+//é…ç½‘è®¾ç½®
 void CrbtnetDemoDlg::OnSettingStu()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	POSITION pos = pListCtrl->GetFirstSelectedItemPosition();
 	if (pos == NULL)
@@ -977,22 +1156,38 @@ void CrbtnetDemoDlg::OnSettingStu()
 	if (dlg.DoModal() == IDOK)
 	{
 		strName = dlg.getStu();
-		if (strName.GetLength() > 6)
+		USES_CONVERSION;
+		int len = strlen(W2A(strName.GetBuffer()));
+		if (len > 10)
 		{
-			AfxMessageBox(_T("0-6 bytes£¡"));
+			AfxMessageBox(_T("0-10 bytesï¼"));
 			return;
 		}
-		USES_CONVERSION;
 		//rbt_win_config_stu(T2A(strMac), T2A(strStu));
 		SetItemName(strMac, strName);
-		rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strName));
-		//rbt_win_config_bmp_stu(T2A(strMac), "", T2A(strName));
+		if (len > 6)
+		{
+			CString str = _T("");
+			for (int i = 2; i < strName.GetLength(); i++)
+			{
+				USES_CONVERSION;
+				if (strlen(W2A(strName.Left(i).GetBuffer())) > 6)
+					break;
+				str = strName.Left(i);
+			}
+			rbt_win_config_bmp_stu_more(T2A(strMac), T2A(strMac), T2A(str));
+		}
+		else
+		{
+			rbt_win_config_bmp_stu(T2A(strMac), T2A(strMac), T2A(strName));
+		}
+		//rbt_win_config_bmp_stu2(T2A(strMac), T2A(strName));
 	}
-}
+	}
 
 void CrbtnetDemoDlg::OnBnClickedButtonSwitch()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 #ifdef _TEST
 	SetTimer(0, 100, NULL);
 #else
@@ -1041,50 +1236,50 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 	pComboBox->ResetContent();
 	std::string strAddress;
 	int nCardNo = 1;
-	//PIP_ADAPTER_INFO½á¹¹ÌåÖ¸Õë´æ´¢±¾»úÍø¿¨ĞÅÏ¢
+	//PIP_ADAPTER_INFOç»“æ„ä½“æŒ‡é’ˆå­˜å‚¨æœ¬æœºç½‘å¡ä¿¡æ¯
 	PIP_ADAPTER_INFO pIpAdapterInfo = NULL;
 	PIP_ADAPTER_INFO pIpAdapterInfoEx = NULL;
 	pIpAdapterInfo = new IP_ADAPTER_INFO();
 	pIpAdapterInfoEx = pIpAdapterInfo;
 
-	//µÃµ½½á¹¹Ìå´óĞ¡,ÓÃÓÚGetAdaptersInfo²ÎÊı
+	//å¾—åˆ°ç»“æ„ä½“å¤§å°,ç”¨äºGetAdaptersInfoå‚æ•°
 	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
-	//µ÷ÓÃGetAdaptersInfoº¯Êı,Ìî³äpIpAdapterInfoÖ¸Õë±äÁ¿;ÆäÖĞstSize²ÎÊı¼ÈÊÇÒ»¸öÊäÈëÁ¿Ò²ÊÇÒ»¸öÊä³öÁ¿
+	//è°ƒç”¨GetAdaptersInfoå‡½æ•°,å¡«å……pIpAdapterInfoæŒ‡é’ˆå˜é‡;å…¶ä¸­stSizeå‚æ•°æ—¢æ˜¯ä¸€ä¸ªè¾“å…¥é‡ä¹Ÿæ˜¯ä¸€ä¸ªè¾“å‡ºé‡
 	int nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);
-	//¼ÇÂ¼Íø¿¨ÊıÁ¿
+	//è®°å½•ç½‘å¡æ•°é‡
 	int netCardNum = 0;
-	//¼ÇÂ¼Ã¿ÕÅÍø¿¨ÉÏµÄIPµØÖ·ÊıÁ¿
+	//è®°å½•æ¯å¼ ç½‘å¡ä¸Šçš„IPåœ°å€æ•°é‡
 	int IPnumPerNetCard = 0;
 	if (ERROR_BUFFER_OVERFLOW == nRel)
 	{
-		//Èç¹ûº¯Êı·µ»ØµÄÊÇERROR_BUFFER_OVERFLOW
-		//ÔòËµÃ÷GetAdaptersInfo²ÎÊı´«µİµÄÄÚ´æ¿Õ¼ä²»¹»,Í¬Ê±Æä´«³östSize,±íÊ¾ĞèÒªµÄ¿Õ¼ä´óĞ¡
-		//ÕâÒ²ÊÇËµÃ÷ÎªÊ²Ã´stSize¼ÈÊÇÒ»¸öÊäÈëÁ¿Ò²ÊÇÒ»¸öÊä³öÁ¿
-		//ÊÍ·ÅÔ­À´µÄÄÚ´æ¿Õ¼ä
+		//å¦‚æœå‡½æ•°è¿”å›çš„æ˜¯ERROR_BUFFER_OVERFLOW
+		//åˆ™è¯´æ˜GetAdaptersInfoå‚æ•°ä¼ é€’çš„å†…å­˜ç©ºé—´ä¸å¤Ÿ,åŒæ—¶å…¶ä¼ å‡ºstSize,è¡¨ç¤ºéœ€è¦çš„ç©ºé—´å¤§å°
+		//è¿™ä¹Ÿæ˜¯è¯´æ˜ä¸ºä»€ä¹ˆstSizeæ—¢æ˜¯ä¸€ä¸ªè¾“å…¥é‡ä¹Ÿæ˜¯ä¸€ä¸ªè¾“å‡ºé‡
+		//é‡Šæ”¾åŸæ¥çš„å†…å­˜ç©ºé—´
 		if (NULL != pIpAdapterInfo) {
 			delete pIpAdapterInfo;
 			pIpAdapterInfo = NULL;
 			pIpAdapterInfoEx = NULL;
 		}
 
-		//ÖØĞÂÉêÇëÄÚ´æ¿Õ¼äÓÃÀ´´æ´¢ËùÓĞÍø¿¨ĞÅÏ¢
+		//é‡æ–°ç”³è¯·å†…å­˜ç©ºé—´ç”¨æ¥å­˜å‚¨æ‰€æœ‰ç½‘å¡ä¿¡æ¯
 		pIpAdapterInfo = (PIP_ADAPTER_INFO)new BYTE[stSize];
 		pIpAdapterInfoEx = pIpAdapterInfo;
-		//ÔÙ´Îµ÷ÓÃGetAdaptersInfoº¯Êı,Ìî³äpIpAdapterInfoÖ¸Õë±äÁ¿
+		//å†æ¬¡è°ƒç”¨GetAdaptersInfoå‡½æ•°,å¡«å……pIpAdapterInfoæŒ‡é’ˆå˜é‡
 		nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);
 	}
 
 	if (ERROR_SUCCESS == nRel)
 	{
 		USES_CONVERSION;
-		//Êä³öÍø¿¨ĞÅÏ¢
-		//¿ÉÄÜÓĞ¶àÍø¿¨,Òò´ËÍ¨¹ıÑ­»·È¥ÅĞ¶Ï
+		//è¾“å‡ºç½‘å¡ä¿¡æ¯
+		//å¯èƒ½æœ‰å¤šç½‘å¡,å› æ­¤é€šè¿‡å¾ªç¯å»åˆ¤æ–­
 		while (pIpAdapterInfo)
 		{
-			//¿ÉÄÜÍø¿¨ÓĞ¶àIP,Òò´ËÍ¨¹ıÑ­»·È¥ÅĞ¶Ï
+			//å¯èƒ½ç½‘å¡æœ‰å¤šIP,å› æ­¤é€šè¿‡å¾ªç¯å»åˆ¤æ–­
 			IP_ADDR_STRING *pIpAddrString = &(pIpAdapterInfo->IpAddressList);
 			strAddress = pIpAddrString->IpAddress.String;
-			// ĞèÒª×¢ÒâµÄÊÇÓĞÊ±¿ÉÄÜ»ñÈ¡µÄIPµØÖ·ÊÇ0.0.0.0£¬ÕâÊ±ĞèÒª¹ıÂËµô
+			// éœ€è¦æ³¨æ„çš„æ˜¯æœ‰æ—¶å¯èƒ½è·å–çš„IPåœ°å€æ˜¯0.0.0.0ï¼Œè¿™æ—¶éœ€è¦è¿‡æ»¤æ‰
 			if (std::string("0.0.0.0") != strAddress)
 			{
 				pComboBox->AddString(A2W(strAddress.c_str()));
@@ -1105,18 +1300,18 @@ bool CrbtnetDemoDlg::GetLocalAddress()
 	}
 }
 
-//´ò¿ªÄ£×é
+//æ‰“å¼€æ¨¡ç»„
 void CrbtnetDemoDlg::OnBnClickedOpenModule()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	//rbt_win_start();
 	CString str;
 	GetDlgItem(IDC_OPEN_MODULE)->GetWindowText(str);
-	if (_T("¹Ø±ÕÄ£×é") == str)
+	if (_T("å…³é—­æ¨¡ç»„") == str)
 	{
 		rbt_win_open_module(false);
 
-		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("´ò¿ªÄ£×é"));
+		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("æ‰“å¼€æ¨¡ç»„"));
 	}
 	else
 	{
@@ -1127,15 +1322,15 @@ void CrbtnetDemoDlg::OnBnClickedOpenModule()
 				}
 		#endif // USE_TEST_KEEPALIVE//*/
 		rbt_win_open_module(true);
-		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("¹Ø±ÕÄ£×é"));
+		GetDlgItem(IDC_OPEN_MODULE)->SetWindowText(_T("å…³é—­æ¨¡ç»„"));
 	}
 
 }
 
-//¹Ø±ÕÄ£×é
+//å…³é—­æ¨¡ç»„
 void CrbtnetDemoDlg::OnBnClickedCloseModule()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 
 	/*rbt_win_stop();
 
@@ -1155,10 +1350,10 @@ void CrbtnetDemoDlg::OnBnClickedCloseModule()
 	rbt_win_set_screen_freq(_wtoi(str.GetBuffer()));
 }
 
-//¿ªÊ¼´ğÌâ
+//å¼€å§‹ç­”é¢˜
 void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	/*CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 	int nCount = pListCtrl->GetItemCount();
 	for (size_t i = 0; i < nCount; i++)
@@ -1169,25 +1364,26 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 
 	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
+	m_nCurrentSubject = subject;
 
 	CString strNum;
 	GetDlgItem(IDC_EDIT_NUM)->GetWindowText(strNum);
 	USES_CONVERSION;
-	int totalTopic = atoi(T2A(strNum)); //ÌâÄ¿×ÜÊı
+	int totalTopic = atoi(T2A(strNum)); //é¢˜ç›®æ€»æ•°
 	char pTopicType[128] = { 0 };
 	for (size_t i = 0; i < totalTopic; i++)
 	{
-		pTopicType[i] = subject + 1; //ÌâÄ¿ÀàĞÍ 1ÅĞ¶Ï 2µ¥Ñ¡ 3¶àÑ¡ 4ÇÀ´ğ
+		pTopicType[i] = subject + 1; //é¢˜ç›®ç±»å‹ 1åˆ¤æ–­ 2å•é€‰ 3å¤šé€‰ 4æŠ¢ç­”
 	}
 	bool bSendRes = false;
-	//0ÎªÖ÷¹ÛÌâ,1Îª¿Í¹ÛÌâ
+	//0ä¸ºä¸»è§‚é¢˜,1ä¸ºå®¢è§‚é¢˜
 	if (index == 0)
 		bSendRes = rbt_win_send_startanswer(index, 0, NULL);
 	else
 		bSendRes = rbt_win_send_startanswer(index, totalTopic, pTopicType);
 
 	if (!bSendRes)
-		AfxMessageBox(_T("¿ªÊ¼´ğÌâÊ§°Ü!"));
+		AfxMessageBox(_T("å¼€å§‹ç­”é¢˜å¤±è´¥!"));
 
 	/*#ifdef USE_TEST_KEEPALIVE
 		rbt_win_send_stopanswer();
@@ -1195,19 +1391,19 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 	#endif // USE_TEST_KEEPALIVE//*/
 }
 
-//Í£Ö¹´ğÌâ
+//åœæ­¢ç­”é¢˜
 void CrbtnetDemoDlg::OnBnClickedButtonStopAnswer()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 
 	rbt_win_send_stopanswer();
 
 }
 
-//½áÊø´ğÌâ
+//ç»“æŸç­”é¢˜
 void CrbtnetDemoDlg::OnBnClickedButtonEndAnswer()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
 
 	for (size_t i = 0; i < pListCtrl->GetItemCount(); i++)
@@ -1222,7 +1418,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonEndAnswer()
 
 void CrbtnetDemoDlg::OnBnClickedButtonSetting()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CString str;
 	GetDlgItem(IDC_EDIT_TIME)->GetWindowText(str);
 	USES_CONVERSION;
@@ -1232,7 +1428,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetting()
 
 void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	int type = m_pDlg->getType();
 	CString strSSID, strPwd, strIP;
 	bool bTcp;
@@ -1273,14 +1469,14 @@ void CrbtnetDemoDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CrbtnetDemoDlg::OnBnClickedButtonSetFreq()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	int nIndex = ((CComboBox*)GetDlgItem(IDC_COMBO_FREQ))->GetCurSel();
 	rbt_win_config_freq(nIndex);
 }
 
 void CrbtnetDemoDlg::OnBnClickedButtonClear()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	std::map<CString, CDrawDlg*>::iterator iter;
 	for (iter = m_device2draw.begin(); iter != m_device2draw.end(); iter++)
 	{
@@ -1290,7 +1486,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonClear()
 
 void CrbtnetDemoDlg::OnCbnSelchangeCombo2()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 	GetDlgItem(IDC_COMBO_SUBJECT)->ShowWindow((index == 1) ? SW_SHOW : SW_HIDE);
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->SetCurSel(2);
@@ -1299,13 +1495,13 @@ void CrbtnetDemoDlg::OnCbnSelchangeCombo2()
 
 void CrbtnetDemoDlg::OnBnClickedButtonImport()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	TCHAR szFilter[] = _T("ÎÄ±¾ÎÄ¼ş(*.csv)|*.csv|ËùÓĞÎÄ¼ş(*.*)|*.*||");
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	TCHAR szFilter[] = _T("æ–‡æœ¬æ–‡ä»¶(*.csv)|*.csv|æ‰€æœ‰æ–‡ä»¶(*.*)|*.*||");
 	CFileDialog dlg(TRUE, _T("csv"), NULL, 0, szFilter, this);
 	if (dlg.DoModal() == IDOK)
 	{
 		char* old_locale = _strdup(setlocale(LC_CTYPE, NULL));
-		setlocale(LC_CTYPE, "chs");//Éè¶¨   
+		setlocale(LC_CTYPE, "chs");//è®¾å®š   
 		CStdioFile file;
 		if (file.Open(dlg.GetPathName(), CFile::modeRead))
 		{
@@ -1323,7 +1519,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonImport()
 				}
 			}
 			setlocale(LC_CTYPE, old_locale);
-			free(old_locale);//»¹Ô­ÇøÓòÉè¶¨
+			free(old_locale);//è¿˜åŸåŒºåŸŸè®¾å®š
 			file.Close();
 		}
 	}
@@ -1331,8 +1527,8 @@ void CrbtnetDemoDlg::OnBnClickedButtonImport()
 
 void CrbtnetDemoDlg::OnBnClickedButtonExport()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	TCHAR szFilter[] = _T("ÎÄ±¾ÎÄ¼ş(*.csv)|*.csv|ËùÓĞÎÄ¼ş(*.*)|*.*||");
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	TCHAR szFilter[] = _T("æ–‡æœ¬æ–‡ä»¶(*.csv)|*.csv|æ‰€æœ‰æ–‡ä»¶(*.*)|*.*||");
 	CFileDialog dlg(FALSE, _T("csv"), _T(""), 0, szFilter, this);
 	if (dlg.DoModal() == IDOK)
 	{
@@ -1378,35 +1574,35 @@ void CrbtnetDemoDlg::ShowOnlineCount()
 	int nSum = 0;
 	for (size_t i = 0; i < nCount; i++)
 	{
-		if (pListCtrl->GetItemText(i, 2) == _T("ÔÚÏß"))
+		if (pListCtrl->GetItemText(i, 2) == _T("åœ¨çº¿"))
 			nSum++;
 	}
 
 	CString strCount;
-	strCount.Format(_T("ÔÚÏß/×ÜÊı£º%d/%d"), nSum, nCount);
+	strCount.Format(_T("åœ¨çº¿/æ€»æ•°ï¼š%d/%d"), nSum, nCount);
 	GetDlgItem(IDC_STATIC_COUNT)->SetWindowText(strCount);
 }
 
 void CrbtnetDemoDlg::OnBnClickedButtonPoint()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CString str;
 	GetDlgItem(IDC_BUTTON_POINT)->GetWindowText(str);
-	if (str == _T("´ò¿ªĞü¸¡µã"))
+	if (str == _T("æ‰“å¼€æ‚¬æµ®ç‚¹"))
 	{
-		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("¹Ø±ÕĞü¸¡µã"));
+		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("å…³é—­æ‚¬æµ®ç‚¹"));
 		rbt_win_open_suspension(true);
 	}
 	else
 	{
-		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("´ò¿ªĞü¸¡µã"));
+		GetDlgItem(IDC_BUTTON_POINT)->SetWindowText(_T("æ‰“å¼€æ‚¬æµ®ç‚¹"));
 		rbt_win_open_suspension(false);
 	}
 }
 
 void CrbtnetDemoDlg::OnBnClickedButtonCvs()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	rbt_win_get_canvas_id();
 }
 
@@ -1418,8 +1614,8 @@ void CrbtnetDemoDlg::OnBnClickedButtonCvs()
 
 void CrbtnetDemoDlg::OnBnClickedButtonSetKeepalive()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	/*rbt_create_image("sessionid", "stuid", 22, 720, 1280, "[1,2]", "[0.0,0.2,0.6,0.8,1.0]", "D:/a.txt", "", "D:/test", "", onResult);
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	/*rbt_create_image("sessionid", "stuid", 22, 720, 1280, 29700, 21000, "[1,2]", "[0.0,0.2,0.6,0.8,1.0]", "D:/a.txt", "", "D:/test", "", onResult, "D:/test.jpg");
 
 	return;//*/
 
@@ -1443,7 +1639,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonSetKeepalive()
 void CrbtnetDemoDlg::OnNMClickListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	*pResult = 0;
 
 	CListCtrl* pListCtrl = (CListCtrl*)GetDlgItem(IDC_LIST_CONNECT);
@@ -1468,4 +1664,12 @@ void CrbtnetDemoDlg::OnNMClickListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 		OutputDebugStringW(strAnswer);
 	}
 
+}
+
+void CrbtnetDemoDlg::OnBnClickedButtonDelNotes()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	int index = ((CComboBox*)GetDlgItem(IDC_COMBO_DEL_NOTES))->GetCurSel();
+	
+	rbt_win_del_notes(index);
 }

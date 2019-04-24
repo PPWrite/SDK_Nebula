@@ -12,19 +12,20 @@
 
 IMPLEMENT_DYNAMIC(CDrawDlg, CDialog)
 
-CDrawDlg::CDrawDlg(CWnd* pParent /*=NULL*/)
+CDrawDlg::CDrawDlg(int deviceType, CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_DRAWDLG, pParent)
 	, m_bTrack(false)
 	, m_bDrawing(false)
 	, m_nPenStatus(0)
 	, m_bMouseDraw(false)
 	, m_lastPoint(0, 0)
+	, m_nDeviceType(deviceType)
 {
 	m_nPenWidth = 2;
-	m_nState = 270;
 
 	m_nWidth = GetPrivateProfileInt(_T("General"), _T("Width"), 22600, GetAppPath() + _T("\\robotpenetdevice_demo.ini"));
 	m_nHeight = GetPrivateProfileInt(_T("General"), _T("Height"), 16650, GetAppPath() + _T("\\robotpenetdevice_demo.ini"));
+	m_nState = GetPrivateProfileInt(_T("General"), _T("State"), 270, GetAppPath() + _T("\\robotpenetdevice_demo.ini"));
 }
 
 CDrawDlg::~CDrawDlg()
@@ -93,23 +94,27 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	/*CString str;
 	str.Format(_T("X:%d-Y:%d-Press:%d-Status:%d"), ux, uy, up, us);
 	WriteLog(str);//*/
-	if (m_nState == 90)
+	int state = m_nState;
+	if (60 == m_nDeviceType)
+		state += 180;
+	if (state == 90)
 	{
 		point.SetPoint(m_nHeight - uy, ux);
 	}
-	else if (m_nState == 180)
+	else if (state == 180)
 	{
 		point.SetPoint(m_nWidth - ux, m_nHeight - uy);
 	}
-	else if (m_nState == 270)
+	else if (state == 270)
 	{
 		point.SetPoint(uy, m_nWidth - ux);
 	}
 	else
 		point.SetPoint(ux, uy);
-	CString str;
+	/*CString str;
 	str.Format(_T("X:%d,Y:%d,Press:%d,Status:%d\n"), ux, uy, up, us);
-	//OutputDebugString(str);
+	OutputDebugString(str);//*/
+
 	/*TRACE("%d\n", us);
 	switch (us)
 	{
@@ -138,7 +143,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 	}
 	return;//*/
 
-	if (us == 0x11 || us == 0x21)
+	if (us == 0x11 || us == 0x21 || us == 0x31)
 	{
 		// 笔接触到板子
 		if (!m_bTrack)
@@ -150,7 +155,7 @@ void CDrawDlg::onRecvData(unsigned short us, unsigned short ux, unsigned short u
 		else
 		{
 			compressPoint(point);
-			onDrawing(point, us == 0x21);
+			onDrawing(point, (ePenType)us);
 		}
 
 #ifdef USE_CURSOR
@@ -204,6 +209,7 @@ void CDrawDlg::Clear()
 	m_currentItem.lstPoint.clear();
 	m_listItems.clear();
 	Invalidate();
+	WriteLog(_T("CDrawDlg::Clear()"));
 }
 
 void CDrawDlg::Clear(const CPoint& pt)
@@ -354,11 +360,11 @@ void CDrawDlg::onbegin(const CPoint& pos)
 	m_currentItem.lstPoint.clear();
 }
 
-void CDrawDlg::onDrawing(const CPoint& pos, bool bRed)
+void CDrawDlg::onDrawing(const CPoint& pos, ePenType type)
 {
 	if (!m_bDrawing)
 		return;
-	doDrawing(pos, bRed);
+	doDrawing(pos, type);
 	m_currentItem.lstPoint.push_back(pos);
 }
 
@@ -367,7 +373,7 @@ void CDrawDlg::onEnd()
 	m_bDrawing = false;
 }
 
-void CDrawDlg::doDrawing(const CPoint& pos, bool bRed)
+void CDrawDlg::doDrawing(const CPoint& pos, ePenType type)
 {
 	CRect rect;
 	CDC* pdc = this->GetDC();
@@ -381,7 +387,11 @@ void CDrawDlg::doDrawing(const CPoint& pos, bool bRed)
 	Graphics graphics(pdc->m_hDC);
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	Pen pen(bRed ? Color(255, 255, 0, 0) : Color(255, 0, 0, 0), m_nPenWidth);
+	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
+	if (type == SIDE_PEN)
+		pen.SetColor(Color(255, 255, 0, 0));
+	else if(type == ERASER)
+		pen.SetColor(Color(255, 240, 240, 240));
 
 	graphics.DrawLine(&pen, m_lastPoint.x, m_lastPoint.y, pos.x, pos.y);
 	m_lastPoint = pos;
@@ -489,4 +499,41 @@ void CDrawDlg::OnSize(UINT nType, int cx, int cy)
 	}
 
 	this->Clear();
+}
+
+
+BOOL CDrawDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	int width = 1000;
+	if (m_nState == 0 || m_nState == 180)
+		width = GetSystemMetrics(SM_CXSCREEN) / 2;
+	else
+		width = GetSystemMetrics(SM_CYSCREEN) * 3 / 5;
+	nCompress = (double)m_nWidth / width;
+	int height = m_nHeight / nCompress;
+
+
+	CRect rect;
+	if (m_nState == 90 || m_nState == 270)
+	{
+		int rand_width = rand() % (GetSystemMetrics(SM_CXSCREEN) - height);
+		int rand_height = rand() % (GetSystemMetrics(SM_CYSCREEN) - width);
+		rect.SetRect(rand_width, rand_height, rand_width + height, rand_height + width);
+	}
+	else
+	{
+		int rand_width = rand() % (GetSystemMetrics(SM_CXSCREEN) - width);
+		int rand_height = rand() % (GetSystemMetrics(SM_CYSCREEN) - height);
+		rect.SetRect(rand_width, rand_height, rand_width + width, rand_height + height);
+	}
+
+	//CRect rect(rand_width,rand_height,rand_width + width,rand_height + height);
+	AdjustWindowRect(rect, GetStyle(), FALSE);
+	MoveWindow(rect);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 异常: OCX 属性页应返回 FALSE
 }

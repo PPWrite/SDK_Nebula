@@ -275,9 +275,8 @@ public:
 		(void)active;
 	}
 	//设备属性
-	virtual void onDeviceProperty(uint8_t *data,int len){
-		(void)data;
-		(void)len;
+	virtual void onDeviceProperty(const HARD_INFO &hardInfo){
+		(void)hardInfo;
 	}
 	//设备特性
 	virtual void onFeature(int type){

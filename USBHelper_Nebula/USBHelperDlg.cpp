@@ -30,7 +30,6 @@
 
 //#define USE_POWER
 //#define USE_OPTIMIZE
-//#define _HF
 
 const char *szSubjectArray[] = { "未选","语文","数学","英语","物理","化学","生物","历史","地理","政治","自然","科一" ,"科二","科三","科四","科五","科六","科七","科八","科九","科十"};
 
@@ -151,6 +150,7 @@ CUSBHelperDlg::CUSBHelperDlg(CWnd* pParent /*=NULL*/)
 	, m_bMouse(false)
 	, m_bConnect(FALSE)
 	, m_DeviceMode(DEVICE_MOUSE)
+	, m_bActive(false)
 {
 	for (int i=0;i<2;i++)
 	{
@@ -301,7 +301,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 	GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
-	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("删除笔记"));
+	//GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("删除笔记"));
+	GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("查询硬件"));
 
 	GetDlgItem(IDC_EDIT_SLAVE_NAME)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_SET_NAME)->ShowWindow(SW_HIDE);
@@ -431,9 +432,8 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
 #endif
-#ifdef _HF
-	GetInstance()->SetKey("36e4a46f689611e8b441060400ef5315");
-#endif
+
+	GetInstance()->SetKey("robotpen");
 
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(0,_T("M2"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(1,_T("M3K"));
@@ -481,7 +481,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	//开启笔记优化
 	GetInstance()->SetOptimizeStatus(true);
 	//设置拖尾长度
-	GetInstance()->SetPointDelay(0.4);
+	//GetInstance()->SetPointDelay(0.4);
 #endif
 
 	//GetInstance()->Rotate(360);
@@ -744,14 +744,15 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
 		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T9W_WX == m_nDeviceType || m_nDeviceType == T8B_DH2
 		|| T9W_B_KZ == m_nDeviceType || C5 == m_nDeviceType || T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType
-		|| T8B_D2 == m_nDeviceType || m_nDeviceType == X9)
+		|| T8B_D2 == m_nDeviceType || m_nDeviceType == X9 || m_nDeviceType == T9W_H || m_nDeviceType == T10)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
 	}
 	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 
 		|| m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE
-		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8 || m_nDeviceType == T7PL_CL)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8 || m_nDeviceType == K8_ZM
+		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF )
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -786,14 +787,25 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	}
 
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
-		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
-		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY)
+		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == T7PL_CL 
+		|| m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY
+		|| m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF  || m_nDeviceType == K8_ZM)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
 		Sleep(100);
 		GetInstance()->Send(SearchMode);
 	}
+
+	if(K8 ==  m_nDeviceType || K8_HF ==  m_nDeviceType || m_nDeviceType == K8_ZM)
+	{
+		GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("K8切换生效"));
+
+		Sleep(200);
+
+		GetInstance()->Send(SearchMode);
+	}
+
 
 	if (m_nDeviceType == Gateway)
 	{
@@ -1022,6 +1034,15 @@ void CUSBHelperDlg::OnBnClickedButtonVoteClear()
 			if (NULL != pDlg)
 				pDlg->SetVote();
 		}
+	}
+	else if(K8 == m_nDeviceType || K8_HF == m_nDeviceType || m_nDeviceType == K8_ZM)
+	{
+		m_bActive = !m_bActive;
+		GetInstance()->SetButtonActive(m_bActive);
+	}
+	else if(T9W_H == m_nDeviceType || C5 == m_nDeviceType || T10 == m_nDeviceType)
+	{
+		GetInstance()->Send(eRbtType::GetProperty);
 	}
 	else
 	{
@@ -1321,7 +1342,9 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 				else if (m_nDeviceType == T7PL 
 					|| m_nDeviceType == K7_HW 
 					|| m_nDeviceType == K8 
-					|| m_nDeviceType == T7PL_CL)
+					|| m_nDeviceType == T7PL_CL
+					|| m_nDeviceType == T7PL_XDF
+					|| m_nDeviceType == K8_HF)
 				{
 					resetDevice();
 					AddList();
@@ -1329,7 +1352,6 @@ LRESULT CUSBHelperDlg::OnUpdateWindow(WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
-	case ROBOT_SET_PASSWORD:
 	case ROBOT_SET_CLASS_SSID:
 	case ROBOT_SET_CLASS_PWD:
 	case ROBOT_SET_STUDENT_ID:
@@ -1401,13 +1423,13 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8
-		|| m_nDeviceType == T7PL_CL)
+		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T7PL_XDF)
 	{
 		GetInstance()->Send(SwitchMode);
 		//GetInstance()->SetDeviceMode(DEVICE_HAND);
 		Sleep(100);
 	}
-	else if (m_nDeviceType == T8B_D2  || m_nDeviceType == J7B_ZY)
+	else if (m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY || m_nDeviceType == K8_HF|| m_nDeviceType == K8_ZM)
 	{
 		if (DEVICE_MOUSE == m_DeviceMode)
 			m_DeviceMode = DEVICE_HAND;
@@ -2117,6 +2139,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 	case ROBOT_SEARCH_MODE:
 		{
 			uint8_t mode = report.payload[0];
+			m_DeviceMode = (eDeviceMode)mode;
+
 			if (mode)
 				GetDlgItem(IDC_STATIC_SCANTIP2)->SetWindowText(_T("Hand"));
 			else
@@ -2125,7 +2149,6 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			//GetInstance()->Send(GetNodeInfo);
 		}
 		break;
-	case ROBOT_SET_PASSWORD:
 	case ROBOT_SET_CLASS_SSID:
 	case ROBOT_SET_CLASS_PWD:
 	case ROBOT_SET_STUDENT_ID:
@@ -2188,6 +2211,15 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			memcpy(&storageInfo,report.payload,sizeof(STORAGE_INFO));
 			CString str;
 			str.Format(_T("total:%d,free:%d"),storageInfo.total,storageInfo.free);
+			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+		}
+		break;
+	case ROBOT_GET_PROPERTY:
+		{
+			HARD_INFO hardInfo = {0};
+			memcpy(&hardInfo,report.payload,sizeof(HARD_INFO));
+			CString str;
+			str.Format(_T("XR:%d,YR%d,LPI:%d"),hardInfo.x_range,hardInfo.y_range,hardInfo.lpi);
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
@@ -2570,6 +2602,11 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 		}
 		break;
+	case ROBOT_DATA_PACKET:
+		{
+			TRACE("ROBOT_DATA_PACKET\n");
+		}
+		break;
 	default:
 		break;
 	}
@@ -2929,7 +2966,7 @@ void CUSBHelperDlg::OnBnClickedButtonSet4()
 		CString strNum = str.Mid(i,2);
 		buffer[index++] = strtoul(WideStrToMultiStr(strNum.GetBuffer()),NULL,16);
 	}
-	GetInstance()->SetPwd(buffer);
+	//GetInstance()->SetPwd(buffer);
 }
 
 

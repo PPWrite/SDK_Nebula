@@ -16,7 +16,8 @@ class CDrawDlg;
 #define WM_SHOW_PAGE (WM_USER + 103)
 #define WM_SHOW_ERROR (WM_USER + 104)
 #define WM_DISCONNECT (WM_USER + 105)
-
+#define WM_RCV_TYPE (WM_USER + 106)
+#define WM_DEL_TYPE (WM_USER + 107)
 
 struct _Mass_Data
 {
@@ -51,6 +52,7 @@ protected:
 
 	afx_msg LRESULT rcvAccept(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT rcvMac(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT rcvDeviceType(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT recvName(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT showPage(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT onShowError(WPARAM wParam, LPARAM lParam);
@@ -73,6 +75,7 @@ public:
 	void recvDeviceAnswerResult(const char* pMac, int resID, unsigned char* pResult, int nSize);
 	void recvDeviceShowpage(const char* pMac, int nNoteId, int nPageId);
 	void recvNameResult(const char* pMac, int res, const char* pName);
+	void recvKeyAnswer(const char* pMac, int key);
 private:
 	void initListControl();
 	void initCbFunction();
@@ -103,7 +106,9 @@ public:
 	static void CALLBACK onError(rbt_win_context* context, const char* pMac, int cmd, const char *msg);
 	static void CALLBACK onCanvasID(rbt_win_context* context, const char* pMac, int type, int canvasID);
 	static void CALLBACK onOptimizeData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, float width, float speed);
-
+	static void CALLBACK onDeviceType(rbt_win_context* context, const char* pMac, int type);
+	static void CALLBACK onKeyAnswer(rbt_win_context* context, const char* pMac, int key);
+	static void CALLBACK onDeleteNotes(rbt_win_context* context, const char* pMac, int result);
 
 	bool GetLocalAddress();
 	afx_msg void OnBnClickedOpenModule();
@@ -129,4 +134,10 @@ public:
 	afx_msg void OnBnClickedButtonCvs();
 	afx_msg void OnBnClickedButtonSetKeepalive();
 	afx_msg void OnNMClickListConnect(NMHDR *pNMHDR, LRESULT *pResult);
+
+	int m_nCurrentSubject = 0;
+	CString getValue(int key);
+	CString Asc(CString strData);
+	void rcvMac(const char* pMac);
+	afx_msg void OnBnClickedButtonDelNotes();
 };

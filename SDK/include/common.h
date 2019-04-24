@@ -360,6 +360,15 @@ typedef struct position_packet
 
 }POSITION_PACKET;
 
+typedef struct hard_info
+{
+	uint16_t x_range;  //X坐标范围
+	uint16_t y_range;  //Y坐标范围
+	uint16_t lpi;		//线条分辨率
+	uint8_t page_num;	//页码位数 16 or 24
+
+}HARD_INFO;
+
 #pragma pack()
 
 enum eKeyPress

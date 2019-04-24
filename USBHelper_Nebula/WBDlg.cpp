@@ -291,11 +291,11 @@ void CWBDlg::onbegin( const CPoint& pos )
 	m_currentItem.lstPoint.clear();
 }
 
-void CWBDlg::onDrawing( const CPoint& pos )
+void CWBDlg::onDrawing( const CPoint& pos , ePenMode type)
 {
 	if (!m_bDrawing)
 		return;
-	doDrawing(pos);
+	doDrawing(pos,type);
 	m_currentItem.lstPoint.push_back(pos);
 }
 
@@ -304,7 +304,7 @@ void CWBDlg::onEnd()
 	m_bDrawing = false;
 }
 
-void CWBDlg::doDrawing( const CPoint& pos )
+void CWBDlg::doDrawing( const CPoint& pos , ePenMode type)
 {
 	CRect rect;
 	CDC* pdc = this->GetDC();
@@ -319,7 +319,10 @@ void CWBDlg::doDrawing( const CPoint& pos )
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
 	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
-
+	if (type == SIDE_PEN)
+		pen.SetColor(Color(255, 255, 0, 0));
+	else if(type == ERASER)
+		pen.SetColor(Color(255, 240, 240, 240));
 	graphics.DrawLine(&pen, m_lastPoint.x, m_lastPoint.y, pos.x, pos.y);
 
 	m_lastPoint = pos;
@@ -425,7 +428,7 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),point.x,point.y,penInfo.nPress,penInfo.nStatus);
 
-	if (penInfo.nStatus == 0x11)
+	if (penInfo.nStatus == 0x11 || penInfo.nStatus == 0x21 || penInfo.nStatus == 0x31)
 	{
 		// ±Ê½Ó´¥µ½°å×Ó
 		if (!m_bTrack)
@@ -438,7 +441,7 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 		{
 			compressPoint(point);
 			//TRACE("onDrawing--x:%d--y:%d\r\n",point.x,point.y);
-			onDrawing(point);
+			onDrawing(point,(ePenMode)penInfo.nStatus);
 			moveCursor(point);
 		}
 	}

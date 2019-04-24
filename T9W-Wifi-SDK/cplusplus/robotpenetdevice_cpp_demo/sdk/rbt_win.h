@@ -69,8 +69,10 @@ extern "C" {
 	void rbt_win_set_screen_freq(int seconds);
 	//设置心跳(测试)
 	void rbt_win_set_keepalive(int channel, int enable, int keepintvl, int keepcnt);
-	//设置中心点偏移
-	void rbt_win_set_offset_center(int x = 0, int y = 0);
+	//删除离线笔记
+	bool rbt_win_del_notes(bool del, const char* mac = "");
+	//设置手写板中心点偏移
+	void rbt_win_set_offset_center(int x = 0, int y = 0, const char* mac = "");
 
 #ifdef __cplusplus
 }

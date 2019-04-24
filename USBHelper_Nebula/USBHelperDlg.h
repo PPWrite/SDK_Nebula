@@ -104,6 +104,7 @@ private:
 	bool m_bMouse;
 
 	eDeviceMode m_DeviceMode;
+	bool m_bActive;
 public:
 	afx_msg void OnBnClickedButton3Update();
 	afx_msg LRESULT OnUpdate(WPARAM wParam, LPARAM lParam);

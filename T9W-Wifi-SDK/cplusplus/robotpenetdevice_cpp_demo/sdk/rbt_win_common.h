@@ -79,6 +79,8 @@ typedef void __stdcall onDeviceInfo(rbt_win_context *ctx, const char* pMac, cons
 typedef void __stdcall onHardInfo(rbt_win_context *ctx, const char* pMac, int xRange, int yRange, int LPI, int pageNum);
 //设备电量信息回调
 typedef void __stdcall onDeviceBattery(rbt_win_context *ctx, const char* pMac, eBatteryStatus battery);
+//设备删除离线笔记回调
+typedef void __stdcall onDeleteNotes(rbt_win_context *ctx, const char* pMac, int result);
 
 void rbt_win_set_accept_cb(onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
@@ -100,6 +102,7 @@ void rbt_win_set_keyanswer_cb(onKeyAnswer *arg);
 void rbt_win_set_deviceinfo_cb(onDeviceInfo *arg);
 void rbt_win_set_hardinfo_cb(onHardInfo *arg);
 void rbt_win_set_devicebattery_cb(onDeviceBattery *arg);
+void rbt_win_set_deletenotes_cb(onDeleteNotes *arg);
 
 #pragma pack(1)
 typedef struct _Init_Param
