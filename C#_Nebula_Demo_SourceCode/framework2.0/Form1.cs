@@ -1219,7 +1219,7 @@ namespace RobotPenTestDll
                 {
                     if (this.slave_name_textBox.Text != "" && this.slave_name_textBox.Text.Contains("T9"))
                     {
-                        nodeCanvasWindow = new TrailsShowFrom(16650, 22015);
+                        nodeCanvasWindow = new TrailsShowFrom(16650, 22600);
                     }
                     else
                     {
@@ -2369,17 +2369,17 @@ namespace RobotPenTestDll
         {
             note_key = Guid.NewGuid().ToString();
             Console.WriteLine(note_key);
-            int t= robotpenController.GetInstance().CreateRecogNote(note_key,3,0);
-            Console.WriteLine(t);
+            //int t= robotpenController.GetInstance().CreateRecogNote(note_key,3,0);
+            //Console.WriteLine(t);
             
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             Console.WriteLine("key"+note_key);
-            int t2 = robotpenController.GetInstance().AppendNote(note_key);
-            int t = robotpenController.GetInstance().RecogNote(user_id, note_key);
-            Console.WriteLine(t);
+            //int t2 = robotpenController.GetInstance().AppendNote(note_key);
+            //int t = robotpenController.GetInstance().RecogNote(user_id, note_key);
+            //Console.WriteLine(t);
         }
     }
 }

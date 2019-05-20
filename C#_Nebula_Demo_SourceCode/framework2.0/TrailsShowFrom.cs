@@ -28,8 +28,8 @@ namespace RobotPenTestDll
 
     public partial class TrailsShowFrom : Form
     {
-        private int m_nDeviceW;
-        private int m_nDeviceH;
+        public int m_nDeviceW;
+        public int m_nDeviceH;
         private int m_nPageNumber = 0;
         private int m_nNoteNumber = 0;
 
@@ -39,11 +39,11 @@ namespace RobotPenTestDll
             canvastype = canvasty;
             if (canvastype == canvasType.DONGLE)
             {
-                m_nDeviceW = 14335;
-                m_nDeviceH = 8191;
+                //m_nDeviceW = 14335;
+                //m_nDeviceH = 8191;
 
-                m_nDeviceW = 22015;
-                m_nDeviceH = 15359;
+                m_nDeviceW = 22600;
+                m_nDeviceH = 16650;
             }
             else if (canvastype == canvasType.P1)
             {
@@ -57,8 +57,8 @@ namespace RobotPenTestDll
             }
             else
             {
-                m_nDeviceW = 22015;
-                m_nDeviceH = 15359;
+                m_nDeviceW = 29700;
+                m_nDeviceH = 21000;
             }
 
             bOptimize = false;
