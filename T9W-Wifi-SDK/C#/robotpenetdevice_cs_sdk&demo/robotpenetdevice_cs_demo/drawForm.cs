@@ -24,6 +24,7 @@ namespace rbt_win32_2_demo
         private List<CanvasItem> m_items = new List<CanvasItem>();  // 所有线条
         private CanvasItem m_currentItem;
         private bool m_bDrawing = false;
+        private bool form_show = false;
         private PointF m_lastPoint;
         private int nFlags = 0;
         private PointF m_point;
@@ -45,6 +46,7 @@ namespace rbt_win32_2_demo
             if (bNotExit) {
                 e.Cancel = true;
                 this.Hide();
+                form_show = false;
             }
         }
 
@@ -181,7 +183,6 @@ namespace rbt_win32_2_demo
                 return;
             doDrawing(ref p, nCompress, isRed);
             m_currentItem.listpoints.Add(p);
-
         }
 
         private void doDrawing(ref PointF pos, int nCompress = 0,bool isRed=false)
@@ -430,5 +431,10 @@ namespace rbt_win32_2_demo
             grap.Dispose();
         }
         #endregion
+
+        private void drawForm_Load(object sender, EventArgs e)
+        {
+            form_show = true;
+        }
     }
 }

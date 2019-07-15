@@ -43,7 +43,8 @@ namespace rbt_win32_2_demo
 
             param.optimize = _optimize;
             rbtnet_.init(ref param);
-
+            //rbtnet_.init();
+            rbtnet_.setPrintType(PrintType.Fault_tolerance2);
 
             comboBox1.Items.Add("判断题");
             comboBox1.Items.Add("单选题");
@@ -61,13 +62,24 @@ namespace rbt_win32_2_demo
             rbtnet_.deviceOriginDataEvt_ += Rbtnet__deviceOriginDataEvt_;
             rbtnet_.deviceOptimizeDataEvt_ += Rbtnet__deviceOptimizeDataEvt_;
 
-            rbtnet_.deviceShowPageEvt_ += Rbtnet__deviceShowPageEvt_;
+            rbtnet_.deviceShowPageNewEvt_ += Rbtnet__deviceShowPageEvt_;
             rbtnet_.deviceKeyPressEvt_ += Rbtnet__deviceKeyPressEvt_;
             rbtnet_.deviceAnswerResultEvt_ += Rbtnet__deviceAnswerResultEvt_;
 
             rbtnet_.deviceError_ += Rbtnet__deviceEvt;
+            rbtnet_.DeviceIpEvt_ += Rbtnet_DeviceIpEvt;
+
+            rbtnet_.DeviceInfoEvt_ += Rbtnet__deviceInfo;
+            rbtnet_.HardInfoEvt_ += Rbtnet__hardInfo;
+            rbtnet_.DeviceBatteryEvt_ += deviceBattery;
             //rbtnet_.deviceClearCanvas_ += Rbtnet__deviceClearCanvas;
         }
+
+        public void Rbtnet_DeviceIpEvt(IntPtr ctx, String pMac, String ip,String sendip)
+        {
+            useIp = sendip;
+        }
+
         public void Rbtnet__deviceEvt(IntPtr ctx, String pmac, int cmd, String msg)
         {
             updateLable(this.label3,string.Format(@"命令：{0}，错误信息：{1}", cmd.ToString(), msg));
@@ -87,6 +99,14 @@ namespace rbt_win32_2_demo
             // Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
             updateDeviceNameListView(strDeviceMac, strDeviceName);
             Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
+
+            Thread.Sleep(400);
+            rbtnet_.configBmpStu(strDeviceMac, strDeviceMac, "学生" + strDeviceMac.Substring(8, 3));
+
+            Thread.Sleep(400);
+            rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_INFO);
+            Thread.Sleep(400);
+            rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_HARD_INFO);
         }
 
         private void Rbtnet__eviceNameResultEvt_(IntPtr ctx, string strDeviceMac,int res, string strDeviceName)
@@ -113,16 +133,104 @@ namespace rbt_win32_2_demo
             updateDeviceMacListView_KeyPress(sMac, keyValue);
         }
 
-        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId)
+        private void Rbtnet__deviceShowPageEvt_(IntPtr ctx, IntPtr strDeviceMac, int nNoteId, int nPageId, int nPageInfo)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
-            updateDeviceMacListView_ShowPage(sMac, nNoteId, nPageId);
+            updateDeviceMacListView_ShowPage(sMac, nNoteId, nPageId, nPageInfo);
         }
 
         private void Rbtnet__deviceDisconnectEvt_(IntPtr ctx, IntPtr strDeviceMac)
         {
             string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
             updateDeviceMacListView_Disconnect(sMac);
+        }
+
+
+        private delegate void updateDeviceInfo(string strDeviceMac, string hardNum, string version,string resolution,string electricity);
+        public void updateDeviceInfoListView(string strDeviceMac, string hardNum, string version, string resolution, string electricity)
+        {
+            if (this.listView1.InvokeRequired)
+            {
+                while (!this.listView1.IsHandleCreated)
+                {
+                    if (this.listView1.Disposing || this.listView1.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                updateDeviceInfo d = new updateDeviceInfo(updateDeviceInfoListView);
+                this.listView1.Invoke(d, new object[] { strDeviceMac, hardNum, version, resolution, electricity });
+            }
+            else
+            {
+                foreach (ListViewItem item in this.listView1.Items)
+                {
+                    string strMac = item.SubItems[0].Text;
+                    if (strDeviceMac == (strMac))
+                    {
+                        if (!string.IsNullOrEmpty(hardNum))
+                        {
+                            item.SubItems[7].Text = hardNum;
+                        }
+                        if (!string.IsNullOrEmpty(version))
+                        {
+                            item.SubItems[10].Text = version;
+                        }
+                        if (!string.IsNullOrEmpty(resolution))
+                        {
+                            item.SubItems[9].Text = resolution;
+                        }
+                        if (!string.IsNullOrEmpty(electricity))
+                        {
+                            item.SubItems[8].Text = electricity;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        private void Rbtnet__deviceInfo(IntPtr ctx, String pMac, String version, String deviceMac, int hardNum)
+        {
+            updateDeviceInfoListView(pMac, hardNum.ToString(), version, "", "");
+        }
+        private void Rbtnet__hardInfo(IntPtr ctx, String pMac, int xRange, int yRange, int LPI, int pageNum)
+        {
+            updateDeviceInfoListView(pMac, "","", yRange.ToString()+"*"+ xRange.ToString(), "");
+        }
+        private void deviceBattery(IntPtr ctx, String pMac, eBatteryStatus battery)
+        {
+            string result = string.Empty;
+            switch (battery)
+            {
+                case eBatteryStatus.BATTERY_LOW_POWER:
+                    result = "低电";
+                    break;
+                case eBatteryStatus.BATTERY_FIVE:
+                    result = "<=5%电量";
+                    break;
+                case eBatteryStatus.BATTERY_TWENTY:
+                    result = "<=20%电量";
+                    break;
+                case eBatteryStatus.BATTERY_FORTY:
+                    result = "<=40%电量";
+                    break;
+                case eBatteryStatus.BATTERY_SIXTY:
+                    result = "<=60%电量";
+                    break;
+                case eBatteryStatus.BATTERY_EIGHTY:
+                    result = "<=80%电量";
+                    break;
+                case eBatteryStatus.BATTERY_ONEHUNDREDTY:
+                    result = "<=100%电量";
+                    break;
+                case eBatteryStatus.BATTERY_CHARGING:
+                    result = "<=充电中";
+                    break;
+                case eBatteryStatus.BATTERY_COMPLETE:
+                    result = "<=充电完成";
+                    break;
+            }
+            updateDeviceInfoListView(pMac, "", "", "", result);
         }
 
         private void initListView() {
@@ -133,6 +241,11 @@ namespace rbt_win32_2_demo
             this.listView1.Columns.Add("按键通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("页码通知", 120, HorizontalAlignment.Left);
             this.listView1.Columns.Add("学生姓名", 120, HorizontalAlignment.Left);
+
+            this.listView1.Columns.Add("硬件号", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("电量", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("分辨率", 120, HorizontalAlignment.Left);
+            this.listView1.Columns.Add("固件版本号", 120, HorizontalAlignment.Left);
         }
         /// <summary>
         /// 接收到设备坐标点数据
@@ -187,7 +300,7 @@ namespace rbt_win32_2_demo
                 {
                     npenStatus = 0;
                 }
-                dicMac2DrawForm_[sMac].recvOptimizeData(npenStatus, ux, uy, fPenWidthF*2);
+                dicMac2DrawForm_[sMac].recvOptimizeData(npenStatus, ux, uy, fPenWidthF);
             }
         }
 
@@ -203,6 +316,7 @@ namespace rbt_win32_2_demo
             //Console.WriteLine("设备MAC地址为:{0}", sMac);
             // 更新UI
             updateDeviceMacListView_Mac(strDeviceMac);
+            //updateListStuName(strDeviceMac, "学生" + strDeviceMac.Substring(8, 3));
         }
         /// <summary>
         /// 
@@ -348,6 +462,11 @@ namespace rbt_win32_2_demo
                 this.listView1.Items[nItemCount].SubItems.Add("");
                 this.listView1.Items[nItemCount].SubItems.Add("");
 
+                this.listView1.Items[nItemCount].SubItems.Add("");
+                this.listView1.Items[nItemCount].SubItems.Add("");
+                this.listView1.Items[nItemCount].SubItems.Add("");
+                this.listView1.Items[nItemCount].SubItems.Add("");
+
                 if (!dicMac2DrawForm_.ContainsKey(strMac)) {
                     dicMac2DrawForm_.Add(strMac, new drawForm());
                 }
@@ -408,8 +527,8 @@ namespace rbt_win32_2_demo
         /// <param name="strMac"></param>
         /// <param name="nNoteId"></param>
         /// <param name="nPageId"></param>
-        private delegate void updateDeviceMac_ShowPage(string strMac, int nNoteId, int nPageId);
-        public void updateDeviceMacListView_ShowPage(string strMac, int nNoteId, int nPageId)
+        private delegate void updateDeviceMac_ShowPage(string strMac, int nNoteId, int nPageId, int nPageInfo);
+        public void updateDeviceMacListView_ShowPage(string strMac, int nNoteId, int nPageId, int nPageInfo)
         {
             if (this.listView1.InvokeRequired)
             {
@@ -421,7 +540,7 @@ namespace rbt_win32_2_demo
                     }
                 }
                 updateDeviceMac_ShowPage d = new updateDeviceMac_ShowPage(updateDeviceMacListView_ShowPage);
-                this.listView1.Invoke(d, new object[] { strMac, nNoteId, nPageId });
+                this.listView1.Invoke(d, new object[] { strMac, nNoteId, nPageId, nPageInfo });
             }
             else
             {
@@ -440,7 +559,7 @@ namespace rbt_win32_2_demo
 
                 if (nFindItem > -1)
                 {
-                    this.listView1.Items[nFindItem].SubItems[5].Text = "noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId);
+                    this.listView1.Items[nFindItem].SubItems[5].Text = "noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId) + " nPageInfo=" + Convert.ToString(nPageInfo);
                 }
             }
         }
@@ -774,6 +893,7 @@ namespace rbt_win32_2_demo
         }
 
         private int delayClose = 2;
+        string useIp = string.Empty;
         private void timer1_Tick(object sender, EventArgs e)
         {
             try
@@ -788,17 +908,18 @@ namespace rbt_win32_2_demo
                     //AddressFamily.InterNetworkV6表示此地址为IPv6类型
                     if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
                     {
-                        this.IpComboBox.Items.Add(IpEntry.AddressList[i].ToString());
+                        this.IpComboBox.Items.Add(IpEntry.AddressList[i].ToString());                        
                         //rbtnet_.configNet(IpEntry.AddressList[i].ToString(), 6001, false, true, "");
                     }
                 }
                 if (startConfigNet)
                 {
-                    string strIP = this.IpComboBox.Text;
-                    if (!string.IsNullOrEmpty(strIP))
-                    {
-                        rbtnet_.configNet(strIP, 6001, false, true, "");
-                    }
+                    rbtnet_.configNet(useIp, 6001, false, true, "");
+                    //string strIP = this.IpComboBox.Text;
+                    //if (!string.IsNullOrEmpty(strIP))     
+                    //{
+                    //    rbtnet_.configNet(strIP, 6001, false, true, "");
+                    //}
                 }
 
                 if (string.IsNullOrEmpty(this.IpComboBox.Text)&& this.IpComboBox.Items.Count>0)
@@ -897,22 +1018,27 @@ namespace rbt_win32_2_demo
             dicMac2DrawForm_.Clear();
             try
             {
-                if(!isClosing)
+                //int nItemCount = this.listView1.Items.Count;
+                //for (int i = 0; i < nItemCount; ++i)
+                //{
+                //    string strAMac = this.listView1.Items[i].SubItems[0].Text;
+                //    rbtnet_.configBmpStu2(strAMac, "");
+                //}
+                //Thread.Sleep(200);
+                if (!isClosing)
                 {
                     rbtnet_.stop();
                     e.Cancel = true;
                     isClosing = true;
                 }
-                
-                
             }
             catch (Exception)
             {
-                //Environment.Exit(0);
+                Environment.Exit(0);
             }
             finally
             {
-                //Environment.Exit(0);
+                Environment.Exit(0);
             }
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -989,7 +1115,8 @@ where device_mac = '{0}';
 
                 foreach (var item in dic)
                 {
-                    rbtnet_.configBmpStu(item.DeviceNum, item.StudentNum, item.StudentName);
+                    //rbtnet_.configBmpStu(item.DeviceNum, item.StudentNum, item.StudentName);
+                    rbtnet_.configBmpStu2(item.DeviceNum, item.StudentName);
                     updateListStuName(item.DeviceNum, item.StudentName);
                 }
 
@@ -1007,6 +1134,11 @@ where device_mac = '{0}';
                     this.listView1.Items[i].SubItems[6].Text = stuName;
                 }
             }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            rbtnet_.configFreq(3);
         }
     }
 }

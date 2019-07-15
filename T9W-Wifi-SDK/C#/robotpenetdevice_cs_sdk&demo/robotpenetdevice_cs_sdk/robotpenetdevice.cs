@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -11,6 +13,9 @@ namespace robotpenetdevice_cs
         // 声明dll 函数接口
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_init(ref Init_Param arg);   // 初始化
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool rbt_win_init2(int port = 6001, int listenCount = 60, bool open = true, bool optimize = false);   // 初始化
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_uninit();     // 反初始化
@@ -32,11 +37,20 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_send_endanswer(string mac);   // 结束答题命令
 
+        /// <summary>
+        /// 发送命令
+        /// </summary>
+        /// <param name="cmdId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool rbt_win_send(int cmdId, string mac = "");   // 结束答题命令
+
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool rbt_win_start();   // 开启监听
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_open_module(bool open);   // 打开模组
+        internal static extern void rbt_win_open_module(bool open,string mac);   // 打开模组
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_stop();   // 停止监听
@@ -55,46 +69,108 @@ namespace robotpenetdevice_cs
         /// <param name="strDeviceMac"></param>
         /// <param name="strDeviceStu"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_config_bmp_stu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName);
+        internal static extern int rbt_win_config_bmp_stu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName);
 
+        /// <summary>
+        /// 设置学生id（支持中文）
+        /// </summary>
+        /// <param name="strDeviceMac"></param>
+        /// <param name="strDeviceStu"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_config_bmp_stu2(string strDeviceMac, string strDeviceStuName);
+
+        /// <summary>
+        /// 批量配置wifi信息
+        /// </summary>
+        /// <param name="strDeviceSSID"></param>
+        /// <param name="strDevicePwd"></param>
+        /// <param name="strDeviceSrc"></param>
+        /// <returns></returns>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_wifi(string strDeviceSSID, string strDevicePwd, string strDeviceSrc);
-
+        /// <summary>
+        /// UDP广播，广播主机ip地址
+        /// 建议每隔两秒一次
+        /// </summary>
+        /// <param name="strIP">传空自动获取IP地址</param>
+        /// <param name="nPort"></param>
+        /// <param name="bMQTT"></param>
+        /// <param name="bTCP"></param>
+        /// <param name="strDeviceSrc"></param>
+        /// <returns></returns>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
-
+        
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int rbt_win_config_wifi_net(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc);
-
+        /// <summary>
+        /// 绑定获取设备MAC地址回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicemac_cb(onDeviceMac arg);   // 设备mac地址上报函数地址
-
+        /// <summary>
+        /// 绑定点数据
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_origindata_cb(onOriginDataNew arg);   // 设备坐标上报函数地址
-
+        /// <summary>
+        /// 绑定点数据拓展
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_origindata_ex_cb(onOriginDataNewEx arg);   // 设备坐标上报函数地址
+        /// <summary>
+        /// 绑定设备断开连接事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devivedisconnect_cb(onDeviceDisconnect arg);   // 设备断开连接函数地址
-
+        /// <summary>
+        /// 绑定按键回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicekeypress_cb(onDeviceKeyPress arg);   // 设备按键函数地址
-
+        /// <summary>
+        /// 绑定设备页码回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_deviceshowpage_cb(onDeviceShowPageNew arg);   // 设备页码识别函数地址
-
+        /// <summary>
+        /// 绑定设备按键结果
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_deviceanswerresult_cb(onDeviceAnswerResult arg);   // 设备选择题结果函数地址
-
+        /// <summary>
+        /// 绑定设备名称回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicename_cb(onDeviceName arg);
-
+        /// <summary>
+        /// 绑定设备设置名称回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_devicenameresult_cb(onDeviceNameResult arg);
-
+        /// <summary>
+        ///设置标点率
+        /// </summary>
+        /// <param name="freq"></param>
+        /// <param name="mac"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_config_freq(int freq);
-
+        internal static extern void rbt_win_config_freq(int freq,string mac);
+        /// <summary>
+        /// 设置休眠事件
+        /// </summary>
+        /// <param name="mins"></param>
+        /// <param name="mac"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void rbt_win_config_sleep(int mins);
+        internal static extern void rbt_win_config_sleep(int mins, string mac);
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_error_cb(onError arg);
@@ -102,8 +178,14 @@ namespace robotpenetdevice_cs
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_canvasid_cb(onCanvasID arg);
 
+        /// <summary>
+        /// 绑定设备优化笔迹回调事件
+        /// </summary>
+        /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_set_optimizedata_cb(onOptimizeData arg);
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_optimizedata_ex_cb(onOptimizeDataEx arg);
 
 
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -122,6 +204,67 @@ namespace robotpenetdevice_cs
         internal static extern void rbt_win_set_screen_freq(int seconds);
 
 
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_deviceip_cb(onDeviceIpOld arg);
+
+        /// <summary>
+        /// 绑定设备状态回调事件
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_devicetype_cb(onDeviceType arg);
+        /// <summary>
+        /// 绑定设备状态回调事件
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_keyanswer_cb(onKeyAnswer arg);
+        /// <summary>
+        /// 绑定设备信息回到事件
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_deviceinfo_cb(onDeviceInfo arg);
+        /// <summary>
+        /// 绑定设备硬件信息回调事件
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_hardinfo_cb(onHardInfo arg);
+        /// <summary>
+        /// 绑定设备电量信息回调事件
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_devicebattery_cb(onDeviceBattery arg);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_oidpageinfo_cb(onOidPageInfo arg);
+
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_offset_center(int x = 0, int y = 0, string mac = "");
+
+        //#笔迹优化
+        //设置笔宽度
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setPenWidth(float width);
+        //设置拖尾阈值，设置的越小，拖尾越长(0~1)
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setPointDelay(float delay);
+        //设置粗细变化阈值，设置的越小，粗细变化越小
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setPointDamping(float damping);
+        //设置基础宽度，用于过滤点和点之间的距离，默认取PenWidth
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setBaseWidth(float width);
+        //设置结尾宽度，此参数决定拖尾笔锋终点宽度，默认取BaseWidth * 0.1
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setEndWidth(float width);
+        //笔锋收尾触发速度判断，当速度大于笔宽度/decrease时会触发笔锋
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setWidthDecrease(float decrease);
+
+
         public event onDeviceMac deviceMacEvt_;
         public event onOriginData deviceOriginDataEvt_;
         public event onOriginDataNew deviceOriginDataNewEvt_;
@@ -135,6 +278,15 @@ namespace robotpenetdevice_cs
         public event onError deviceError_ = null;
         public event onCanvasID deviceCanvasID_ = null;
         public event onOptimizeData deviceOptimizeDataEvt_ = null;
+        public event onDeviceIpOld DeviceIpOldEvt_ = null;
+        public event onDeviceIp DeviceIpEvt_ = null;
+
+        public event onDeviceType DeviceTypeEvt_ = null;
+        public event onKeyAnswer KeyAnswerEvt_ = null;
+        public event onDeviceInfo DeviceInfoEvt_ = null;
+        public event onHardInfo HardInfoEvt_ = null;
+        public event onDeviceBattery DeviceBatteryEvt_ = null;
+
 
         //private onOriginData originDataDeletegate = new onOriginData(originDataNotify);
         // 用于存储this对象主要保证该变量的生命周期
@@ -153,6 +305,16 @@ namespace robotpenetdevice_cs
         private static onError onerror = null;
         private static onCanvasID oncanvasid = null;
         private static onOptimizeData onoptimizedata = null;
+        private static onDeviceIpOld ondeviceipold = null;
+        private static onDeviceIp ondeviceip = null;
+
+        private static onDeviceType ondevicetype = null;
+        private static onKeyAnswer onkeyanswer = null;
+        private static onDeviceInfo ondeviceinfo = null;
+        private static onHardInfo onhardinfo = null;
+        private static onDeviceBattery ondevicebattery = null;
+
+
 
 
         // 构造函数
@@ -199,6 +361,25 @@ namespace robotpenetdevice_cs
                 if (rbtNetThis.deviceOptimizeDataEvt_!= null)
                 {
                     rbtNetThis.deviceOptimizeDataEvt_(ctx, pmac, us, ux, uy, width, speed);
+                }
+            }
+        }
+
+        private static void deviceip(IntPtr ctx, String pMac, String ip)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+            if (rbtNetThis != null)
+            {
+                if (rbtNetThis.DeviceIpEvt_ != null)
+                {
+                    string wd = ip.Substring(0, ip.LastIndexOf('.'));
+                    if(ipdic.ContainsKey(wd))
+                    {
+                        rbtNetThis.DeviceIpEvt_(ctx, pMac, ip, ipdic[wd]);
+                    }
+
+                    //
                 }
             }
         }
@@ -299,15 +480,41 @@ namespace robotpenetdevice_cs
 
             if (rbtNetThis != null)
             {
-                if(rbtNetThis.deviceShowPageNewEvt_ != null)
+                int _nPageInfo = 0;
+                if (nPageInfo != 0)
                 {
-                    rbtNetThis.deviceShowPageNewEvt_(ctx, strDeviceMac, nNoteId, nPageId, nPageInfo);
+                    string d = System.Convert.ToString(nPageInfo, 2);
+                    int dlen = d.Length;
+                    for (int j = 0; j < 17 - dlen; j++)
+                    {
+                        d = "0" + d;
+                    }
+                    switch (rbtNetThis.pt)
+                    {
+                        case PrintType.Base:
+                        default:
+                            _nPageInfo = nPageInfo;
+                            break;
+                        case PrintType.Fault_tolerance:
+                            string code = "" + d[1] + d[6] + d[9] + d[12] + d[15];
+                            _nPageInfo = Convert.ToInt32(code, 2);
+                            break;
+                        case PrintType.Fault_tolerance2:
+                            string code2 = "" + d[0] + d[2] + d[5] + d[7] + d[9] + d[11] + d[13] + d[15];
+                            _nPageInfo = Convert.ToInt32(code2, 2);
+                            break;
+                    }
                 }
-                else if(rbtNetThis.deviceShowPageEvt_ != null)
+
+                if (rbtNetThis.deviceShowPageNewEvt_ != null)
+                {
+                    rbtNetThis.deviceShowPageNewEvt_(ctx, strDeviceMac, nNoteId, nPageId, _nPageInfo);
+                }
+                else if (rbtNetThis.deviceShowPageEvt_ != null)
                 {
                     rbtNetThis.deviceShowPageEvt_(ctx, strDeviceMac, nNoteId, nPageId);
                 }
-                
+
             }
         }
 
@@ -362,6 +569,65 @@ namespace robotpenetdevice_cs
                 rbtNetThis.deviceCanvasID_(ctx, pmac, type, canvasID);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="pMac"></param>
+        /// <param name="type"></param>
+        private static void deviceType(IntPtr ctx, String pMac, int type)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.DeviceTypeEvt_ != null)
+            {
+                rbtNetThis.DeviceTypeEvt_(ctx, pMac, type);
+            }
+        }
+        private static void keyAnswer(IntPtr ctx, String pMac, int key)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.KeyAnswerEvt_ != null)
+            {
+                rbtNetThis.KeyAnswerEvt_(ctx, pMac, key);
+            }
+        }
+        private static void deviceInfo(IntPtr ctx, String pMac, String version, String deviceMac, int hardNum)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.DeviceInfoEvt_ != null)
+            {
+                rbtNetThis.DeviceInfoEvt_(ctx, pMac, version, deviceMac, hardNum);
+            }
+        }
+        private static void hardInfo(IntPtr ctx, String pMac, int xRange, int yRange, int LPI, int pageNum)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.HardInfoEvt_ != null)
+            {
+                rbtNetThis.HardInfoEvt_(ctx, pMac, xRange, yRange, LPI, pageNum);
+            }
+        }
+        private static void deviceBattery(IntPtr ctx, String pMac, eBatteryStatus battery)
+        {
+            GCHandle thisHandle = GCHandle.FromIntPtr(ctx);
+            RbtNet rbtNetThis = (RbtNet)thisHandle.Target;
+
+            if (rbtNetThis != null && rbtNetThis.DeviceBatteryEvt_ != null)
+            {
+                rbtNetThis.DeviceBatteryEvt_(ctx, pMac, battery);
+            }
+        }
+
+
+        PrintType pt = PrintType.Base;
 
         /// <summary>
         /// 初始化
@@ -382,10 +648,27 @@ namespace robotpenetdevice_cs
                 arg.listenCount = 60;
             }
             bool sus = rbt_win_init(ref arg);
+            /*int size = Marshal.SizeOf(typeof(Init_Param));
+            System.Diagnostics.Debug.WriteLine(size);//*/
+
+            BindEvent();
+        }
+
+        public void init(int port = 6001, int listenCount = 60, bool open = true, bool optimize = false)
+        {
+            gchandld = GCHandle.Alloc(this);
+            iPtrThis_ = GCHandle.ToIntPtr(gchandld);
+
+            rbt_win_init2();
 
             /*int size = Marshal.SizeOf(typeof(Init_Param));
             System.Diagnostics.Debug.WriteLine(size);//*/
 
+            BindEvent();
+        }
+
+        private void BindEvent()
+        {
             onorigindatanew = new onOriginDataNew(originDataNotifyNew);
             rbt_win_set_origindata_cb(onorigindatanew);
             ondevicemac = new onDeviceMac(deviceMacNotify);
@@ -408,6 +691,29 @@ namespace robotpenetdevice_cs
             rbt_win_set_canvasid_cb(oncanvasid);
             onoptimizedata = new onOptimizeData(optimizeData);
             rbt_win_set_optimizedata_cb(onoptimizedata);
+            ondeviceipold = new onDeviceIpOld(deviceip);
+            rbt_win_set_deviceip_cb(ondeviceipold);
+
+            ondevicetype = new onDeviceType(deviceType);
+            rbt_win_set_devicetype_cb(ondevicetype);
+            onkeyanswer = new onKeyAnswer(keyAnswer);
+            rbt_win_set_keyanswer_cb(onkeyanswer);
+            ondeviceinfo = new onDeviceInfo(deviceInfo);
+            rbt_win_set_deviceinfo_cb(ondeviceinfo);
+            onhardinfo = new onHardInfo(hardInfo);
+            rbt_win_set_hardinfo_cb(onhardinfo);
+            ondevicebattery = new onDeviceBattery(deviceBattery);
+            rbt_win_set_devicebattery_cb(ondevicebattery);
+        }
+
+
+        /// <summary>
+        /// 设置页码打印模式
+        /// </summary>
+        /// <param name="_pt"></param>
+        public void setPrintType(PrintType _pt)
+        {
+            pt = _pt;
         }
 
         // 反初始化
@@ -466,9 +772,9 @@ namespace robotpenetdevice_cs
         /// </summary>
         /// <param name="open">true:打开，false:关闭</param>
         /// <returns></returns>
-        public void openModule(bool open)
+        public void openModule(bool open,string mac="")
         {
-            rbt_win_open_module(open);
+            rbt_win_open_module(open, mac);
         }
 
         /// <summary>
@@ -482,9 +788,18 @@ namespace robotpenetdevice_cs
         /// <summary>
         /// 设置学号(支持中文)
         /// </summary>
-        public void configBmpStu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName)
+        public int configBmpStu(string strDeviceMac, string strDeviceStuNo, string strDeviceStuName)
         {
-            rbt_win_config_bmp_stu(strDeviceMac, strDeviceStuNo, strDeviceStuName);
+           return rbt_win_config_bmp_stu(strDeviceMac, strDeviceStuNo, strDeviceStuName);
+        }
+
+        /// <summary>
+        /// 设置学号(支持中文)
+        /// 天喻单独定制接口
+        /// </summary>
+        public void configBmpStu2(string strDeviceMac, string strDeviceStuName)
+        {
+            rbt_win_config_bmp_stu2(strDeviceMac, strDeviceStuName);
         }
 
         /// <summary>
@@ -495,28 +810,65 @@ namespace robotpenetdevice_cs
             return rbt_win_config_wifi(strDeviceSSID, strDevicePwd, strDeviceSrc);
         }
 
+        public static Dictionary<string, string> ipdic = new Dictionary<string, string>();
         /// <summary>
         /// 配网
         /// </summary>
         public int configNet(string strIP, int nPort, bool bMQTT, bool bTCP, string strDeviceSrc)
         {
+            try
+            {
+                string HostName = Dns.GetHostName();
+                IPHostEntry IpEntry = Dns.GetHostEntry(HostName);
+                for (int i = 0; i < IpEntry.AddressList.Length; i++)
+                {
+                    //从IP地址列表中筛选出IPv4类型的IP地址
+                    //AddressFamily.InterNetwork表示此IP为IPv4,
+                    //AddressFamily.InterNetworkV6表示此地址为IPv6类型
+                    if (IpEntry.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+                    {                        
+                        if (!string.IsNullOrEmpty(IpEntry.AddressList[i].ToString()))
+                        {
+                            string wd = IpEntry.AddressList[i].ToString().Substring(0, IpEntry.AddressList[i].ToString().LastIndexOf('.'));
+                            if(ipdic.ContainsKey(wd))
+                            {
+                                if(ipdic[wd]!= IpEntry.AddressList[i].ToString())
+                                {
+                                    ipdic[wd] = IpEntry.AddressList[i].ToString();
+                                }
+                            }
+                            else
+                            {
+                                ipdic.Add(wd, IpEntry.AddressList[i].ToString());
+                            }
+                        }
+
+                        //rbtnet_.configNet(IpEntry.AddressList[i].ToString(), 6001, false, true, "");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            
             return rbt_win_config_net(strIP, nPort, bMQTT, bTCP, strDeviceSrc);
         }
 
         /// <summary>
         /// 设置报点率(范围是0到5)
         /// </summary>
-        public void configFreq(int freq)
+        public void configFreq(int freq, string mac = "")
         {
-            rbt_win_config_freq(freq);
+            rbt_win_config_freq(freq,mac);
         }
 
         /// <summary>
         /// 设置睡眠时间(分钟)
         /// </summary>
-        public void configSleep(int mins)
+        public void configSleep(int mins, string mac = "")
         {
-            rbt_win_config_sleep(mins);
+            rbt_win_config_sleep(mins,mac);
         }
 
         /// <summary>
@@ -533,6 +885,59 @@ namespace robotpenetdevice_cs
         public void setScreenFreq(int seconds)
         {
             rbt_win_set_screen_freq(seconds);
+        }
+        /// <summary>
+        /// 设置笔宽度
+        /// </summary>
+        /// <param name="width"></param>
+        public void SetPenWidth(float width)
+        {
+            rbt_win_setPenWidth(width);
+        }
+        /// <summary>
+        /// 设置拖尾阈值，设置的越小，拖尾越长(0~1)
+        /// </summary>
+        /// <param name="delay"></param>
+        public void SetPointDelay(float delay)
+        {
+            rbt_win_setPointDelay(delay);
+        }
+        /// <summary>
+        /// 设置粗细变化阈值，设置的越小，粗细变化越小
+        /// </summary>
+        /// <param name="damping"></param>
+        public void PointDamping(float damping)
+        {
+            rbt_win_setPointDamping(damping);
+        }
+        /// <summary>
+        /// 设置基础宽度，用于过滤点和点之间的距离，默认取PenWidth
+        /// </summary>
+        /// <param name="width"></param>
+        public void SetBaseWidth(float width)
+        {
+            rbt_win_setBaseWidth(width);
+        }
+        /// <summary>
+        /// 设置结尾宽度，此参数决定拖尾笔锋终点宽度，默认取BaseWidth * 0.1
+        /// </summary>
+        /// <param name="width"></param>
+        public void SetEndWidth(float width)
+        {
+            rbt_win_setEndWidth(width);
+        }
+        /// <summary>
+        /// 笔锋收尾触发速度判断，当速度大于笔宽度/decrease时会触发笔锋
+        /// </summary>
+        /// <param name="decrease"></param>
+        public void SetWidthDecrease(float decrease)
+        {
+            rbt_win_setWidthDecrease(decrease);
+        }
+
+        public void SendCmd(int cmdkey,string mac="")
+        {
+            rbt_win_send(cmdkey, mac);
         }
     }
 }
