@@ -51,7 +51,7 @@ namespace rbt_win32_2_demo
         {
             if (!string.IsNullOrEmpty(this.textBox1.Text))
             {
-                int t = form.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
+                int t = Form1.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
                 if (t == 0)
                 {
                     isStartConfigWifi = true;
@@ -70,7 +70,7 @@ namespace rbt_win32_2_demo
             if (!string.IsNullOrEmpty(this.textBox4.Text))
             {
                 num = int.Parse(this.textBox4.Text);
-                form.rbtnet_.configSleep(num);
+                Form1.rbtnet_.configSleep(num);
                 isStartConfigSleep = true;
             }
             else
@@ -83,13 +83,13 @@ namespace rbt_win32_2_demo
         {
             if (!string.IsNullOrEmpty(this.textBox1.Text)&& isStartConfigWifi)
             {
-                int t = form.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
+                int t = Form1.rbtnet_.configWifi(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text);
             }
             if (!string.IsNullOrEmpty(this.textBox4.Text)&& isStartConfigSleep)
             {
                 int num = 0;
                 num = int.Parse(this.textBox4.Text);
-                form.rbtnet_.configSleep(num);
+                Form1.rbtnet_.configSleep(num);
             }
         }
     }

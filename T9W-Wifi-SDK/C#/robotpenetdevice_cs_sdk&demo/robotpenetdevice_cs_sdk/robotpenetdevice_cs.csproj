@@ -81,6 +81,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="robotpenetdevice.cs" />
     <Compile Include="robotpenetdevice_entity.cs" />
+    <Compile Include="robotpenetdevice_event.cs" />
+    <Compile Include="robotpenetdevice_ex.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

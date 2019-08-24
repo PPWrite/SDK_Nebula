@@ -19,8 +19,8 @@ namespace rbt_win32_2_demo
 
     public partial class drawForm : Form
     {
-        private int m_nDeviceW = 22600;
-        private int m_nDeviceH = 16650;
+        private int m_nDeviceW = 29700;
+        private int m_nDeviceH = 21000;
         private List<CanvasItem> m_items = new List<CanvasItem>();  // 所有线条
         private CanvasItem m_currentItem;
         private bool m_bDrawing = false;
@@ -30,6 +30,7 @@ namespace rbt_win32_2_demo
         private PointF m_point;
         private int m_nPenStatus = 0;
         private double m_nCompress = 0;
+
         public bool bScreenO { get; set; }
 
         public drawForm()
@@ -131,14 +132,6 @@ namespace rbt_win32_2_demo
         public void recvData(int nPenStatus, int x, int y, int nCompress)
         {
             PointF pointf;
-            /*if (!bScreenO)
-            {
-                pointf = new PointF(y, m_nDeviceW-x);
-            }
-            else
-            {
-                pointf = new PointF(x, y);
-            }*/
             pointf = new PointF(x, y);
             if (!pointIsInvalid(nPenStatus, ref pointf))
                 return;
@@ -244,20 +237,8 @@ namespace rbt_win32_2_demo
         {
             if (fPenSize < 0)
                 return;
-
-            //Console.WriteLine("origin status={0} x={1} y={2} penWidth={3}", nPenStatus, x, y, fPenSize);
-            //Console.WriteLine("origin status={0} x={1} y={2} penWidth={3}", nPenStatus, x, y, fPenWidth);
             PointF pointf;
-            /*if (canvastype == canvasType.T7E_TS)
-            {
-                int nx = m_nDeviceW - x;
-                int ny = m_nDeviceH - y;
-                pointf = new PointF(nx, ny);
-            }
-            else*/
-            {
-                pointf = new PointF(x, y);
-            }
+            pointf = new PointF(x, y);
 
 
             if (!pointIsInvalid(nPenStatus, ref pointf))
@@ -267,8 +248,6 @@ namespace rbt_win32_2_demo
             {
                 if (nFlags == 1)
                     onEndDrawBezier();
-                //else
-                // onEndDrawBezier();
                 nFlags = 0;
             }
             else
@@ -287,15 +266,13 @@ namespace rbt_win32_2_demo
             }
         }
 
+
         List<PointF> lstBezierPoints = new List<PointF>();
         bool bFristPoint = false;
         float fPenSize = 0;
 
         public void onBeginDrawBezier(ref PointF p, float fPenWidth)
         {
-            // doPointDrawing(ref p);
-            //return;
-
             bFristPoint = true;
             lstBezierPoints.Clear();
             m_bDrawing = true;
@@ -314,10 +291,6 @@ namespace rbt_win32_2_demo
         {
             if (!m_bDrawing)
                 return;
-
-            //doPointDrawing(ref p);
-            // return;
-
 
             lstBezierPoints.Add(p);
             m_currentItem.listpoints.Add(p);
@@ -402,7 +375,6 @@ namespace rbt_win32_2_demo
         /// <param name="fPenWidthF"></param>
         private void doLineDrawing(ref PointF p1, ref PointF p2, float fPenWidthF)
         {
-            //Console.WriteLine("doLineDrawing p1={0} p2={1} penWidth={2}", p1, p2, fPenWidthF);
             Graphics grap = this.CreateGraphics();
             grap.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             grap.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;

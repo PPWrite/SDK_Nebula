@@ -54,15 +54,15 @@ namespace rbt_win32_2_demo
             }
             if(isSubChinese)
             {
-                form.rbtnet_.configStu(macNum, this.textBox1.Text);
+                Form1.rbtnet_.configStu(macNum, this.textBox1.Text);
                 Thread.Sleep(100);
-                //form.rbtnet_.configBmpStu2(macNum, this.textBox2.Text);
-                form.rbtnet_.configBmpStu(macNum,this.textBox1.Text, this.textBox2.Text);
+                Form1.rbtnet_.configBmpStu2(macNum, this.textBox2.Text);
+               // Form1.rbtnet_.configBmpStu(macNum,this.textBox1.Text, this.textBox2.Text);
                 form.UpdateListViewSelectedStuName(this.textBox1.Text, this.textBox2.Text);
             }
             else
             {
-                form.rbtnet_.configStu(macNum, this.textBox1.Text);
+                Form1.rbtnet_.configStu(macNum, this.textBox1.Text);
                 form.UpdateListViewSelectedStuName(this.textBox1.Text);
             }
             

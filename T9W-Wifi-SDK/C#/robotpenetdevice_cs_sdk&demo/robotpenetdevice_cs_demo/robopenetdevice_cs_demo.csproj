@@ -111,7 +111,15 @@
     <Compile Include="drawForm.Designer.cs">
       <DependentUpon>drawForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="drawFormForA4.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="drawFormForA4.designer.cs">
+      <DependentUpon>drawFormForA4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\DeviceSettingInfo.cs" />
+    <Compile Include="Helper\Drawing.cs" />
+    <Compile Include="Helper\Drawing_RePlay.cs" />
     <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -135,6 +143,9 @@
     </Compile>
     <EmbeddedResource Include="drawForm.resx">
       <DependentUpon>drawForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="drawFormForA4.resx">
+      <DependentUpon>drawFormForA4.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
