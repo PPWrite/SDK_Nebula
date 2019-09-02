@@ -21,6 +21,8 @@ namespace rbt_win32_2_demo
         public static RbtNet rbtnet_ = null;
         public static bool _optimize = false;
 
+        public string oemkey = string.Empty;
+
 
         public Form1()
         {
@@ -41,6 +43,7 @@ namespace rbt_win32_2_demo
             Init_Param param = new Init_Param();
 
             _optimize = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["optimize"]);
+            oemkey = System.Configuration.ConfigurationSettings.AppSettings["OEMKEY"];
 
             param.optimize = _optimize;
             rbtnet_.init(ref param);
@@ -698,6 +701,16 @@ namespace rbt_win32_2_demo
             }
             else
             {
+                int Packet_len = 8;
+                int resultList_len = 6;
+
+                if (oemkey == "YJ")
+                {
+                    Packet_len = 9;
+                    resultList_len = 7;
+                }
+
+
                 int nItemCount = this.listView1.Items.Count;
                 int nFindItem = -1;
                 for (int i = 0; i < nItemCount; ++i)
@@ -719,11 +732,11 @@ namespace rbt_win32_2_demo
                     }
                     else
                     {
-                        int count = nResultSize / 8;
+                        int count = nResultSize / Packet_len;
                         for (int i = 0; i < count; i++)
                         {
-                            byte[] byteRes = new byte[6];
-                            Array.Copy(strResult, i * 8 + 2, byteRes, 0, 6);
+                            byte[] byteRes = new byte[resultList_len];
+                            Array.Copy(strResult, i * Packet_len + 2, byteRes, 0, resultList_len);
                             strKeyValue += GetResultKey(i + 1, byteRes) + "；";
                         }
                     }
@@ -1205,6 +1218,7 @@ where device_mac = '{0}';
         {
             comboBox_Qlist.Items.Clear();
             textBox_num.Text = "1";
+            this.button_start.Enabled = true;
             switch (comboBox_Qtype.SelectedIndex)
             {
                 case 0:
@@ -1234,6 +1248,13 @@ where device_mac = '{0}';
                         comboBox_Qlist.Items.Add("多选题");
                         comboBox_Qlist.SelectedIndex = 0;
                         textBox_num.Enabled = false;
+
+                        if (oemkey == "YJ")
+                        {
+                            this.button_start.Enabled = false;
+                            MessageBox.Show("当前固件不支持");
+                        }
+
                         break;
                     }
                 case 3:
@@ -1250,6 +1271,13 @@ where device_mac = '{0}';
                         comboBox_Qlist.SelectedIndex = 0;
                         comboBox_Qlist.Enabled = false;
                         textBox_num.Enabled = true;
+
+                        if (oemkey == "YJ")
+                        {
+                            this.button_start.Enabled = false;
+                            MessageBox.Show("当前固件不支持");
+                        }
+
                         break;
                     }
                 case 5:
@@ -1258,6 +1286,13 @@ where device_mac = '{0}';
                         comboBox_Qlist.SelectedIndex = 0;
                         comboBox_Qlist.Enabled = false;
                         textBox_num.Enabled = false;
+
+                        if (oemkey == "YJ")
+                        {
+                            this.button_start.Enabled = false;
+                            MessageBox.Show("当前固件不支持");
+                        }
+
                         break;
                     }
                 default:
