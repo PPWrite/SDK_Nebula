@@ -17,6 +17,7 @@ enum keyPressEnum
 	K_ERROR = 0x13,
 	K_CACLE = 0x14,
 	K_SURE = 0x15,
+	K_G = 0x16,
 };
 
 enum eBatteryStatus
@@ -81,6 +82,12 @@ typedef void __stdcall onHardInfo(rbt_win_context *ctx, const char* pMac, int xR
 typedef void __stdcall onDeviceBattery(rbt_win_context *ctx, const char* pMac, eBatteryStatus battery);
 //设备删除离线笔记回调
 typedef void __stdcall onDeleteNotes(rbt_win_context *ctx, const char* pMac, int result);
+//设备上线上报设备的ip地址
+typedef void __stdcall onDeviceIp(rbt_win_context *ctx, const char* pMac, const char *ip);
+//X10上报扫描信息(x坐标,y坐标,旋转角度)
+typedef void __stdcall onOidPageInfo(rbt_win_context *ctx, const char* pMac, float fX, float fY, int nAngle);
+//解答,书写,测试类题目切换题目上报的题号
+typedef void __stdcall onCurrentWritingNum(rbt_win_context *ctx, const char* pMac, int nNum);
 
 void rbt_win_set_accept_cb(onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
@@ -103,6 +110,9 @@ void rbt_win_set_deviceinfo_cb(onDeviceInfo *arg);
 void rbt_win_set_hardinfo_cb(onHardInfo *arg);
 void rbt_win_set_devicebattery_cb(onDeviceBattery *arg);
 void rbt_win_set_deletenotes_cb(onDeleteNotes *arg);
+void rbt_win_set_deviceip_cb(onDeviceIp *arg);
+void rbt_win_set_oidpageinfo_cb(onOidPageInfo *arg);
+void rbt_wib_set_currentwritingnum_cb(onCurrentWritingNum *arg);
 
 #pragma pack(1)
 typedef struct _Init_Param

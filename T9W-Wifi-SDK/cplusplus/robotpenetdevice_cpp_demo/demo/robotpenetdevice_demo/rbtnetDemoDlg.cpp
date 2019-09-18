@@ -19,7 +19,8 @@
 
 //#define USE_OPT
 
-#define USE_KDXF 
+//#define USE_KDXF 
+//#define WIFI_YJ
 
 //#define USE_TEST_KEEPALIVE
 
@@ -173,6 +174,8 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 #ifdef USE_KDXF
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(2, _T("投票"));
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(3, _T("不定选择"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(4, _T("测试"));
+	((CComboBox*)GetDlgItem(IDC_COMBO2))->InsertString(5, _T("书写"));
 #endif
 	((CComboBox*)GetDlgItem(IDC_COMBO2))->SetCurSel(0);
 
@@ -180,7 +183,15 @@ BOOL CrbtnetDemoDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(1, _T("单选"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(2, _T("多选"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(3, _T("抢答"));
+#ifdef WIFI_YJ
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->InsertString(4, _T("解答"));
+#endif
+#ifdef WIFI_YJ
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT2))->InsertString(0, _T("单选"));
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT2))->InsertString(1, _T("多选"));
+#endif
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->SetCurSel(0);
+	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT2))->SetCurSel(0);
 
 	GetLocalAddress();
 
@@ -665,7 +676,7 @@ void CrbtnetDemoDlg::OnNMDblclkListConnect(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	m_device2draw[strMac]->SetWindowText(strMac);
-
+	m_device2draw[strMac]->ShowWindow(TRUE);
 	*pResult = 0;
 }
 
@@ -1363,7 +1374,16 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 
-	int subject = ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
+	int subject = 0;
+	if (index == 2)
+	{
+		subject== ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT2))->GetCurSel()+1;
+	}
+	else
+	{
+		subject == ((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->GetCurSel();
+	}
+		
 	m_nCurrentSubject = subject;
 
 	CString strNum;
@@ -1376,7 +1396,7 @@ void CrbtnetDemoDlg::OnBnClickedButtonStartAnswer()
 		pTopicType[i] = subject + 1; //题目类型 1判断 2单选 3多选 4抢答
 	}
 	bool bSendRes = false;
-	//0为主观题,1为客观题
+	//0为主观题,1为客观题，2为投票提
 	if (index == 0)
 		bSendRes = rbt_win_send_startanswer(index, 0, NULL);
 	else
@@ -1489,8 +1509,10 @@ void CrbtnetDemoDlg::OnCbnSelchangeCombo2()
 	// TODO: 在此添加控件通知处理程序代码
 	int index = ((CComboBox*)GetDlgItem(IDC_COMBO2))->GetCurSel();
 	GetDlgItem(IDC_COMBO_SUBJECT)->ShowWindow((index == 1) ? SW_SHOW : SW_HIDE);
+	GetDlgItem(IDC_COMBO_SUBJECT2)->ShowWindow((index == 2) ? SW_SHOW : SW_HIDE);
+
 	((CComboBox*)GetDlgItem(IDC_COMBO_SUBJECT))->SetCurSel(2);
-	GetDlgItem(IDC_EDIT_NUM)->ShowWindow(index ? SW_SHOW : SW_HIDE);
+	GetDlgItem(IDC_EDIT_NUM)->ShowWindow((index == 1) ? SW_SHOW : SW_HIDE);
 }
 
 void CrbtnetDemoDlg::OnBnClickedButtonImport()

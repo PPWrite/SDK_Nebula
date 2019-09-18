@@ -8,19 +8,21 @@ extern "C" {
 
 	// 初始化
 	bool rbt_win_init(Init_Param* arg);
+	// 初始化
+	bool rbt_win_init2(int port, int listenCount, bool open, bool optimize);
 	//释放
 	void rbt_win_uninit();
 	//发送命令
-	void rbt_win_send(int cmdId);
+	void rbt_win_send(int cmdId, const char *mac = "");
 	//开始答题
-	//type 0为主观题 1为客观题
-	//pTopicType 题目总数
-	//pTopicType 题目类型 1判断 2单选 3多选 4抢答
+	//type 0为主观题 1为客观题 2为投票 3为不定选择 4为测试 5为书写
+	//totalTopic 题目总数
+	//pTopicType 题目类型 1判断 2单选 3多选 4抢答 5解答
 	//mac 为空时，发送命令到所有设备，否则为当前mac设备
 	bool rbt_win_send_startanswer(int type, int totalTopic, char* pTopicType, const char* mac = "");
 	//开始答题(若支持多主观题用此接口)
 	//type 0为主观题 1为客观题
-	//pTopicType 题目总数
+	//totalTopic 题目总数
 	//pTopicType 题目类型 1判断 2单选 3多选 4抢答
 	//mac 为空时，发送命令到所有设备，否则为当前mac设备
 	bool rbt_win_send_startanswerEx(int type, int totalTopic, char* pTopicType, const char* mac = "");
@@ -73,6 +75,25 @@ extern "C" {
 	bool rbt_win_del_notes(bool del, const char* mac = "");
 	//设置手写板中心点偏移
 	void rbt_win_set_offset_center(int x = 0, int y = 0, const char* mac = "");
+	//笔迹优化
+	//优化笔迹转成path
+	float* rbt_win_toPath(const char *mac, float* points, int len, int *nLen);
+	//转成优化轨迹的path
+	float* rbt_win_toTrailsPath(const char *mac, float* points, int len, int *nLen);
+	//设置线条是否进行spline处理
+	void rbt_win_setIsSpline(bool open);
+	//设置笔宽度
+	void rbt_win_setPenWidth(float width);
+	//设置拖尾阈值，设置的越小，拖尾越长(0~1)
+	void rbt_win_setPointDelay(float delay);
+	//设置粗细变化阈值，设置的越小，粗细变化越小
+	void rbt_win_setPointDamping(float damping);
+	//设置基础宽度，用于过滤点和点之间的距离，默认取PenWidth
+	void rbt_win_setBaseWidth(float width);
+	//设置结尾宽度，此参数决定拖尾笔锋终点宽度，默认取BaseWidth * 0.1
+	void rbt_win_setEndWidth(float width);
+	//笔锋收尾触发速度判断，当速度大于笔宽度/decrease时会触发笔锋
+	void rbt_win_setWidthDecrease(float decrease);
 
 #ifdef __cplusplus
 }
