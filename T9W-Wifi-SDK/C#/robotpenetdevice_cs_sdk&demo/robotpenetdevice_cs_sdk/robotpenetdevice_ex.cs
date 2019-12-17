@@ -303,6 +303,15 @@ namespace robotpenetdevice_cs
         /// <param name="decrease"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_win_setWidthDecrease(float decrease);
+
+
+        /// <summary>
+        /// 设置FB手写板消息
+        /// </summary>
+        /// <param name="decrease"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_setFBDeviceMessage(string mac,string msg);
+
         #endregion
 
         #region 绑定事件
@@ -469,6 +478,27 @@ namespace robotpenetdevice_cs
         /// <param name="arg"></param>
         [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void rbt_wib_set_currentwritingnum_cb(onCurrentWritingNum arg);
+
+        /// <summary>
+        /// 绑定打开模组回调
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_openmodule_cb(onOpenModule arg);
+
+        /// <summary>
+        /// 绑定FB设置消息回调
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_fbmsgresult_cb(onFBSetMessage arg);
+
+        /// <summary>
+        /// 绑定页码传感器20个值上报回调
+        /// </summary>
+        /// <param name="arg"></param>
+        [DllImport("robotpenetdevice.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void rbt_win_set_page_sensor_cb(onPageSensor arg);
         #endregion
     }
 }

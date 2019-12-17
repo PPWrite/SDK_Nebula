@@ -56,8 +56,14 @@ namespace rbt_win32_2_demo
             {
                 Form1.rbtnet_.configStu(macNum, this.textBox1.Text);
                 Thread.Sleep(100);
-                Form1.rbtnet_.configBmpStu2(macNum, this.textBox2.Text);
-               // Form1.rbtnet_.configBmpStu(macNum,this.textBox1.Text, this.textBox2.Text);
+                if (Form1.oemkey == "TY")
+                {
+                    Form1.rbtnet_.configBmpStu2(macNum, this.textBox2.Text);
+                }
+                else
+                {
+                    Form1.rbtnet_.configBmpStu(macNum, this.textBox1.Text, this.textBox2.Text);
+                }
                 form.UpdateListViewSelectedStuName(this.textBox1.Text, this.textBox2.Text);
             }
             else
@@ -68,6 +74,17 @@ namespace rbt_win32_2_demo
             
         }
 
-       
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((e.KeyChar >= 'a' && e.KeyChar <= 'z') || (e.KeyChar >= 'A' && e.KeyChar <= 'Z')
+                || (e.KeyChar >= '0' && e.KeyChar <= '9') || (e.KeyChar == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

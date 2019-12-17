@@ -166,6 +166,11 @@ namespace WindowsForms.Class
             updatePictureBoxImg_EVT(this.myControl, bt);
         }
 
+        public void clear()
+        {
+            CreateMyGraphics();
+        }
+
         private delegate void updatePictureBoxImg(System.Windows.Forms.PictureBox _control, Bitmap bt);
         private void updatePictureBoxImg_EVT(System.Windows.Forms.PictureBox _control, Bitmap bt)
         {
@@ -186,6 +191,7 @@ namespace WindowsForms.Class
                 else
                 {
                     _control.Image = bt;
+                    //_control.Refresh();
                 }
             }
             catch(Exception ex)

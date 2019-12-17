@@ -35,6 +35,8 @@
             this.ListViewMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TSMI_SetStu = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_SetBmpStu = new System.Windows.Forms.ToolStripMenuItem();
+            this.LookAnswerResultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SetFBMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_tip = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,6 +58,9 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.ListViewMenuStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -101,9 +106,11 @@
             // 
             this.ListViewMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TSMI_SetStu,
-            this.TSMI_SetBmpStu});
+            this.TSMI_SetBmpStu,
+            this.LookAnswerResultToolStripMenuItem,
+            this.SetFBMenuItem});
             this.ListViewMenuStrip.Name = "ListViewMenuStrip";
-            this.ListViewMenuStrip.Size = new System.Drawing.Size(207, 48);
+            this.ListViewMenuStrip.Size = new System.Drawing.Size(207, 92);
             // 
             // TSMI_SetStu
             // 
@@ -118,6 +125,21 @@
             this.TSMI_SetBmpStu.Size = new System.Drawing.Size(206, 22);
             this.TSMI_SetBmpStu.Text = "设置学生中文id(T9W-A)";
             this.TSMI_SetBmpStu.Click += new System.EventHandler(this.TSMI_SetBmpStu_Click);
+            // 
+            // LookAnswerResultToolStripMenuItem
+            // 
+            this.LookAnswerResultToolStripMenuItem.Name = "LookAnswerResultToolStripMenuItem";
+            this.LookAnswerResultToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.LookAnswerResultToolStripMenuItem.Text = "查看答题结果信息";
+            this.LookAnswerResultToolStripMenuItem.Click += new System.EventHandler(this.LookAnswerResultToolStripMenuItem_Click);
+            // 
+            // SetFBMenuItem
+            // 
+            this.SetFBMenuItem.Name = "SetFBMenuItem";
+            this.SetFBMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.SetFBMenuItem.Text = "设置显示信息";
+            this.SetFBMenuItem.Visible = false;
+            this.SetFBMenuItem.Click += new System.EventHandler(this.SetFBMenuItem_Click);
             // 
             // label_tip
             // 
@@ -296,6 +318,9 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.textBox1);
+            this.groupBox4.Controls.Add(this.label4);
+            this.groupBox4.Controls.Add(this.button3);
             this.groupBox4.Controls.Add(this.button6);
             this.groupBox4.Controls.Add(this.button5);
             this.groupBox4.Controls.Add(this.button4);
@@ -337,6 +362,33 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(488, 20);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(124, 23);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "开启页码对比";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(619, 25);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 12);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "页码：";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(657, 21);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 21);
+            this.textBox1.TabIndex = 5;
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -351,7 +403,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";
-            this.Text = "wifi测试工具";
+            this.Text = "wifi测试工具 HEXL v20191108002";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -361,6 +413,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -394,6 +447,11 @@
         private System.Windows.Forms.Button button_stop;
         private System.Windows.Forms.TextBox textBox_num;
         private System.Windows.Forms.Button button_end;
+        private System.Windows.Forms.ToolStripMenuItem LookAnswerResultToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SetFBMenuItem;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button3;
     }
 }
 

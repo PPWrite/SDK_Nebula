@@ -93,6 +93,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(538, 628);
             this.Controls.Add(this.groupBox1);
+            this.DoubleBuffered = true;
             this.Name = "drawFormForA4";
             this.Text = "drawForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.drawFormForA4_FormClosing);

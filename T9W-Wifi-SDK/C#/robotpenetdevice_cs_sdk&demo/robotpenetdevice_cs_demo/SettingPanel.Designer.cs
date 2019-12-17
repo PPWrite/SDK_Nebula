@@ -69,7 +69,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(205, 142);
+            this.button1.Location = new System.Drawing.Point(286, 103);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 8;
@@ -104,6 +104,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(195, 21);
             this.textBox3.TabIndex = 5;
+            this.textBox3.Visible = false;
             this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
             // 
             // label3
@@ -115,11 +116,12 @@
             this.label3.Size = new System.Drawing.Size(63, 19);
             this.label3.TabIndex = 4;
             this.label3.Text = "source：";
+            this.label3.Visible = false;
             // 
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(85, 65);
-            this.textBox2.MaxLength = 10;
+            this.textBox2.MaxLength = 20;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(195, 21);
             this.textBox2.TabIndex = 3;
@@ -138,7 +140,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(85, 27);
-            this.textBox1.MaxLength = 10;
+            this.textBox1.MaxLength = 20;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(195, 21);
             this.textBox1.TabIndex = 1;

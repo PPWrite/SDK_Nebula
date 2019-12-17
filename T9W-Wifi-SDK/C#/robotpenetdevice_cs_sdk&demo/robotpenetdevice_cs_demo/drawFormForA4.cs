@@ -44,13 +44,18 @@ namespace rbt_win32_2_demo
                 by = uy,
                 isOptimize = false
             };
-            if (!drawingDic.ContainsKey(DrawInfo))
+            try
             {
-                addPictoreBox();
+                if(!drawingDic.ContainsKey(DrawInfo))
+                {
+                    addPictoreBox();
+                }
+                drawingDic[DrawInfo].drawing.recvData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bPress);
             }
+            catch(Exception ex)
+            {
 
-            drawingDic[DrawInfo].drawing.recvData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bPress);
-
+            }
         }
         public void RememberData(ushort us, ushort ux, ushort uy, float uw, float uspeed)
         {
@@ -63,13 +68,18 @@ namespace rbt_win32_2_demo
                 by = uy,
                 isOptimize = true
             };
-            if (!drawingDic.ContainsKey(DrawInfo))
+            try
             {
-                addPictoreBox();
+                if (!drawingDic.ContainsKey(DrawInfo))
+                {
+                    addPictoreBox();
+                }
+                drawingDic[DrawInfo].drawing.recvOptimizeData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bWidth);
             }
+            catch (Exception ex)
+            {
 
-            drawingDic[DrawInfo].drawing.recvOptimizeData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bWidth);
-
+            }
         }
 
         #region 委托修改控件
@@ -148,31 +158,14 @@ namespace rbt_win32_2_demo
         #region UI事件
         private void drawFormForA4_Load(object sender, EventArgs e)
         {
+            this.Text = MacAdr;
             compressPictureBox();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Multiselect = false;
-            fileDialog.Title = "请选择文件";
-            fileDialog.Filter = "image文件|*.bmp;*.ico;*.gif;*.jpeg;*.jpg;*.png;*.tif;*.tiff";
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filePath = fileDialog.FileName;
-                //为当前画布添加底图
-            }
         }
 
         private void drawFormForA4_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
             this.Hide();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            compressPictureBox();
         }
 
         private void drawFormForA4_SizeChanged(object sender, EventArgs e)
@@ -210,12 +203,14 @@ namespace rbt_win32_2_demo
             pInfo.TabIndex = 0;
             pInfo.TabStop = false;
             pInfo.Visible = true;
-            pInfo.Paint += new System.Windows.Forms.PaintEventHandler((object sender, PaintEventArgs e) => {
-                pInfo.Image = drawingDic[key].drawing.bt;
-            });
-            pInfo.DoubleClick += new System.EventHandler((object sender, EventArgs e) => {
+            //pInfo.Paint += new System.Windows.Forms.PaintEventHandler((object sender, PaintEventArgs e) => {
+            //    pInfo.Image = drawingDic[key].drawing.bt;
+            //});
+            pInfo.DoubleClick += new System.EventHandler((object sender, EventArgs e) =>
+            {
                 drawingDic[key].pbox.Image = null;
                 drawingDic[key].remData.Clear();
+                drawingDic[key].drawing.clear();
             });
             Dinfo.pbox = pInfo;
 

@@ -516,13 +516,13 @@ namespace WindowsForms.Class
             //Console.WriteLine("doBezierDrawing p1={0} p2={1} p3={2} penWidth={3}", p1, p2, p3, fPenWidthF);
             grap.DrawBezier(new Pen(Color.Black, fPenWidthF), p1, p2, p2, p3);
 
-            Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p1.X, p1.Y, fPenWidthF));
-            Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p2.X, p2.Y, fPenWidthF));
-            Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p3.X, p3.Y, fPenWidthF));
+            //Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p1.X, p1.Y, fPenWidthF));
+            //Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p2.X, p2.Y, fPenWidthF));
+            //Console.WriteLine(string.Format(@"s={0},x={1},y={2},w={3}", 0, p3.X, p3.Y, fPenWidthF));
 
-            grap.DrawEllipse(new Pen(Color.Black, 1), p1.X, p1.Y, 1, fPenWidthF);
-            grap.DrawEllipse(new Pen(Color.Black, 1), p2.X, p2.Y, 1, fPenWidthF);
-            grap.DrawEllipse(new Pen(Color.Black, 1), p3.X, p3.Y, 1, fPenWidthF);
+            //grap.DrawEllipse(new Pen(Color.Black, 1), p1.X, p1.Y, 1, fPenWidthF);
+            //grap.DrawEllipse(new Pen(Color.Black, 1), p2.X, p2.Y, 1, fPenWidthF);
+            //grap.DrawEllipse(new Pen(Color.Black, 1), p3.X, p3.Y, 1, fPenWidthF);
 
             grap.Dispose();
         }

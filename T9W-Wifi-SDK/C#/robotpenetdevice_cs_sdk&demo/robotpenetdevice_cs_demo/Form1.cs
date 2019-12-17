@@ -13,15 +13,20 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using rbt_win32_2_demo.Helper;
+using robopenetdevice_cs_demo;
+using System.Diagnostics;
 
 namespace rbt_win32_2_demo
 {
     public partial class Form1 : Form
     {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        public static extern void OutputDebugString(string message);
+
         public static RbtNet rbtnet_ = null;
         public static bool _optimize = false;
 
-        public string oemkey = string.Empty;
+        public static string oemkey = string.Empty;
 
 
         public Form1()
@@ -48,16 +53,38 @@ namespace rbt_win32_2_demo
             param.optimize = _optimize;
             rbtnet_.init(ref param);
             //rbtnet_.init();
-            rbtnet_.setPrintType(PrintType.TyMode);
+            if(oemkey=="TY")
+            {
+                rbtnet_.setPrintType(PrintType.TyMode);
+            }
+            else if(oemkey == "FB")
+            {
+                rbtnet_.setPrintType(PrintType.NoMarkCode_FB_FT);
+                //rbtnet_.setPrintType(PrintType.NoMarkCode);
+            }
+            else
+            {
+                rbtnet_.setPrintType(PrintType.Base);
+            }
+            
 
             comboBox_Qtype.Items.Add("主观题");
             comboBox_Qtype.Items.Add("客观题");
-            comboBox_Qtype.Items.Add("投票");
-            comboBox_Qtype.Items.Add("不定项");
-            comboBox_Qtype.Items.Add("测试");
-            comboBox_Qtype.Items.Add("书写");
+           
             comboBox_Qtype.SelectedIndex = 0;
 
+            if(oemkey=="FB")
+            {
+                SetFBMenuItem.Visible = true;
+            }
+            if (oemkey == "YJ"|| oemkey == "ZHL")
+            {
+                comboBox_Qtype.Items.Add("投票");
+                comboBox_Qtype.Items.Add("不定项");
+                comboBox_Qtype.Items.Add("测试");
+                comboBox_Qtype.Items.Add("书写");
+                //LookAnswerResultToolStripMenuItem.Visible = true;
+            }
 
             /*
             * 所有事件响应接口都是在内部SDK线程中上报出来
@@ -84,7 +111,11 @@ namespace rbt_win32_2_demo
             rbtnet_.DeviceBatteryEvt_ += deviceBattery;
 
             rbtnet_.CurrentWritingNumEvt_ += Rbtnet__CurrentWritingNumEvt_;
+            OutputDebugString("绑定20位模拟量回调事件");
+            rbtnet_.pageSensorEvt_ += Rbtnet__PageSensorEvt_;
         }
+
+        
 
         /// <summary>
         /// IP地址回调
@@ -133,26 +164,9 @@ namespace rbt_win32_2_demo
         {
             // Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
             updateDeviceNameListView(strDeviceMac, strDeviceName);
-            Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
+            //Console.WriteLine("Rbtnet__deviceMacEvt_:{0}-{1}", strDeviceMac, strDeviceName);
         }
-        /// <summary>
-        /// 开新线程，进行下发学生姓名，获取设备信息和硬件信息
-        /// </summary>
-        /// <param name="strDeviceMacObj"></param>
-        public void setCmd(object strDeviceMacObj)
-        {
-            string strDeviceMac = strDeviceMacObj as string;
-            if (!string.IsNullOrEmpty(strDeviceMac))
-            {
-                Thread.Sleep(200);
-                rbtnet_.configBmpStu(strDeviceMac, strDeviceMac, "学生" + strDeviceMac.Substring(8, 3));
-            }
-
-            Thread.Sleep(400);
-            rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_INFO, strDeviceMac);
-            Thread.Sleep(400);
-            rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_HARD_INFO, strDeviceMac);
-        }
+        
         /// <summary>
         /// 设置名称成功回调
         /// </summary>
@@ -204,6 +218,39 @@ namespace rbt_win32_2_demo
             {
                 dicMac2DrawForm_[sMac].UpdateJDNum(nNum);
             }
+        }
+
+        private void Rbtnet__PageSensorEvt_(IntPtr ctx, String pMac, ST_PAGE_SENSOR pageSensor)
+        {
+            Console.WriteLine(string.Format(@"{0}的模拟量：{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}.{9}.{10}.{11}.{12}.{13}.{14}.{15}.{16}.{17}.{18}.{19},{20}", pMac
+                , pageSensor.sensor1, pageSensor.sensor2
+                , pageSensor.sensor3, pageSensor.sensor4
+                , pageSensor.sensor5, pageSensor.sensor6
+                , pageSensor.sensor7, pageSensor.sensor8
+                , pageSensor.sensor9, pageSensor.sensor10
+                , pageSensor.sensor11, pageSensor.sensor12
+                , pageSensor.sensor13, pageSensor.sensor14
+                , pageSensor.sensor15, pageSensor.sensor16
+                , pageSensor.sensor17, pageSensor.sensor18
+                , pageSensor.sensor19, pageSensor.sensor20
+                ));
+            OutputDebugString(string.Format(@"{0}的模拟量：{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}.{9}.{10}.{11}.{12}.{13}.{14}.{15}.{16}.{17}.{18}.{19},{20}",pMac
+                , pageSensor.sensor1, pageSensor.sensor2
+                , pageSensor.sensor3, pageSensor.sensor4
+                , pageSensor.sensor5, pageSensor.sensor6
+                , pageSensor.sensor7, pageSensor.sensor8
+                , pageSensor.sensor9, pageSensor.sensor10
+                , pageSensor.sensor11, pageSensor.sensor12
+                , pageSensor.sensor13, pageSensor.sensor14
+                , pageSensor.sensor15, pageSensor.sensor16
+                , pageSensor.sensor17, pageSensor.sensor18
+                , pageSensor.sensor19, pageSensor.sensor20
+                ));
+        }
+
+        private void Rbtnet__FBSetMessageEvt_(IntPtr ctx, String pMac, bool ret)
+        {
+            Console.WriteLine("设置FB消息回调{0}:{1}", pMac, ret);
         }
 
         private void Rbtnet__deviceDisconnectEvt_(IntPtr ctx, IntPtr strDeviceMac)
@@ -331,6 +378,7 @@ namespace rbt_win32_2_demo
         {
             try
             {
+                Console.WriteLine("x:{0},y:{1},s:{2}",ux,uy,us);
                 if (_optimize)
                 {
                     return;
@@ -398,6 +446,32 @@ namespace rbt_win32_2_demo
             t.Start(strDeviceMac);
         }
         /// <summary>
+        /// 开新线程，进行下发学生姓名，获取设备信息和硬件信息
+        /// </summary>
+        /// <param name="strDeviceMacObj"></param>
+        public void setCmd(object strDeviceMacObj)
+        {
+            string strDeviceMac = strDeviceMacObj as string;
+            if (!string.IsNullOrEmpty(strDeviceMac))
+            {
+                Thread.Sleep(200);
+                if(oemkey=="TY")
+                {
+                    rbtnet_.configBmpStu2(strDeviceMac, "学生" + strDeviceMac.Substring(10, 2));
+                }
+                else
+                {
+                    rbtnet_.configBmpStu(strDeviceMac, strDeviceMac, "学生" + strDeviceMac.Substring(10, 2));
+                }
+                
+            }
+
+            //Thread.Sleep(400);
+            //rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_INFO, strDeviceMac);
+            //Thread.Sleep(400);
+            //rbtnet_.SendCmd((int)DeviceCmd.CMD_DEVICE_HARD_INFO, strDeviceMac);
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
@@ -418,7 +492,7 @@ namespace rbt_win32_2_demo
                 rbtnet_.stop();
                 this.button_start_stop.Text = "开始";
                 this.listView1.Items.Clear();
-                this.dicMac2DrawForm_.Clear();
+                //this.dicMac2DrawForm_.Clear();
 
                 this.label3.Text = "关闭服务，手写板小房子消失，上位机不能发送命令和响应消息";
             }
@@ -453,7 +527,9 @@ namespace rbt_win32_2_demo
                         this.listView1.Items[i].SubItems[2].Text = "在线";
                         if (!dicMac2DrawForm_.ContainsKey(strMac))
                         {
-                            dicMac2DrawForm_.Add(strMac, new drawFormForA4(strMac));
+                            drawFormForA4 fa4F = new drawFormForA4(strMac);
+                            dicMac2DrawForm_.Add(strMac, fa4F);
+                            fa4F.Show();
                         }
                         return;
                     }
@@ -473,7 +549,9 @@ namespace rbt_win32_2_demo
                 this.listView1.Items[nItemCount].SubItems.Add("");
 
                 if (!dicMac2DrawForm_.ContainsKey(strMac)) {
-                    dicMac2DrawForm_.Add(strMac, new drawFormForA4(strMac));
+                    drawFormForA4 fa4F = new drawFormForA4(strMac);
+                    dicMac2DrawForm_.Add(strMac, fa4F);
+                    fa4F.Show();
                 }
             }
         }
@@ -564,7 +642,20 @@ namespace rbt_win32_2_demo
 
                 if (nFindItem > -1)
                 {
-                    this.listView1.Items[nFindItem].SubItems[5].Text = "noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId) + " nPageInfo=" + Convert.ToString(nPageInfo);
+                    //Console.WriteLine(Convert.ToString(nPageInfo));
+                    this.listView1.Items[nFindItem].SubItems[5].Text = "nPageInfo=" + Convert.ToString(nPageInfo)+" noteid=" + Convert.ToString(nNoteId) + " pageid=" + Convert.ToString(nPageId) ;
+                    
+                    if(PageNumberContrast&& nPageInfo!=pageNumber)
+                    {
+                        this.listView1.Items[nFindItem].ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        this.listView1.Items[nFindItem].ForeColor = Color.Black;
+                    }
+                    //this.listView1.Items[nFindItem].ForeColor = Color.Red;
+                    this.listView1.Refresh();
+                    //rbtnet_.SetFBDeviceMessages(strMac, "pageid=" + Convert.ToString(nPageInfo));
                 }
             }
         }
@@ -679,6 +770,8 @@ namespace rbt_win32_2_demo
             }
         }
 
+        private Dictionary<string, string> AnswerResultDic = new Dictionary<string, string>();
+        private Dictionary<string, Dictionary<int, string>> AnswerResultDicDetail = new Dictionary<string, Dictionary<int, string>>();
         /// <summary>
         /// 收到答题消息
         /// </summary>
@@ -701,21 +794,29 @@ namespace rbt_win32_2_demo
             }
             else
             {
-                int Packet_len = 8;
-                int resultList_len = 6;
+                int Packet_len = 8;//包长
+                int resultList_len = 6;//其中结果集合的长度
 
                 if (oemkey == "YJ")
                 {
                     Packet_len = 9;
                     resultList_len = 7;
                 }
+                else if(oemkey == "ZHL")
+                {
+                    Packet_len = 5;
+                    resultList_len = 4;
+                }
+
+
 
 
                 int nItemCount = this.listView1.Items.Count;
                 int nFindItem = -1;
+                string strAMac = string.Empty;
                 for (int i = 0; i < nItemCount; ++i)
                 {
-                    string strAMac = this.listView1.Items[i].SubItems[0].Text;
+                    strAMac = this.listView1.Items[i].SubItems[0].Text;
                     if (strAMac == strMac)
                     {
                         nFindItem = i;
@@ -726,18 +827,90 @@ namespace rbt_win32_2_demo
                 if (nFindItem > -1)
                 {
                     string strKeyValue = string.Empty;
+                    string answerKeyValue = string.Empty;
                     if (resID != 110)
                     {
-                        strKeyValue = GetResultKey(resID, strResult);
+                        strKeyValue = GetResultKey(resID, strResult,out answerKeyValue,"");
+                        if(AnswerResultDicDetail.ContainsKey(strAMac))
+                        {
+                            if(AnswerResultDicDetail[strAMac].ContainsKey(resID))
+                            {
+                                AnswerResultDicDetail[strAMac][resID] = answerKeyValue;
+                            }
+                            else
+                            {
+                                AnswerResultDicDetail[strAMac].Add(resID, answerKeyValue);
+                            }
+                        }
+                        else
+                        {
+                            Dictionary<int, string> arDic = new Dictionary<int, string>();
+                            arDic.Add(resID, answerKeyValue);
+                            AnswerResultDicDetail.Add(strAMac, arDic);
+                        }
                     }
                     else
                     {
                         int count = nResultSize / Packet_len;
+                        int resultKeyNum = 0;
+                        if (AnswerResultDicDetail.ContainsKey(strAMac) && oemkey == "YJ")
+                        {
+                            resultKeyNum = AnswerResultDicDetail[strAMac].Max(p => p.Key);
+                        }
                         for (int i = 0; i < count; i++)
                         {
-                            byte[] byteRes = new byte[resultList_len];
-                            Array.Copy(strResult, i * Packet_len + 2, byteRes, 0, resultList_len);
-                            strKeyValue += GetResultKey(i + 1, byteRes) + "；";
+                            string answerKeyValueItem = string.Empty;
+                            int questionNum = 0;
+                            if (oemkey == "ZHL")
+                            {
+                                //获取题号
+                                byte[] byteRes_zhl_num = new byte[1];
+                                Array.Copy(strResult, i * Packet_len, byteRes_zhl_num, 0, 1);
+                                questionNum = Convert.ToInt32(byteRes_zhl_num[0]);
+                                //获取答题内容
+                                byte[] byteRes_zhl = new byte[resultList_len];
+                                Array.Copy(strResult, i * Packet_len + 1, byteRes_zhl, 0, resultList_len);
+
+                                strKeyValue += GetResultKey(questionNum, byteRes_zhl, out answerKeyValueItem, oemkey) + "；";
+                            }
+                            else
+                            {
+                                questionNum = resultKeyNum + i + 1;
+                                byte[] byteRes = new byte[resultList_len];
+                                Array.Copy(strResult, i * Packet_len + 2, byteRes, 0, resultList_len);
+                                strKeyValue += GetResultKey(questionNum, byteRes, out answerKeyValueItem, oemkey) + "；";
+                            }
+                           
+                            
+                            
+
+                            if (AnswerResultDicDetail.ContainsKey(strAMac))
+                            {
+                                
+                                if (AnswerResultDicDetail[strAMac].ContainsKey(resultKeyNum + i + 1))
+                                {
+                                    AnswerResultDicDetail[strAMac][resultKeyNum + i + 1] = answerKeyValueItem;
+                                }
+                                else
+                                {
+                                    AnswerResultDicDetail[strAMac].Add(resultKeyNum + i + 1, answerKeyValueItem);
+                                }
+                            }
+                            else
+                            {
+                                Dictionary<int, string> arDic = new Dictionary<int, string>();
+                                arDic.Add(resultKeyNum + i + 1, answerKeyValueItem);
+                                AnswerResultDicDetail.Add(strAMac, arDic);
+                            }
+                        }
+
+                        strKeyValue = string.Empty;
+                        if(AnswerResultDicDetail.ContainsKey(strAMac))
+                        {
+                            foreach (var item in AnswerResultDicDetail[strAMac])
+                            {
+                                strKeyValue+=string.Format("{0}：{1}；", item.Key,item.Value);
+                            }
                         }
                     }
 
@@ -746,51 +919,83 @@ namespace rbt_win32_2_demo
                 }
             }
         }
-        private string GetResultKey(int resultId, byte[] strResult)
+        private string GetResultKey(int resultId, byte[] strResult,out string strAnswerKeyValue,string _oemkey)
         {
             string strKeyValue = string.Format("{0}：", resultId);
-            foreach (var c in strResult)
+            strAnswerKeyValue = "";
+            if(_oemkey == "ZHL")
             {
-                keyPressEnum keyValueE = (keyPressEnum)c;
-                switch (keyValueE)
+                int t = 0;
+                foreach (var c in strResult)
                 {
-                    case keyPressEnum.K_A:
-                        strKeyValue += "A";
-                        break;
-                    case keyPressEnum.K_B:
-                        strKeyValue += "B";
-                        break;
-                    case keyPressEnum.K_C:
-                        strKeyValue += "C";
-                        break;
-                    case keyPressEnum.K_D:
-                        strKeyValue += "D";
-                        break;
-                    case keyPressEnum.K_E:
-                        strKeyValue += "E";
-                        break;
-                    case keyPressEnum.K_F:
-                        strKeyValue += "F";
-                        break;
-                    case keyPressEnum.K_SUCC:
-                        strKeyValue += "正确";
-                        break;
-                    case keyPressEnum.K_ERROR:
-                        strKeyValue += "错误";
-                        break;
-                    case keyPressEnum.K_CACLE:
-                        strKeyValue += "取消";
-                        break;
-                    case keyPressEnum.K_SURE:
-                        strKeyValue += "确认";
-                        break;
-                    case keyPressEnum.K_G:
-                        strKeyValue += "G";
-                        break;
-                    default:
-                        break;
+                    t++;
+                    string d = System.Convert.ToString(c, 2);
+                    int len = d.Length;
+                    for (int j = 0; j < 8 - len; j++)
+                    {
+                        d = "0" + d;
+                    }
+                    for (int i = 0; i < d.Length; i++)
+                    {
+                        answerResultKey arkey = (answerResultKey)i;
+                        if (d[i] == '1')
+                        {
+                            strAnswerKeyValue += arkey.ToString();
+                        }
+                    }
+                    if(t!= strResult.Length)
+                    {
+                        strAnswerKeyValue += "|";
+                    }
                 }
             }
+            else
+            {
+                foreach (var c in strResult)
+                {
+                    keyPressEnum keyValueE = (keyPressEnum)c;
+                    switch (keyValueE)
+                    {
+                        case keyPressEnum.K_A:
+                            strAnswerKeyValue += "A";
+                            break;
+                        case keyPressEnum.K_B:
+                            strAnswerKeyValue += "B";
+                            break;
+                        case keyPressEnum.K_C:
+                            strAnswerKeyValue += "C";
+                            break;
+                        case keyPressEnum.K_D:
+                            strAnswerKeyValue += "D";
+                            break;
+                        case keyPressEnum.K_E:
+                            strAnswerKeyValue += "E";
+                            break;
+                        case keyPressEnum.K_F:
+                            strAnswerKeyValue += "F";
+                            break;
+                        case keyPressEnum.K_SUCC:
+                            strAnswerKeyValue += "正确";
+                            break;
+                        case keyPressEnum.K_ERROR:
+                            strAnswerKeyValue += "错误";
+                            break;
+                        case keyPressEnum.K_CACLE:
+                            strAnswerKeyValue += "取消";
+                            break;
+                        case keyPressEnum.K_SURE:
+                            strAnswerKeyValue += "确认";
+                            break;
+                        case keyPressEnum.K_G:
+                            strAnswerKeyValue += "G";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            
+            strKeyValue += strAnswerKeyValue;
             return strKeyValue;
         }
 
@@ -809,6 +1014,7 @@ namespace rbt_win32_2_demo
                 if (dicMac2DrawForm_.ContainsKey(strMac)) {
                     dicMac2DrawForm_[strMac].Text = strMac;
                     dicMac2DrawForm_[strMac].Show();
+                    dicMac2DrawForm_[strMac].TopMost = true;
                 }
             }
         }
@@ -1005,13 +1211,6 @@ namespace rbt_win32_2_demo
             dicMac2DrawForm_.Clear();
             try
             {
-                //int nItemCount = this.listView1.Items.Count;
-                //for (int i = 0; i < nItemCount; ++i)
-                //{
-                //    string strAMac = this.listView1.Items[i].SubItems[0].Text;
-                //    rbtnet_.configBmpStu2(strAMac, "");
-                //}
-                //Thread.Sleep(200);
                 if (!isClosing)
                 {
                     rbtnet_.stop();
@@ -1103,7 +1302,6 @@ where device_mac = '{0}';
                 foreach (var item in dic)
                 {
                     rbtnet_.configBmpStu(item.DeviceNum, item.StudentNum, item.StudentName);
-                    //rbtnet_.configBmpStu2(item.DeviceNum, item.StudentName);
                     updateListStuName(item.DeviceNum, item.StudentName);
                 }
 
@@ -1136,30 +1334,74 @@ where device_mac = '{0}';
         /// <param name="e"></param>
         private void button_start_Click(object sender, EventArgs e)
         {
+            AnswerResultDic.Clear();
+            AnswerResultDicDetail.Clear();
             bool bRes = false;
+
+            int totalTopic = 0;
+            if (int.TryParse(textBox_num.Text,out totalTopic))
+            {
+                if(totalTopic<=0)
+                {
+                    MessageBox.Show("请输入题目数量");
+                    return;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请输入题目数量");
+                return;
+            }
+            if (oemkey == "YJ")
+            {
+                if(totalTopic>75)
+                {
+                    MessageBox.Show("最多75道题");
+                    return;
+                }
+            }
+            else
+            {
+                if (totalTopic > 20)
+                {
+                    MessageBox.Show("最多20道题");
+                    return;
+                }
+            }
 
             int type = comboBox_Qtype.SelectedIndex;
 
+            if (type == 3 && oemkey == "ZHL")
+            {
+                MessageBox.Show("不支持不定项选择题");
+                return;
+            }
+
             int index = comboBox_Qlist.SelectedIndex;
-            int totalTopic = int.Parse(textBox_num.Text);
+            
             byte[] topicType;
 
             List<int> qlist = new List<int>();
-            if (index == 5)
+            if (index == 5||(index == 4&& oemkey != "YJ" && oemkey != "ZHL"))
             {
-                totalTopic = 8;
+                totalTopic = 6;
                 topicType = new byte[totalTopic];
+                if (oemkey == "YJ" || oemkey == "ZHL")
+                {
+                    totalTopic = 8;
+                    topicType = new byte[totalTopic];
+                    topicType[6] = 5;
+                    topicType[7] = 5;
+                    qlist.Add(7);
+                    qlist.Add(8);
+                }
+                
                 topicType[0] = 1;
                 topicType[1] = 1;
                 topicType[2] = 2;
                 topicType[3] = 2;
                 topicType[4] = 3;
                 topicType[5] = 3;
-                topicType[6] = 5;
-                topicType[7] = 5;
-
-                qlist.Add(7);
-                qlist.Add(8);
             }
             else
             {
@@ -1226,6 +1468,7 @@ where device_mac = '{0}';
                         comboBox_Qlist.Items.Add("无");
                         comboBox_Qlist.SelectedIndex = 0;
                         comboBox_Qlist.Enabled = false;
+                        textBox_num.Text = "1";
                         textBox_num.Enabled = false;
                         break;
                     }
@@ -1236,7 +1479,10 @@ where device_mac = '{0}';
                         comboBox_Qlist.Items.Add("单选题");
                         comboBox_Qlist.Items.Add("多选题");
                         comboBox_Qlist.Items.Add("抢答题");
-                        comboBox_Qlist.Items.Add("解答题");
+                        if (oemkey == "YJ" || oemkey == "ZHL")
+                        {
+                            comboBox_Qlist.Items.Add("解答题");
+                        }
                         comboBox_Qlist.Items.Add("混合模拟");
                         comboBox_Qlist.SelectedIndex = 0;
                         break;
@@ -1247,6 +1493,7 @@ where device_mac = '{0}';
                         comboBox_Qlist.Items.Add("单选题");
                         comboBox_Qlist.Items.Add("多选题");
                         comboBox_Qlist.SelectedIndex = 0;
+                        textBox_num.Text = "1";
                         textBox_num.Enabled = false;
 
                         if (oemkey == "YJ")
@@ -1285,6 +1532,7 @@ where device_mac = '{0}';
                         comboBox_Qlist.Items.Add("无");
                         comboBox_Qlist.SelectedIndex = 0;
                         comboBox_Qlist.Enabled = false;
+                        textBox_num.Text = "1";
                         textBox_num.Enabled = false;
 
                         if (oemkey == "YJ")
@@ -1304,9 +1552,9 @@ where device_mac = '{0}';
 
         private void comboBox_Qlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(comboBox_Qtype.SelectedIndex==1)
+            if (comboBox_Qtype.SelectedIndex == 1)
             {
-                if(comboBox_Qlist.SelectedIndex == 3|| comboBox_Qlist.SelectedIndex == 5)
+                if (comboBox_Qlist.SelectedIndex == 3 || comboBox_Qlist.SelectedIndex == 5||(comboBox_Qlist.SelectedIndex == 4 && oemkey != "YJ" && oemkey != "ZHL"))
                 {
                     textBox_num.Enabled = false;
                 }
@@ -1314,6 +1562,69 @@ where device_mac = '{0}';
                 {
                     textBox_num.Enabled = true;
                 }
+            }
+        }
+
+        private void LookAnswerResultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string macStr = string.Empty;
+            string numStr = string.Empty;
+            string nameStr = string.Empty;
+            if (GetListViewSelectMac(out macStr, out numStr, out nameStr))
+            {
+                if(AnswerResultDicDetail.ContainsKey(macStr))
+                {
+                    ShowAnswerResult saform = new ShowAnswerResult(AnswerResultDicDetail[macStr]);
+                    saform.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show(string.Format(@"{1}暂未提交答案", macStr));
+                }
+            }
+            
+        }
+
+        private void SetFBMenuItem_Click(object sender, EventArgs e)
+        {
+            string macStr = string.Empty;
+            string numStr = string.Empty;
+            string nameStr = string.Empty;
+            if (GetListViewSelectMac(out macStr, out numStr, out nameStr))
+            {
+                SetFBMsg setFBMsgForm = new SetFBMsg(macStr,this);
+                setFBMsgForm.ShowDialog();
+            }
+
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((e.KeyChar >= '0' && e.KeyChar <= '9') || (e.KeyChar == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+        bool PageNumberContrast = false;
+        int pageNumber = 0;
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(PageNumberContrast)
+            {
+                this.button3.Text = "开启页码对比"; ;
+                PageNumberContrast = false;
+                this.textBox1.Enabled = true;
+            }
+            else
+            {
+                this.button3.Text = "关闭页码对比"; ;
+                pageNumber = int.Parse(this.textBox1.Text);
+                this.textBox1.Enabled = false;
+                PageNumberContrast = true; 
             }
         }
     }

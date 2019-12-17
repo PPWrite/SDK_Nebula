@@ -24,8 +24,7 @@ namespace rbt_win32_2_demo
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((e.KeyChar >= 'a' && e.KeyChar <= 'z') || (e.KeyChar >= 'A' && e.KeyChar <= 'Z')
-                || (e.KeyChar >= '0' && e.KeyChar <= '9') || (e.KeyChar == 8))
+            if ((e.KeyChar >= ' ' && e.KeyChar <= '~') || e.KeyChar == '\b')
             {
                 e.Handled = false;
             }

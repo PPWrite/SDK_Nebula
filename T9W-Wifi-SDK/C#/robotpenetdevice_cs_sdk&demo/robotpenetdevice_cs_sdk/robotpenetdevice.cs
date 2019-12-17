@@ -51,6 +51,11 @@ namespace robotpenetdevice_cs
         public event onOidPageInfo oidPageInfoEvt_ = null;
         public event onCurrentWritingNum CurrentWritingNumEvt_ = null;
 
+        public event onOpenModule openModuleEvt_ = null;
+        public event onFBSetMessage fBSetMessageEvt_ = null;
+
+        public event onPageSensor pageSensorEvt_ = null;
+
 
         private GCHandle gchandld;
         private IntPtr iPtrThis_ = IntPtr.Zero;
@@ -146,6 +151,14 @@ namespace robotpenetdevice_cs
             rbt_win_set_oidpageinfo_cb(onoidpageinfo);
             oncurrentwritingnum = new onCurrentWritingNum(currentWritingNum);
             rbt_wib_set_currentwritingnum_cb(oncurrentwritingnum);
+
+            onopenmodule = new onOpenModule(openModule);
+            rbt_win_set_openmodule_cb(onopenmodule);
+            onfbsetmessage = new onFBSetMessage(fBSetMessage);
+            rbt_win_set_fbmsgresult_cb(onfbsetmessage);
+
+            onpagesensor = new onPageSensor(pageSensor);
+            rbt_win_set_page_sensor_cb(onpagesensor);
         }
 
 
@@ -604,7 +617,15 @@ namespace robotpenetdevice_cs
             rbt_win_setWidthDecrease(decrease);
         }
 
-
+        /// <summary>
+        /// 设置FB手写板消息
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="msg"></param>
+        public void SetFBDeviceMessages(string mac,string msg)
+        {
+            rbt_win_setFBDeviceMessage(mac, msg);
+        }
 
         
     }

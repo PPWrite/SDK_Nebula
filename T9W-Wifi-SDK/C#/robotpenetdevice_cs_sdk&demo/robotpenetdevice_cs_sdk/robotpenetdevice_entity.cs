@@ -162,6 +162,7 @@ namespace robotpenetdevice_cs
     /// <param name="deviceMac"></param>
     /// <param name="hardNum">硬件号</param>
     public delegate void onDeviceInfo(IntPtr ctx, String pMac, String version, String deviceMac, int hardNum);
+
     /// <summary>
     /// 设备硬件信息回调
     /// </summary>
@@ -213,6 +214,30 @@ namespace robotpenetdevice_cs
     /// <param name="nNum"></param>
     public delegate void onCurrentWritingNum(IntPtr ctx, String pMac, int nNum);
 
+    /// <summary>
+    /// 打开模组回调
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="pMac"></param>
+    /// <param name="isOpen"></param>
+    public delegate void onOpenModule(IntPtr ctx, String pMac, bool isOpen);
+
+    /// <summary>
+    /// FB设置消息回调
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="pMac"></param>
+    /// <param name="ret"></param>
+    public delegate void onFBSetMessage(IntPtr ctx, String pMac, bool ret);
+
+    /// <summary>
+    /// 页码传感器20个值上报回调
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="pMac"></param>
+    /// <param name="pageSensor"></param>
+    public delegate void onPageSensor(IntPtr ctx, String pMac, ST_PAGE_SENSOR pageSensor);
+
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -229,6 +254,31 @@ namespace robotpenetdevice_cs
         public IntPtr ctx;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ST_PAGE_SENSOR
+    {
+        public UInt16 sensor1;
+        public UInt16 sensor2;
+        public UInt16 sensor3;
+        public UInt16 sensor4;
+        public UInt16 sensor5;
+        public UInt16 sensor6;
+        public UInt16 sensor7;
+        public UInt16 sensor8;
+        public UInt16 sensor9;
+        public UInt16 sensor10;
+        public UInt16 sensor11;
+        public UInt16 sensor12;
+        public UInt16 sensor13;
+        public UInt16 sensor14;
+        public UInt16 sensor15;
+        public UInt16 sensor16;
+        public UInt16 sensor17;
+        public UInt16 sensor18;
+        public UInt16 sensor19;
+        public UInt16 sensor20;
+    }
+
     public enum keyPressEnum
     {
         K_A = 0x06,
@@ -243,6 +293,19 @@ namespace robotpenetdevice_cs
         K_SURE = 0x15,
         K_G = 0x16,
     };
+
+    public enum answerResultKey
+    {
+        A = 0,
+        B = 1,
+        C = 2,
+        D = 3,
+        E = 4,
+        F = 5,
+        Y = 6,
+        N = 7,
+        G = 8,
+    }
 
     public enum eBatteryStatus
     {
@@ -283,6 +346,26 @@ namespace robotpenetdevice_cs
         /// 1000     0000           111100111
         /// pageid   nodeid高4位    nodeid低9位 
         /// </summary>
-        TyMode
+        TyMode,
+        /// <summary>
+        /// 没有标志位的页码
+        /// </summary>
+        NoMarkCode,
+        /// <summary>
+        /// FB新页码，方案1
+        /// 00-01111011-11011110-00
+        /// </summary>
+        NoMarkCode_FB1,
+        /// <summary>
+        ///  FB新页码，方案2
+        ///  0111101111-1111011110
+        /// </summary>
+        NoMarkCode_FB2,
+
+        /// <summary>
+        ///  FB新页码，方案2
+        ///  0111101111-1111011110
+        /// </summary>
+        NoMarkCode_FB_FT
     }
 }
