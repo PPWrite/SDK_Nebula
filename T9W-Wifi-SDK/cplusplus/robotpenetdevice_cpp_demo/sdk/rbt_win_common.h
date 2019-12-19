@@ -40,6 +40,31 @@ enum DeviceCmd
 	CMD_DEVICE_HARD_INFO //获取硬件信息
 };
 
+//页码传感器的20个值
+typedef struct st_page_sensor
+{
+	uint16_t sensor1;
+	uint16_t sensor2;
+	uint16_t sensor3;
+	uint16_t sensor4;
+	uint16_t sensor5;
+	uint16_t sensor6;
+	uint16_t sensor7;
+	uint16_t sensor8;
+	uint16_t sensor9;
+	uint16_t sensor10;
+	uint16_t sensor11;
+	uint16_t sensor12;
+	uint16_t sensor13;
+	uint16_t sensor14;
+	uint16_t sensor15;
+	uint16_t sensor16;
+	uint16_t sensor17;
+	uint16_t sensor18;
+	uint16_t sensor19;
+	uint16_t sensor20;
+}ST_PAGE_SENSOR;
+
 //设备上线回调
 typedef void __stdcall onAccept(rbt_win_context* context, const char* pClientIpAddress);
 //错误包回调
@@ -48,6 +73,8 @@ typedef void __stdcall onErrorPacket(rbt_win_context* context);
 typedef void __stdcall onOriginData(rbt_win_context* ctx, const char* pMac, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
 //多主观题笔迹数据回调
 typedef void __stdcall onOriginDataEx(rbt_win_context* ctx, const char* pMac, int currentPage, ushort us, ushort ux, ushort uy, ushort up, unsigned char *buffer, int len);
+//笔迹数据回调
+typedef void __stdcall onOriginDataE3(rbt_win_context* ctx, const char* pMac, ushort us, int ux, int uy, ushort up, ushort ua, unsigned char *buffer, int len);
 //Mac地址回调
 typedef void __stdcall onDeviceMac(rbt_win_context* context, const char* pMac);
 //设备名称回调
@@ -88,11 +115,22 @@ typedef void __stdcall onDeviceIp(rbt_win_context *ctx, const char* pMac, const 
 typedef void __stdcall onOidPageInfo(rbt_win_context *ctx, const char* pMac, float fX, float fY, int nAngle);
 //解答,书写,测试类题目切换题目上报的题号
 typedef void __stdcall onCurrentWritingNum(rbt_win_context *ctx, const char* pMac, int nNum);
+//打开模组回调
+typedef void __stdcall onOpenModule(rbt_win_context* ctx, const char* pMac, bool isOpen);
+//FB设置消息回调
+typedef void __stdcall onFBSetMessage(rbt_win_context* ctx, const char* pMac, bool ret);
+//下载WAV文件回调
+typedef void __stdcall onDownloadWAVFile(rbt_win_context* ctx, const char* pMac, int ret, const char *outpath);
+//上传wav文件回调
+typedef void __stdcall onUploadWAVFile(rbt_win_context* ctx, const char* pMac, int ret);
+//页码传感器20个值上报回调
+typedef void __stdcall onPageSensor(rbt_win_context* ctx, const char* pMac, ST_PAGE_SENSOR pageSensor);
 
 void rbt_win_set_accept_cb(onAccept* arg);
 void rbt_win_set_errorpacket_cb(onErrorPacket* arg);
 void rbt_win_set_origindata_cb(onOriginData* arg);
 void rbt_win_set_origindata_ex_cb(onOriginDataEx* arg);
+void rbt_win_set_origindata_e3_cb(onOriginDataE3* arg);
 void rbt_win_set_devicemac_cb(onDeviceMac* arg);
 void rbt_win_set_devicename_cb(onDeviceName* arg);
 void rbt_win_set_devicenameresult_cb(onDeviceNameResult* arg);
@@ -113,6 +151,11 @@ void rbt_win_set_deletenotes_cb(onDeleteNotes *arg);
 void rbt_win_set_deviceip_cb(onDeviceIp *arg);
 void rbt_win_set_oidpageinfo_cb(onOidPageInfo *arg);
 void rbt_wib_set_currentwritingnum_cb(onCurrentWritingNum *arg);
+void rbt_win_set_openmodule_cb(onOpenModule *arg);
+void rbt_win_set_fbmsgresult_cb(onFBSetMessage *arg);
+void rbt_win_set_downloadwavfile_cb(onDownloadWAVFile *arg);
+void rbt_win_set_uploadwavfile_cb(onUploadWAVFile *arg);
+void rbt_win_set_page_sensor_cb(onPageSensor *arg);
 
 #pragma pack(1)
 typedef struct _Init_Param

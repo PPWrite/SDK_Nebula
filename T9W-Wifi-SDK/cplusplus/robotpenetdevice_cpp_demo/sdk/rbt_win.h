@@ -44,6 +44,8 @@ extern "C" {
 	int rbt_win_config_bmp_stu_more(const char *mac, const char *stuNo, const char *stuName);
 	//设置学生中文姓名2
 	int rbt_win_config_bmp_stu2(const char *mac, const char *stuName);
+	//TAL设置中文姓名3(TAL支持4文字)
+	int rbt_win_config_bmp_stu3(const char *mac, const char *stuNo, const char *stuName);
 	//配网
 	//source 默认为空,暂时无效
 	int rbt_win_config_wifi(const char *ssid, const char *pwd, const char *source = "");
@@ -94,6 +96,22 @@ extern "C" {
 	void rbt_win_setEndWidth(float width);
 	//笔锋收尾触发速度判断，当速度大于笔宽度/decrease时会触发笔锋
 	void rbt_win_setWidthDecrease(float decrease);
+	//设置打印三点当前坐标值(x1,y1左上 x2,y2中心点 x3,y3右下)
+	void rbt_win_setPrintThreePoint(int x1, int y1, int x2, int y2, int x3, int y3);
+	//设置打印点偏移量
+	void rbt_win_setPrintThreeOffset(int x1, int y1, int x2, int y2, int x3, int y3);
+	//设置X10页码点阵范围
+	void rbt_win_setX10Matirx(int nMaxX, int nMaxY, int nWidth, int nHeight);
+	//设置E3W页码点阵范围
+	void rbt_win_setE3WMatirx(int nMaxX, int nMaxY, int nWidth, int nHeight);
+	//设置x10开启角度旋转
+	void rbt_win_setX10EnableAngle(bool isEnable);
+	//设置X10摄像头中心点坐标
+	void rbt_win_setX10CameraCenter(float centerX, float centerY);
+	//设置FB手写板消息
+	void rbt_win_setFBDeviceMessage(const char *mac, const char *msg);
+	//上传WAV语音文件
+	void rbt_win_upload_wavfile(const char *mac, const char *filePath);
 
 #ifdef __cplusplus
 }
