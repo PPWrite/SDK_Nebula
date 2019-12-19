@@ -38,7 +38,7 @@ protected:
 	CFont	m_font;
 
 public:
-	void AddData(PEN_INFO& penInfo);
+	void AddData(PEN_INFO& penInfo, float fWidth = 2);
 	void SetOnLine(bool bOn = false);
 	void SetText(CString str = _T(""));
 	void SetVote(CString strVote = _T(""));

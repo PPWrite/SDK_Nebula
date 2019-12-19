@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.6.1")
+#define _VERSION  _T("版本号:1.1.6.5")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -221,6 +221,11 @@ BEGIN_MESSAGE_MAP(CUSBHelperDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET6, &CUSBHelperDlg::OnBnClickedButtonSet6)
 	ON_CBN_SELCHANGE(IDC_COMBO_PEN, &CUSBHelperDlg::OnCbnSelchangeComboPen)
 	ON_BN_CLICKED(IDC_BUTTON_SER_PEN, &CUSBHelperDlg::OnBnClickedButtonSerPen)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SLAVE, &CUSBHelperDlg::OnLvnItemchangedListSlave)
+	ON_BN_CLICKED(IDC_ADJUST_VALUE, &CUSBHelperDlg::OnBnClickedAdjustValue)
+	ON_EN_CHANGE(IDC_EDIT_REMOTE, &CUSBHelperDlg::OnEnChangeEditRemote)
+	ON_BN_CLICKED(IDC_BUTTON_SET_ADJUST_VALUE, &CUSBHelperDlg::OnBnClickedButtonSetAdjustValue)
+	ON_EN_CHANGE(IDC_EDIT4, &CUSBHelperDlg::OnEnChangeEdit4)
 END_MESSAGE_MAP()
 
 
@@ -319,6 +324,11 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON3_RESET2)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("NODE"));
+	GetDlgItem(IDC_ADJUST_VALUE)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_BUTTON_SET_ADJUST_VALUE)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_SHOW);
+	
 #endif
 
 #ifdef _WIFI
@@ -350,6 +360,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_MAC)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_EDIT_MAC)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_SET6)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SET_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_HIDE);
 #endif
 
 #ifdef _DONGLE
@@ -383,6 +397,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SYNC_OPEN)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	SetWindowText(_T("DONGLE"));
+	GetDlgItem(IDC_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SET_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_HIDE);
 
 #endif
 
@@ -424,6 +442,10 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON3_UPDATE)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_SHOW);
 	GetDlgItem(IDC_BUTTON_GET_ID)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SET_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_HIDE);
 
 	SetWindowText(_T("P1"));
 #endif
@@ -431,9 +453,13 @@ BOOL CUSBHelperDlg::OnInitDialog()
 #ifdef _CY
 	GetDlgItem(IDC_BUTTON_ADJUST)->ShowWindow(SW_HIDE);
 	GetDlgItem(IDC_BUTTON_CONNECT)->SetWindowText(_T("绑定"));
+	GetDlgItem(IDC_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_BUTTON_SET_ADJUST_VALUE)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->ShowWindow(SW_HIDE);
+	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_HIDE);
 #endif
 
-	GetInstance()->SetKey("robotpen");
+	//GetInstance()->SetKey("robotpen");
 
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(0,_T("M2"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(1,_T("M3K"));
@@ -475,11 +501,16 @@ BOOL CUSBHelperDlg::OnInitDialog()
 
 	//==========================优化笔记设置======================
 #ifdef USE_OPTIMIZE
-	GetInstance()->SetPenWidth(1);
 	//开启压感
 	GetInstance()->SetPressStatus(true);
 	//开启笔记优化
+	float fWidth = 2.0f;
 	GetInstance()->SetOptimizeStatus(true);
+	GetInstance()->SetPenWidth(fWidth);
+	GetInstance()->SetPointDelay(0.28f);
+	GetInstance()->SetPointDamping(0.026f);
+	GetInstance()->SetEndWidth(fWidth*0.5f);
+
 	//设置拖尾长度
 	//GetInstance()->SetPointDelay(0.4);
 #endif
@@ -668,7 +699,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 			GetInstance()->Send(DongleDisconnect);
 			Sleep(300);
 		}
-		else if (T8B_D2 == m_nDeviceType)
+		else if (T8B_D2 == m_nDeviceType || T8S == m_nDeviceType || T8S_LQ == m_nDeviceType)
 		{
 			GetInstance()->SetDeviceMode(DEVICE_MOUSE);
 			Sleep(300);
@@ -679,7 +710,9 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(ExitUsb);
 		Sleep(100);
 		}//*/
-		GetInstance()->ConnectDispose();
+		if(T8S != m_nDeviceType){
+			GetInstance()->ConnectDispose();
+		}
 		resetDevice();
 		return;
 	}
@@ -744,7 +777,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		|| m_nDeviceType == T8C || m_nDeviceType == T9W || m_nDeviceType == T9W_TY || T9B_YD2 == m_nDeviceType
 		|| T9W_QX == m_nDeviceType || T9W_YJ == m_nDeviceType || T9W_WX == m_nDeviceType || m_nDeviceType == T8B_DH2
 		|| T9W_B_KZ == m_nDeviceType || C5 == m_nDeviceType || T9B == m_nDeviceType || T9B_ZXB == m_nDeviceType
-		|| T8B_D2 == m_nDeviceType || m_nDeviceType == X9 || m_nDeviceType == T9W_H || m_nDeviceType == T10)
+		|| T8B_D2 == m_nDeviceType || T8S_LQ == m_nDeviceType || m_nDeviceType == X9 || m_nDeviceType == T9W_H || m_nDeviceType == T10)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE)->SetWindowText(_T("开始同步"));
 		GetDlgItem(IDC_BUTTON_VOTE_OFF)->SetWindowText(_T("结束同步"));
@@ -752,7 +785,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	else if (m_nDeviceType == X8 || m_nDeviceType == T7PL || m_nDeviceType == X8E_A5 
 		|| m_nDeviceType == T7E || m_nDeviceType == P1_CX_M3 || m_nDeviceType == S1_DE
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == K8 || m_nDeviceType == K8_ZM
-		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF )
+		|| m_nDeviceType == T7PL_CL || m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF || m_nDeviceType == K8)
 	{
 
 		GetDlgItem(IDC_BUTTON3_SET)->EnableWindow(FALSE);
@@ -788,8 +821,8 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == T7PL_CL 
-		|| m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY
-		|| m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF  || m_nDeviceType == K8_ZM)
+		|| m_nDeviceType == T8B_D2 || m_nDeviceType == T8S_LQ || m_nDeviceType == J7B_ZY
+		|| m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF  || m_nDeviceType == K8_ZM || m_nDeviceType == T8S|| m_nDeviceType == K8)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -797,7 +830,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(SearchMode);
 	}
 
-	if(K8 ==  m_nDeviceType || K8_HF ==  m_nDeviceType || m_nDeviceType == K8_ZM)
+	if(K8 ==  m_nDeviceType || K8_HF ==  m_nDeviceType || m_nDeviceType == K8_ZM || m_nDeviceType == T8S)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("K8切换生效"));
 
@@ -1429,7 +1462,7 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 		//GetInstance()->SetDeviceMode(DEVICE_HAND);
 		Sleep(100);
 	}
-	else if (m_nDeviceType == T8B_D2 || m_nDeviceType == J7B_ZY || m_nDeviceType == K8_HF|| m_nDeviceType == K8_ZM)
+	else if (m_nDeviceType == T8B_D2 || m_nDeviceType == T8S_LQ || m_nDeviceType == J7B_ZY || m_nDeviceType == K8_HF|| m_nDeviceType == K8_ZM || m_nDeviceType == T8S)
 	{
 		if (DEVICE_MOUSE == m_DeviceMode)
 			m_DeviceMode = DEVICE_HAND;
@@ -1687,6 +1720,13 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			}
 		}
 		break;
+	case  ROBOT_SHOW_OID_PAGE:
+		{
+			OID_PAGE_INFO pageInfo;
+			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
+			TRACE("ROBOT_SHOW_OID_PAGE: x: %f, y: %f, angle:%d\r\n",pageInfo.fX,pageInfo.fY, pageInfo.nAngle);
+		}
+		break;
 	case ROBOT_GATEWAY_ERROR://错误
 		{
 			switch(report.payload[0])
@@ -1763,7 +1803,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				memcpy(&m_lastInfo,&info,sizeof(m_lastInfo));
 
 			CString str;
-			str.Format(_T("%d.%d.%d.%d"),info.version.version4,info.version.version3,info.version.version2,info.version.version);
+			str.Format(_T("%d.%d.%d.%d 硬件号:%d"),info.version.version4,info.version.version3,info.version.version2,info.version.version,info.hardware_num);
 			GetDlgItem(IDC_STATIC_VERSION)->SetWindowText(str);
 
 			str.Format(_T("%d"),info.custom_num);
@@ -1776,6 +1816,10 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			str.Format(_T("%02X%02X%02X%02X%02X%02X"),info.mac[0],info.mac[1],info.mac[2],info.mac[3],info.mac[4],info.mac[5]);
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
 #endif
+#ifdef _NODE
+			//查询硬件信息
+			GetInstance()->Send(31);
+#endif // _NODE
 		}
 		break;			
 	case ROBOT_ONLINE_STATUS://在线状态
@@ -1793,6 +1837,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			/*CString str;
 			str.Format(_T("ROBOT_DEVICE_CHANGE:%d"),report.reserved);
 			WriteLog(str);//*/
+
+			TRACE("==============%d ,,,,,%d\r\n", report.reserved, report.payload[0]);
 
 			this->PostMessage(WM_UPDATE_WINDOW,report.payload[0],report.cmd_id);
 		}
@@ -1856,6 +1902,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				|| J7B_ZY	==	m_nDeviceType
 				|| T8S      ==	m_nDeviceType
 				|| T8B_D2 == m_nDeviceType
+				|| T8S_LQ == m_nDeviceType
 				)
 			{
 				switch(penInfo.nStatus)
@@ -1883,13 +1930,16 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			/*CString str;
 			str.Format(_T("Press:%d"),penInfo.nPress);
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);*/
+			CString str;
+			str.Format(_T("Press:%d"),penInfo.nPress);
+			GetDlgItem(IDC_EDIT4)->SetWindowText(str);
 
 			m_list[0]->AddData(penInfo);
 		}
 		break;
 	case ROBOT_KEY_PRESS://按键按下
 		{
-			int nStatus = report.payload[0];
+ 			int nStatus = report.payload[0];
 			switch(nStatus)
 			{
 			case CLICK:
@@ -2133,7 +2183,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			else
 				penInfo.nPress = 0;
 
-			m_list[0]->AddData(penInfo);
+			m_list[0]->AddData(penInfo, penInfof.fWidth);
 		}
 		break;
 	case ROBOT_SEARCH_MODE:
@@ -2219,8 +2269,25 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			HARD_INFO hardInfo = {0};
 			memcpy(&hardInfo,report.payload,sizeof(HARD_INFO));
 			CString str;
-			str.Format(_T("XR:%d,YR%d,LPI:%d"),hardInfo.x_range,hardInfo.y_range,hardInfo.lpi);
+			str.Format(_T("XR:%d,YR%d,LPI:%d,PageNum:%d"),hardInfo.x_range,hardInfo.y_range,hardInfo.lpi,hardInfo.page_num);
 			GetDlgItem(IDC_STATIC_SCANTIP)->SetWindowText(str);
+			AfxMessageBox(str);
+		}
+		break;
+	case ROBOT_GET_ADJUST_VALUE:
+		{
+			int nValue = report.payload[0];
+			TRACE(_T("ROBOT_GET_ADJUST_VALUE %d\n"),nValue);
+			CString str;
+			str.Format(_T("当前设备校准相位值:%d"),report.payload[0]);
+			AfxMessageBox(str);
+		}
+		break;
+	case ROBOT_SET_ADJUST_VALUE:
+		{
+			CString str;
+			str.Format(_T("设置后的设备校准相位值:%d"),report.payload[0]);
+			AfxMessageBox(str);
 		}
 		break;
 	default:						
@@ -2604,7 +2671,7 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 		break;
 	case ROBOT_DATA_PACKET:
 		{
-			TRACE("ROBOT_DATA_PACKET\n");
+			//TRACE("ROBOT_DATA_PACKET\n");
 		}
 		break;
 	default:
@@ -3015,4 +3082,51 @@ CString CUSBHelperDlg::GetSubject(int subject)
 	CString str = MultiCharToWideChar(szSubjectArray[subject]).c_str();
 
 	return str;
+}
+
+
+void CUSBHelperDlg::OnLvnItemchangedListSlave(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+	*pResult = 0;
+}
+
+
+void CUSBHelperDlg::OnBnClickedAdjustValue()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	GetInstance()->Send(GetAdjustValue);
+}
+
+
+void CUSBHelperDlg::OnEnChangeEditRemote()
+{
+	// TODO:  如果该控件是 RICHEDIT 控件，它将不
+	// 发送此通知，除非重写 __super::OnInitDialog()
+	// 函数并调用 CRichEditCtrl().SetEventMask()，
+	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
+
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CUSBHelperDlg::OnBnClickedButtonSetAdjustValue()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString str;
+	GetDlgItem(IDC_EDIT_ADJUST_VALUE1)->GetWindowText(str);
+	int nValue = atoi(WideStrToMultiStr(str.GetBuffer()));
+	GetInstance()->SetAdujustValue(nValue);
+}
+
+
+void CUSBHelperDlg::OnEnChangeEdit4()
+{
+	// TODO:  如果该控件是 RICHEDIT 控件，它将不
+	// 发送此通知，除非重写 __super::OnInitDialog()
+	// 函数并调用 CRichEditCtrl().SetEventMask()，
+	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
+
+	// TODO:  在此添加控件通知处理程序代码
 }

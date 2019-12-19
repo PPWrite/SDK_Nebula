@@ -168,4 +168,9 @@ public:
 	std::map<int,RTC_NOTE_INFO> mapRtc;
 	std::map<int,SYNC_INFO> mapSyncInfo;
 	static CString GetSubject(int subject);
+	afx_msg void OnLvnItemchangedListSlave(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedAdjustValue();
+	afx_msg void OnEnChangeEditRemote();
+	afx_msg void OnBnClickedButtonSetAdjustValue();
+	afx_msg void OnEnChangeEdit4();
 };

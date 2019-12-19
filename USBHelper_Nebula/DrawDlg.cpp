@@ -133,9 +133,9 @@ BOOL CDrawDlg::OnInitDialog()
 	// 异常: OCX 属性页应返回 FALSE
 }
 
-void CDrawDlg::AddData(PEN_INFO& penInfo)
+void CDrawDlg::AddData(PEN_INFO& penInfo,  float fWidth)
 {
-	m_pWBDlg->onRecvData(penInfo);
+	m_pWBDlg->onRecvData(penInfo, fWidth);
 
 	for(int i=COUNT-1;i>0;i--)
 	{

@@ -9,6 +9,7 @@
 
 //#define  USE_FILE
 // CWBDlg 对话框
+//#define USE_PATH
 
 bool compare(const PAGE_INFO & a,const PAGE_INFO &b)
 {
@@ -32,6 +33,8 @@ IMPLEMENT_DYNAMIC(CWBDlg, CDialog)
 	, m_nState(0)
 	, m_nPenWidth(1)
 	, m_lastPoint(0,0)
+	, m_lastWidth(0)
+	, m_lastPathPoint(0,0)
 	, m_nID(0)
 {
 	memset(&m_pageInfo,0,sizeof(PAGE_INFO));
@@ -172,6 +175,7 @@ void CWBDlg::OnPaint()
 
 	DeleteObject(pDC->m_hDC);
 #else
+	return;
 	CDC* pdc = this->GetDC();
 	Graphics graphics( pdc->m_hDC );
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
@@ -198,7 +202,8 @@ void CWBDlg::OnPaint()
 			++nCount;
 		}
 
-		graphics.DrawLines(&pen, pointSize, nSize);
+		//用path绘制
+		//graphics.DrawLines(&pen, pointSize, nSize);
 		delete [] pointSize;
 	}
 
@@ -224,7 +229,10 @@ void CWBDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 		if (rect.PtInRect(pt))  // 点是否在该矩形区域中
 		{
-			onbegin(pt);
+			PointF fPoint;
+			fPoint.X = pt.x;
+			fPoint.Y = pt.y;
+			onbegin(fPoint);
 		}
 	}
 
@@ -258,7 +266,10 @@ void CWBDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 		if (rect.PtInRect(pt))  // 点是否在该矩形区域中
 		{
-			onDrawing(pt);
+			PointF fPoint;
+			fPoint.X = pt.x;
+			fPoint.Y = pt.y;
+			onDrawing(fPoint);
 		}
 	}
 
@@ -266,12 +277,12 @@ void CWBDlg::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-void CWBDlg::compressPoint(CPoint& point)
+void CWBDlg::compressPoint(PointF& point)
 {
-	int nx = (point.x / nCompress);
-	int ny = (point.y / nCompress);
-	point.x = nx;
-	point.y = ny;
+	float fx = (float)(point.X / nCompress);
+	float fy = (float)(point.Y / nCompress);
+	point.X = fx;
+	point.Y = fy;
 }
 
 bool CWBDlg::pointIsInvalid( int nPenStatus, CPoint& pointValue )
@@ -283,20 +294,26 @@ bool CWBDlg::pointIsInvalid( int nPenStatus, CPoint& pointValue )
 	return true;
 }
 
-void CWBDlg::onbegin( const CPoint& pos )
+void CWBDlg::onbegin( const PointF& pos )
 {
 	m_bDrawing = true;
 	m_lastPoint = pos;
-	m_currentItem.beginPonit = pos;
+
+	CPoint cPoint;
+	cPoint.SetPoint(pos.X, pos.Y);
+	m_currentItem.beginPonit = cPoint;
 	m_currentItem.lstPoint.clear();
 }
 
-void CWBDlg::onDrawing( const CPoint& pos , ePenMode type)
+void CWBDlg::onDrawing( const PointF& pos , ePenMode type, float fWidth)
 {
 	if (!m_bDrawing)
 		return;
-	doDrawing(pos,type);
-	m_currentItem.lstPoint.push_back(pos);
+	doDrawing(pos,type, fWidth);
+
+	CPoint cPoint;
+	cPoint.SetPoint(pos.X, pos.Y);
+	m_currentItem.lstPoint.push_back(cPoint);
 }
 
 void CWBDlg::onEnd()
@@ -304,7 +321,7 @@ void CWBDlg::onEnd()
 	m_bDrawing = false;
 }
 
-void CWBDlg::doDrawing( const CPoint& pos , ePenMode type)
+void CWBDlg::doDrawing( const PointF& pos , ePenMode type, float fWidth)
 {
 	CRect rect;
 	CDC* pdc = this->GetDC();
@@ -318,12 +335,13 @@ void CWBDlg::doDrawing( const CPoint& pos , ePenMode type)
 	Graphics graphics( pdc->m_hDC );
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	Pen pen(Color(255, 0, 0, 0), m_nPenWidth);
+
+	Pen pen(Color(255, 0, 0, 0), fWidth);
 	if (type == SIDE_PEN)
 		pen.SetColor(Color(255, 255, 0, 0));
 	else if(type == ERASER)
 		pen.SetColor(Color(255, 240, 240, 240));
-	graphics.DrawLine(&pen, m_lastPoint.x, m_lastPoint.y, pos.x, pos.y);
+	graphics.DrawLine(&pen, m_lastPoint.X, m_lastPoint.Y, pos.X, pos.Y);
 
 	m_lastPoint = pos;
 	//delete pdc;
@@ -384,11 +402,11 @@ void CWBDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	Clear();
-
+	m_graphicsPath.Reset();
 	CDialog::OnLButtonDblClk(nFlags, point);
 }
 
-void CWBDlg::onRecvData(const PEN_INFO& penInfo)
+void CWBDlg::onRecvData(const PEN_INFO& penInfo, float fWidth)
 {
 #ifdef USE_FILE
 	if (m_canvasPageInfo == m_pageInfo)
@@ -400,11 +418,15 @@ void CWBDlg::onRecvData(const PEN_INFO& penInfo)
 	m_vecPenInfo.push_back(penInfo);
 #endif
 
-	processData(penInfo);
+	processData(penInfo, fWidth);
 }
 
-void CWBDlg::processData(const PEN_INFO& penInfo)
+void CWBDlg::processData(const PEN_INFO& penInfo, float fWidth)
 {
+
+	//TRACE("++++++++++++++++++ fwidth %f\r\n", fWidth);
+	//fWidth = fWidth/nCompress;
+	//TRACE("++++++++++++++++++ fwidth %f\r\n", fWidth);
 	CPoint point(penInfo.nX, penInfo.nY);
 	//Clear(point);
 	/*CString str;
@@ -428,20 +450,51 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 	//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),point.x,point.y,penInfo.nPress,penInfo.nStatus);
 
+	PointF fPoint;
+	fPoint.X = point.x;
+	fPoint.Y = point.y;
+
 	if (penInfo.nStatus == 0x11 || penInfo.nStatus == 0x21 || penInfo.nStatus == 0x31)
 	{
+
 		// 笔接触到板子
 		if (!m_bTrack)
 		{
 			m_bTrack = true;
-			compressPoint(point);
-			onbegin(point);
+#ifdef USE_PATH
+			m_lastWidth = fWidth;
+			m_lastpoint = point;
+			m_pointsList.push_back(point.x);
+			m_pointsList.push_back(point.y);
+			m_pointsList.push_back(fWidth);
+#endif
+
+			compressPoint(fPoint);
+			onbegin(fPoint);
 		}
 		else
 		{
-			compressPoint(point);
+
+#ifdef USE_PATH
+			float a = labs(m_lastpoint.x - point.x);
+			float b = labs(m_lastpoint.y - point.y);
+			float c = sqrt(a*a+b*b);
+			//TRACE("kaifang-------->>>>:%f ====>>> %f\r\n",c, (m_lastWidth+fWidth)/2);
+			if(c >= (m_lastWidth+fWidth)/2){
+				//TRACE("insert-------->>>>\r\n");
+				m_pointsList.push_back(point.x);
+				m_pointsList.push_back(point.y);
+				m_pointsList.push_back(fWidth);
+				m_lastWidth = fWidth;
+			}else{
+				
+			}
+			m_lastpoint = point;
+			
+#endif
+			compressPoint(fPoint);
 			//TRACE("onDrawing--x:%d--y:%d\r\n",point.x,point.y);
-			onDrawing(point,(ePenMode)penInfo.nStatus);
+			onDrawing(fPoint,(ePenMode)penInfo.nStatus, fWidth/*/nCompress*/);
 			moveCursor(point);
 		}
 	}
@@ -454,10 +507,160 @@ void CWBDlg::processData(const PEN_INFO& penInfo)
 #endif
 		m_bTrack = false;
 		endTrack(true);
+
+#ifdef USE_PATH
+		if(m_pointsList.size() > 0)
+		{
+			float *fPoint = new float[m_pointsList.size()];
+			for (int i = 0; i < m_pointsList.size(); i++)
+			{
+				fPoint[i] = m_pointsList[i];
+			}
+
+			if(m_pointsList.size() < 2){
+				drawLinePath(fPoint, m_pointsList.size());
+				m_pointsList.clear();
+				delete fPoint;
+				fPoint = NULL;
+				return;
+			}
+			//TRACE("insert point count ===>>>>>> %d\r\n", m_pointsList.size());
+
+			int nCount = 0;
+			float *fResult = GetInstance()->ToPath(fPoint, m_pointsList.size(), &nCount);
+			drawLinePath(fResult, nCount);
+			m_pointsList.clear();
+			GetInstance()->FreeMemory(fResult);
+
+			delete fPoint;
+			fPoint = NULL;
+		}
+#endif
+
 	}
 
 }
 
+void CWBDlg::drawLinePath(float *points, unsigned int count)
+{
+	float ratioY = nCompress;
+	if(points == NULL)
+		return;
+
+	CRect rect;
+	CDC* pdc = this->GetDC();
+	if (pdc == NULL)
+	{
+		DWORD dw = ::GetLastError();
+		dw = dw;
+		return;
+	}
+
+	Graphics graphics( pdc->m_hDC );
+	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+
+	//GraphicsPath newpath;
+
+
+	//GraphicsPath newpath1;
+	//newpath1.AddLine(100,100,200,100);
+	//newpath.AddPath(&newpath1, true);
+
+	//GraphicsPath newpath2;
+	//newpath2.AddLine(200,100,200,200);
+	//newpath.AddPath(&newpath2, true);
+
+	//GraphicsPath newpath3;
+	//newpath3.AddLine(100,100,100,100);
+	//newpath.AddPath(&newpath3, true);
+
+
+	//graphics.FillPath(new SolidBrush(Gdiplus::Color::Black), &newpath);
+	//DeleteObject(pdc->m_hDC);
+
+	//return;
+
+	//Point *newpoints = new Point[count/3];
+
+	int nIndex = 0;
+
+	for(int i = 0; i < count; i+=3){
+		/*if(i == 0)
+		{
+			Point firstP(points[i]/ratioY, points[i+1]/ratioY);
+			m_lastPathPoint = firstP;
+			continue;
+		}else if (points[i+2] > 0)
+		 {
+		 if(points[i+5] > 0){
+		 Point *p2 = new Point[4];
+		 Point point0(m_lastPathPoint);
+		 Point point1(points[i]/ratioY, points[i+1]/ratioY);
+		 Point point2(points[i+3]/ratioY, points[i+4]/ratioY);
+		 Point point3(points[i+6]/ratioY, points[i+7]/ratioY);
+		 p2[0] = point0;
+		 p2[1] = point1;
+		 p2[2] = point2;
+		 p2[3] = point3;
+		 m_lastPathPoint = point3;
+		 m_graphicsPath.AddCurve(p2, 4);
+		 i += 6;
+		 }else {
+		 Point *p3 = new Point[3];
+		 Point point0(m_lastPathPoint);
+		 Point point1(points[i]/ratioY, points[i+1]/ratioY);
+		 Point point2(points[i+3]/ratioY, points[i+4]/ratioY);
+		 p3[0] = point0;
+		 p3[1] = point1;
+		 p3[2] = point2;
+
+		 m_lastPathPoint = point2;
+		 m_graphicsPath.AddBeziers(p3, 3);
+		 i += 3;
+		 }
+
+		 }else {
+		 Point *p1 = new Point[2];
+		 Point point(points[i]/ratioY,  points[i+1]/ratioY);
+		 p1[0] = m_lastPathPoint;
+		 p1[1] = point;
+		 m_lastPathPoint = point;
+		 m_graphicsPath.AddLines(p1, 2);
+		 }*/
+
+		PointF point((float)points[i]/ratioY,  (float)points[i+1]/ratioY);
+		
+		//newpoints[nIndex] = point;
+		//nIndex++;
+		if(i > 0){
+			GraphicsPath newPath;
+			newPath.AddLine(m_lastPathPoint, point);
+			newPath.SetFillMode(Gdiplus::FillModeWinding);
+			
+			m_graphicsPath.AddPath(&newPath, true);
+			//m_graphicsPath.AddEllipse(point.X, point.Y, points[i+2], points[i+2]);
+			//TRACE("point ===>>> last %f ,%f; current:%f, %f current index %d\r\n", m_lastPathPoint.X, m_lastPathPoint.Y, point.X, point.Y, i);
+
+		}
+
+
+		//Point point1(point.X,  point.Y);
+		m_lastPathPoint = point;
+
+	}
+	m_graphicsPath.CloseFigure();
+			//GraphicsPath newPath;
+			//newPath.AddClosedCurve(newpoints, count/3);
+			//m_graphicsPath.AddPath(&newPath, false);
+	//m_graphicsPath.add
+	//m_graphicsPath.AddLines(newpoints, count/3);
+	this->Clear();
+	//graphics.DrawPath(new Pen(Gdiplus::Color::Black), &m_graphicsPath);
+	m_graphicsPath.SetFillMode(Gdiplus::FillModeWinding);
+	graphics.FillPath(new SolidBrush(Gdiplus::Color::Black), &m_graphicsPath);
+	DeleteObject(pdc->m_hDC);
+}
 
 void CWBDlg::moveCursor(CPoint& pos)
 {
@@ -491,13 +694,18 @@ void CWBDlg::OnSize(UINT nType, int cx, int cy)
 	}
 
 	this->Clear();
+	m_graphicsPath.Reset();
 }
 
 void CWBDlg::Clear(const CPoint& pt)
 {
 	CPoint point = pt;
-	compressPoint(point);
+	PointF fPoint;
+	fPoint.X = pt.x;
+	fPoint.Y = pt.y;
+	compressPoint(fPoint);
 	CRect rc(0,0,10,10);
+	point.SetPoint(fPoint.X, fPoint.Y);
 	if (rc.PtInRect(point))
 		this->Clear();
 }

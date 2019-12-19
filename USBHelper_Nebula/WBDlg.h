@@ -1,4 +1,6 @@
 #pragma once
+#include <list>
+using namespace std;
 
 // CWBDlg ¶Ô»°¿ò
 #define DEV_WIDTH	14335
@@ -35,7 +37,7 @@ private:
 	bool m_bDrawing;
 	std::list<sCanvasPointItem> m_listItems;
 	sCanvasPointItem m_currentItem;
-	CPoint m_lastPoint;
+	PointF m_lastPoint;
 	int m_nPenStatus;
 	CPoint m_point;
 	int m_nDevStatus;
@@ -43,18 +45,20 @@ private:
 	bool m_bMouseDraw;
 	bool m_bTrack;
 	int	m_nPenWidth;
+	CPoint m_lastpoint;
 protected:
-	void onbegin(const CPoint& pos);
-	void onDrawing(const CPoint& pos, ePenMode type = PEN);
+	void onbegin(const PointF& pos);
+	void onDrawing(const PointF& pos, ePenMode type = PEN, float fWidth = 2);
 	void onEnd();
-	void doDrawing(const CPoint& pos, ePenMode type = PEN);
+	void doDrawing(const PointF& pos, ePenMode type = PEN, float fWidth = 2);
 	void endTrack(bool bSave = true);
 
-	void compressPoint(CPoint& point);
+	void compressPoint(PointF& point);
 	bool pointIsInvalid( int nPenStatus, CPoint& pointValue );
 public:
-	void onRecvData(const PEN_INFO& penInfo);
-	void processData(const PEN_INFO& penInfo);
+	void onRecvData(const PEN_INFO& penInfo, float fWidth = 2);
+	void processData(const PEN_INFO& penInfo, float fWidth = 2);
+	void drawLinePath(float *points, unsigned int count);
 	void moveCursor(CPoint& pos);
 	void Clear();
 	void Clear(const CPoint& pt);
@@ -79,6 +83,12 @@ private:
 	int m_nHeight;
 	int m_nState;
 	int m_nID;
+
+	std::vector<float> m_pointsList;
+	GraphicsPath m_graphicsPath;
+	PointF m_lastPathPoint;
+	float m_lastWidth;
+
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedButtonLeft();
