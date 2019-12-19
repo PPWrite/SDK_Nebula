@@ -48,7 +48,8 @@ namespace rbt_win32_2_demo
             {
                 if(!drawingDic.ContainsKey(DrawInfo))
                 {
-                    addPictoreBox();
+                    AddDrweingInfo();
+                    //addPictoreBox();
                 }
                 drawingDic[DrawInfo].drawing.recvData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bPress);
             }
@@ -72,7 +73,8 @@ namespace rbt_win32_2_demo
             {
                 if (!drawingDic.ContainsKey(DrawInfo))
                 {
-                    addPictoreBox();
+                    AddDrweingInfo();
+                    //addPictoreBox();
                 }
                 drawingDic[DrawInfo].drawing.recvOptimizeData(rPoint.bPenStatus, rPoint.bx, rPoint.by, rPoint.bWidth);
             }
@@ -280,6 +282,14 @@ namespace rbt_win32_2_demo
 
 
         private delegate void updateForm();
+        private void AddDrweingInfo()
+        {
+            DrawingInfo Dinfo = CreateCanvase(DrawInfo);
+            this.Controls.Add(Dinfo.pbox);
+            Dinfo.drawing = new Drawing_RePlay(Dinfo.pbox, angle, m_nDeviceW, m_nDeviceH, 0, 0);
+            Dinfo.drawing.DrawingCallbackBrushstroke_Evt += Form_DrawingCallbackBrushstroke;
+            drawingDic.Add(DrawInfo, Dinfo);
+        }
         private void addPictoreBox()
         {
             if (this.InvokeRequired)

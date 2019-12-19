@@ -142,7 +142,11 @@ namespace WindowsForms.Class
             }
             grap.DrawLine(new Pen(pointc, penW), m_lastPoint, pos);
             m_lastPoint = pos;
-            updatePictureBoxImg_EVT(this.myControl, bt);
+            if(this.myControl!=null)
+            {
+                updatePictureBoxImg_EVT(this.myControl, bt);
+            }
+            
         }
 
 
@@ -158,17 +162,28 @@ namespace WindowsForms.Class
             //grap.DrawEllipse(new Pen(Color.Black, 1), p2.X, p2.Y, 1, fPenWidthF);
             //grap.DrawEllipse(new Pen(Color.Black, 1), p3.X, p3.Y, 1, fPenWidthF);
 
-            updatePictureBoxImg_EVT(this.myControl, bt);
+            if (this.myControl != null)
+            {
+                updatePictureBoxImg_EVT(this.myControl, bt);
+            }
         }
         public override void doLineDrawing(ref PointF p1, ref PointF p2, float fPenWidthF)
         {
             grap.DrawLine(new Pen(Color.Black, fPenWidthF), p1, p2);
-            updatePictureBoxImg_EVT(this.myControl, bt);
+            if (this.myControl != null)
+            {
+                updatePictureBoxImg_EVT(this.myControl, bt);
+            }
         }
 
         public void clear()
         {
             CreateMyGraphics();
+        }
+
+        public void addPictureBox(System.Windows.Forms.PictureBox _control)
+        {
+            myControl = _control;
         }
 
         private delegate void updatePictureBoxImg(System.Windows.Forms.PictureBox _control, Bitmap bt);

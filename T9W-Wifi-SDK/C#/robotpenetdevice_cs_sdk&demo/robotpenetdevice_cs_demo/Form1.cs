@@ -59,8 +59,8 @@ namespace rbt_win32_2_demo
             }
             else if(oemkey == "FB")
             {
-                rbtnet_.setPrintType(PrintType.NoMarkCode_FB_FT);
-                //rbtnet_.setPrintType(PrintType.NoMarkCode);
+                //rbtnet_.setPrintType(PrintType.NoMarkCode_FB_FT);
+                rbtnet_.setPrintType(PrintType.NoMarkCode);
             }
             else
             {
@@ -386,11 +386,6 @@ namespace rbt_win32_2_demo
                 string sMac = Marshal.PtrToStringAnsi(strDeviceMac);
                 if (dicMac2DrawForm_.ContainsKey(sMac))
                 {
-                    //int npenStatus = Convert.ToInt32(us);
-                    //if (npenStatus != 17&& npenStatus != 33)
-                    //{
-                    //    npenStatus = 0;
-                    //}
                     dicMac2DrawForm_[sMac].RememberData(us, ux, uy, up);
                 }
             }
@@ -529,7 +524,7 @@ namespace rbt_win32_2_demo
                         {
                             drawFormForA4 fa4F = new drawFormForA4(strMac);
                             dicMac2DrawForm_.Add(strMac, fa4F);
-                            fa4F.Show();
+                            //fa4F.Show();
                         }
                         return;
                     }
@@ -551,7 +546,7 @@ namespace rbt_win32_2_demo
                 if (!dicMac2DrawForm_.ContainsKey(strMac)) {
                     drawFormForA4 fa4F = new drawFormForA4(strMac);
                     dicMac2DrawForm_.Add(strMac, fa4F);
-                    fa4F.Show();
+                    //fa4F.Show();
                 }
             }
         }
@@ -655,7 +650,7 @@ namespace rbt_win32_2_demo
                     }
                     //this.listView1.Items[nFindItem].ForeColor = Color.Red;
                     this.listView1.Refresh();
-                    //rbtnet_.SetFBDeviceMessages(strMac, "pageid=" + Convert.ToString(nPageInfo));
+                    rbtnet_.SetFBDeviceMessages(strMac, "pageid=" + Convert.ToString(nPageInfo));
                 }
             }
         }
