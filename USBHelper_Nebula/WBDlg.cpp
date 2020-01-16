@@ -337,11 +337,19 @@ void CWBDlg::doDrawing( const PointF& pos , ePenMode type, float fWidth)
 	graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
 
 	Pen pen(Color(255, 0, 0, 0), fWidth);
-	if (type == SIDE_PEN)
+	if (type == SIDE_PEN){
+		pen.SetWidth(fWidth);
 		pen.SetColor(Color(255, 255, 0, 0));
-	else if(type == ERASER)
+		graphics.DrawLine(&pen, m_lastPoint.X, m_lastPoint.Y, pos.X, pos.Y);
+	}else if(type == ERASER){
+		pen.SetWidth(20);
 		pen.SetColor(Color(255, 240, 240, 240));
-	graphics.DrawLine(&pen, m_lastPoint.X, m_lastPoint.Y, pos.X, pos.Y);
+		//pen.SetColor(Color(255, 255, 0, 0));
+		graphics.DrawLine(&pen, m_lastPoint.X-10, m_lastPoint.Y-10, pos.X+10, pos.Y+10);
+
+	}else{
+		graphics.DrawLine(&pen, m_lastPoint.X, m_lastPoint.Y, pos.X, pos.Y);
+	}
 
 	m_lastPoint = pos;
 	//delete pdc;

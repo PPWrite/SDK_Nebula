@@ -318,6 +318,22 @@ public:
 	{
 		(void)pageSensor;
 	}	
+	//当前固件模式 1 采集模式 2 检测模式
+	virtual void onTestFirmwareMode(int mode)
+	{
+		(void)mode;
+	}
+	//上报X/Y 通道号,增益值,ADC值
+	virtual void onTestFirmwareValue(int mode, const st_test_firmware_info *infoList, int length)
+	{
+		(void)mode;
+		(void)infoList;
+		(void)length;
+	}
+	//上报设备生产日期和延保日期
+	virtual void onProductDate(const char *datestr){
+		(void)datestr;
+	}
 };
 
 class RobotPenController
@@ -440,9 +456,17 @@ public:
 	virtual void SetX10InstallOffset(int jediOffsetX, int jediOffsetY, int oid3sOffsetX, int oid3sOffsetY, int nAngle) = 0;
 	//是否开启X10偏移，默认开启
 	virtual void openX10Offset(bool isOpen) = 0;
+	//是否开启X10角度偏移，默认开启
+	virtual void openX10AngleOffset(bool isOpen) = 0;
 	//设置FB设备消息
 	virtual void SetFBDeviceMessgae(const char *msg) = 0;
-
+	//切换测试固件模式(0查询当前模式 1 采集模式 2 检测模式)
+	virtual void SetTestFirmwareMode(int mode) = 0;
+	//设置测试通道号，增益，ADC值
+	virtual void SetTestFirmwareValue(int mode, const st_test_firmware_info *infoList, int length) = 0;
+	//设置/获取设备生产日期和延保日期(K7-C5-XF-年月日(占6个字符)-05-序列号(4个字符))
+	//datastr为空代表获取
+	virtual void SetProductDate(const char*datestr) = 0;
 #ifdef USE_RECOG
 	//////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 	//设置识别回调函数
@@ -590,11 +614,18 @@ extern "C" ROBOT_API void SetE3WMac(int type,unsigned char *mac,int len);
 extern "C" ROBOT_API void SetPenType(ePenType type);
 //设置X10工装偏差
 extern "C" ROBOT_API void SetX10InstallOffset(int jediOffsetX, int jediOffsetY, int oid3sOffsetX, int oid3sOffsetY, int nAngle);
-//是否开启X10偏移，默认开启
+//是否开启X10偏移以及角度偏移，默认开启
 extern "C" ROBOT_API void openX10Offset(bool isOpen);
+//是否开启X10角度偏移，默认开启
+extern "C" ROBOT_API void openX10AngleOffset(bool isOpen);
 //设置FB设备消息
 extern "C" ROBOT_API void SetFBDeviceMessgae(const char *msg);
-
+//切换测试固件模式(1 采集模式 2 检测模式)
+extern "C" ROBOT_API void SetTestFirmwareMode(int mode);
+//设置测试通道号，增益，ADC值(1代表 x轴 2代表 y轴)
+extern "C" ROBOT_API void SetTestFirmwareValue(int mode, const st_test_firmware_info *infoList, int length);
+//设置/获取设备生产日期和延保日期(K7-C5-XF-年月日(占6个字符)-05-序列号(4个字符))
+extern "C" ROBOT_API void SetProductDate(const char*datestr);
 #ifdef USE_RECOG
 //////////////////////////////////////////////笔记识别接口//////////////////////////////////////////////
 //设置识别回调函数

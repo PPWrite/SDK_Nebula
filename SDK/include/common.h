@@ -79,6 +79,8 @@ enum eDevicePid
 	T9W_ZHL_PID = 0x6056,
 	T8S_LQ_PID = 0x6057,
 	E3W_PID = 0x6058,
+	T9W_H2_PID = 0x605a,
+	T9W_H_FB_PID = 0x605b,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 	
@@ -174,7 +176,10 @@ enum eDeviceType
 	T9Y,
 	T9W_ZHL,
 	T8S_LQ,
-	E3W
+	E3W,
+	D7,
+	T9W_H2,
+	T9W_H_FB,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -326,8 +331,8 @@ typedef struct oid_info
 {
 	uint32_t oid_x : 20;
 	uint32_t oid_y : 20;
-	uint8_t oid_angle : 7;
-	uint8_t oid_angle_symbol : 1;//0为正 1为负
+	uint16_t oid_angle : 15;
+	uint16_t oid_angle_symbol : 1;//0为正 1为负
 	oid_info() :oid_x(0), oid_y(0) , oid_angle_symbol(0), oid_angle(0){}
 }OID_INFO;
 //oid3页码信息(X10点阵)
@@ -335,8 +340,8 @@ typedef struct oid_page_info
 {
 	float fX;
 	float fY;
-	int nAngle;
-	oid_page_info():fX(0.0f),fY(0.0f),nAngle(0){}
+	float fAngle;
+	oid_page_info():fX(0.0f),fY(0.0f),fAngle(0){}
 }OID_PAGE_INFO;
 // 笔数据信息
 typedef struct pen_info
@@ -432,6 +437,14 @@ typedef struct st_page_sensor
 	uint16_t sensor19;
 	uint16_t sensor20;
 }ST_PAGE_SENSOR;
+
+//通道号，增益值，ADC
+typedef struct st_test_firmware_info
+{
+	uint8_t num;
+	uint8_t channel_gain;
+	uint16_t adc_value; 
+}ST_TEST_FIRMWARE_INFO;
 
 #pragma pack()
 

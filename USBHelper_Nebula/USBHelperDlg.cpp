@@ -1724,7 +1724,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 		{
 			OID_PAGE_INFO pageInfo;
 			memcpy(&pageInfo,report.payload,sizeof(pageInfo));
-			TRACE("ROBOT_SHOW_OID_PAGE: x: %f, y: %f, angle:%d\r\n",pageInfo.fX,pageInfo.fY, pageInfo.nAngle);
+			TRACE("ROBOT_SHOW_OID_PAGE: x: %f, y: %f, angle:%d\r\n",pageInfo.fX,pageInfo.fY, pageInfo.fAngle);
 		}
 		break;
 	case ROBOT_GATEWAY_ERROR://´íÎó
