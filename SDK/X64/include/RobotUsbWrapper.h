@@ -78,6 +78,10 @@ public:
 	virtual void onDeviceInfo(const ST_DEVICE_INFO &info) {
 		(void)info;
 	}
+	//设备信息事件
+	virtual void onDeviceInfoEx(const ST_DEVICE_INFO &info) {
+		(void)info;
+	}
 	//在线状态事件
 	virtual void onOnlineStatus(uint8_t *status) {
 		(void)status;
@@ -334,6 +338,10 @@ public:
 	virtual void onProductDate(const char *datestr){
 		(void)datestr;
 	}
+	//上报当前使用场景纸类型
+	virtual void onPaperType(ePaperType paperType){
+		(void)paperType;
+	}
 };
 
 class RobotPenController
@@ -356,6 +364,8 @@ public:
 	virtual void SetX10PageNum(int nNum) = 0;
 	//升级
 	virtual bool Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow) = 0;
+	//对于支持Telink设备的手写板升级MCU使用此接口
+	virtual bool UpdateMcu(const char *fileMcu) = 0;
 	//设置
 	virtual void SetConfig(int nCostumNum,int nClassNum,int nDeviceNum) = 0;
 	//获取可用设备总数
@@ -530,6 +540,8 @@ extern "C" ROBOT_API bool  IsConnected();
 extern "C" ROBOT_API void  Send(int nCmd);
 //升级
 extern "C" ROBOT_API void  Update(const char *fileMcu,const char *fileBle,eDeviceType type = Unknow);
+//对于支持Telink设备的手写板升级MCU使用此接口
+extern "C" ROBOT_API bool UpdateMcu(const char *fileMcu);
 //设置
 extern "C" ROBOT_API void  SetConfig(int nCostumNum,int nClassNum,int nDeviceNum);
 //获取可用设备总数

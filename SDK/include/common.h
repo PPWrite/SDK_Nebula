@@ -1,6 +1,6 @@
 #pragma once
 
-#define FILEVERSION "1.1.6.5"
+#define FILEVERSION "1.1.6.6"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -81,6 +81,11 @@ enum eDevicePid
 	E3W_PID = 0x6058,
 	T9W_H2_PID = 0x605a,
 	T9W_H_FB_PID = 0x605b,
+	T9Y_TAL_PID = 0x605c,
+	T9W_H_ZB_PID = 0x605d,
+	X10_B_PID = 0x605e,
+	J7M_PID = 0x605f,
+	T8Y_PID = 0x6060,
 	DONGLE_PID  =	0x5001,
 	P1_PID		=   0x7806,
 	
@@ -180,6 +185,11 @@ enum eDeviceType
 	D7,
 	T9W_H2,
 	T9W_H_FB,
+	T9Y_TAL,
+	T9W_H_ZB,
+	X10_B,
+	J7M,
+	T8Y,
 };
 ////////////////////////////////////////NEBULA///////////////////////////////////////
 #pragma pack(1)
@@ -362,6 +372,15 @@ typedef struct pen_info
 		return false;
 	}
 }PEN_INFO;  
+//笔记数据
+typedef struct pen_e3_info
+{
+	uint8_t  status;		// 笔状态
+	uint32_t  x;			// 笔x轴坐标
+	uint32_t  y;			// 笔y轴坐标
+	uint16_t  press;		// 笔压力
+	uint16_t  angle;		// 角度
+}PEN_E3_INFO;
 // 优化笔数据信息
 typedef struct pen_infof
 {
@@ -403,6 +422,23 @@ typedef struct position_packet
 	uint8_t press : 5;
 
 }POSITION_PACKET;
+
+//笔记包
+typedef struct st_usb_e3_packet
+{
+	uint8_t  status;		// 笔状态
+	uint8_t  x_l;		    // x低8位
+	uint8_t  x;		        // x中8位
+	uint8_t  x_h;		    // x高8位
+	uint8_t  y_l;		    // y低8位
+	uint8_t  y;		        // y中8位
+	uint8_t  y_h;		    // y高8位
+	uint8_t  press_l;		// 压力值
+	uint8_t  press_h;		// 压力值
+	uint8_t  angle_l;		// 角度
+	uint8_t  angle_h;		// 角度
+
+}ST_USB_E3_PACKET;
 
 typedef struct hard_info
 {
@@ -618,6 +654,8 @@ enum eRobotCmd
 	ROBOT_X10_SET_OFFSET_VALUE,					//X10 设置固件工装偏移命令
 	ROBOT_SET_FB_MSG_RESULT,					//设置FB 设备消息
 	ROBOT_PAGE_SENSOR,							//页码传感器
+	ROBOT_PAPER_TYPE,							//纸张类型
+	ROBOT_DEVICE_INFO,							//设备信息
 };
 
 
@@ -706,8 +744,9 @@ enum ePenStatus
 //纸张类型
 enum ePaperType {
 	eDefult = 0,
-	eA4,
-	eA5,
+	eA4,	//A4纸
+	eA5,	//A5纸
+	eCustom, //自定义纸
 };
 #define WIDTH_T7P	22015
 #define HEIGHT_T7P	15359

@@ -175,7 +175,7 @@ void CWBDlg::OnPaint()
 
 	DeleteObject(pDC->m_hDC);
 #else
-	return;
+	//return;
 	CDC* pdc = this->GetDC();
 	Graphics graphics( pdc->m_hDC );
 	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
@@ -203,7 +203,7 @@ void CWBDlg::OnPaint()
 		}
 
 		//”√pathªÊ÷∆
-		//graphics.DrawLines(&pen, pointSize, nSize);
+		graphics.DrawLines(&pen, pointSize, nSize);
 		delete [] pointSize;
 	}
 

@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define _VERSION  _T("版本号:1.1.6.5")
+#define _VERSION  _T("版本号:1.1.6.6")
 
 #define RESET_NODE 0x2a
 #define RESET_ALL  0x29
@@ -234,7 +234,6 @@ END_MESSAGE_MAP()
 BOOL CUSBHelperDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
 	// 将“关于...”菜单项添加到系统菜单中。
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
@@ -459,7 +458,7 @@ BOOL CUSBHelperDlg::OnInitDialog()
 	GetDlgItem(IDC_EDIT4)->ShowWindow(SW_HIDE);
 #endif
 
-	//GetInstance()->SetKey("robotpen");
+	GetInstance()->SetKey("robotpen");
 
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(0,_T("M2"));
 	((CComboBox*)GetDlgItem(IDC_COMBO_PEN))->InsertString(1,_T("M3K"));
@@ -710,7 +709,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(ExitUsb);
 		Sleep(100);
 		}//*/
-		if(T8S != m_nDeviceType){
+		if(T8S != m_nDeviceType/* && T8Y != m_nDeviceType*/){
 			GetInstance()->ConnectDispose();
 		}
 		resetDevice();
@@ -750,6 +749,11 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		CString str;
 		str.Format(_T("打开失败,错误码:%d"),nRes);
 		AfxMessageBox(str);
+	}
+
+	if(T8Y == m_nDeviceType)
+	{
+		GetInstance()->Send(EnterUsb);
 	}
 
 	/*GetDlgItem(IDC_BUTTON_VOTE)->EnableWindow(!m_bNode);
@@ -822,7 +826,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 	if(m_nDeviceType == T7PL || m_nDeviceType == T7E || m_nDeviceType == S1_DE 
 		|| m_nDeviceType == J7E || m_nDeviceType == K7_HW || m_nDeviceType == T7PL_CL 
 		|| m_nDeviceType == T8B_D2 || m_nDeviceType == T8S_LQ || m_nDeviceType == J7B_ZY
-		|| m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF  || m_nDeviceType == K8_ZM || m_nDeviceType == T8S|| m_nDeviceType == K8)
+		|| m_nDeviceType == T7PL_XDF || m_nDeviceType == K8_HF  || m_nDeviceType == K8_ZM || m_nDeviceType == T8S|| m_nDeviceType == K8 || m_nDeviceType == J7M || m_nDeviceType == X10_B || m_nDeviceType == T8Y)
 	{
 		GetDlgItem(IDC_BUTTON3_SHOW)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_BUTTON3_SHOW)->SetWindowText(_T("切换"));
@@ -830,7 +834,7 @@ void CUSBHelperDlg::OnBnClickedButton3Open()
 		GetInstance()->Send(SearchMode);
 	}
 
-	if(K8 ==  m_nDeviceType || K8_HF ==  m_nDeviceType || m_nDeviceType == K8_ZM || m_nDeviceType == T8S)
+	if(K8 ==  m_nDeviceType || K8_HF ==  m_nDeviceType || m_nDeviceType == K8_ZM || m_nDeviceType == T8S || m_nDeviceType == X10_B)
 	{
 		GetDlgItem(IDC_BUTTON_VOTE_CLEAR)->SetWindowText(_T("K8切换生效"));
 
@@ -1068,7 +1072,7 @@ void CUSBHelperDlg::OnBnClickedButtonVoteClear()
 				pDlg->SetVote();
 		}
 	}
-	else if(K8 == m_nDeviceType || K8_HF == m_nDeviceType || m_nDeviceType == K8_ZM)
+	else if(K8 == m_nDeviceType || K8_HF == m_nDeviceType || m_nDeviceType == K8_ZM || m_nDeviceType == X10_B)
 	{
 		m_bActive = !m_bActive;
 		GetInstance()->SetButtonActive(m_bActive);
@@ -1275,7 +1279,20 @@ LRESULT CUSBHelperDlg::OnUpdate(WPARAM wParam, LPARAM lParam)
 		GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),"");
 		break;
 	case START_UPADTE_NODE:
-		GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),WideStrToMultiStr(m_strFileBle.GetBuffer()));
+		if(m_nDeviceType == T8Y)
+		{
+			if(m_strFileBle.IsEmpty())
+			{
+				if(!m_strFileMcu.IsEmpty())
+				{
+					GetInstance()->UpdateMcu(WideStrToMultiStr(m_strFileMcu.GetBuffer()));
+				}
+			}else{
+				GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),WideStrToMultiStr(m_strFileBle.GetBuffer()));
+			}
+		}else{
+			GetInstance()->Update(WideStrToMultiStr(m_strFileMcu.GetBuffer()),WideStrToMultiStr(m_strFileBle.GetBuffer()));	
+		}
 		break;
 	case START_UPADTE_DONGLE:
 		{
@@ -1462,7 +1479,7 @@ void CUSBHelperDlg::OnBnClickedButton3Show()
 		//GetInstance()->SetDeviceMode(DEVICE_HAND);
 		Sleep(100);
 	}
-	else if (m_nDeviceType == T8B_D2 || m_nDeviceType == T8S_LQ || m_nDeviceType == J7B_ZY || m_nDeviceType == K8_HF|| m_nDeviceType == K8_ZM || m_nDeviceType == T8S)
+	else if (m_nDeviceType == T8B_D2 || m_nDeviceType == T8S_LQ || m_nDeviceType == J7B_ZY || m_nDeviceType == K8_HF|| m_nDeviceType == K8_ZM || m_nDeviceType == T8S || m_nDeviceType == J7M || m_nDeviceType == X10_B || m_nDeviceType == T8Y)
 	{
 		if (DEVICE_MOUSE == m_DeviceMode)
 			m_DeviceMode = DEVICE_HAND;
@@ -1893,7 +1910,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			TRACE(_T("ROBOT_ORIGINAL_PACKET X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			//TRACE(_T("ROBOT_ORIGINAL_PACKET X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 			if (T7B_HF		==	m_nDeviceType
 				|| T7E		==	m_nDeviceType
 				|| S1_DE	==	m_nDeviceType
@@ -1903,6 +1920,8 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 				|| T8S      ==	m_nDeviceType
 				|| T8B_D2 == m_nDeviceType
 				|| T8S_LQ == m_nDeviceType
+				|| J7M == m_nDeviceType
+				|| T8Y == m_nDeviceType
 				)
 			{
 				switch(penInfo.nStatus)
@@ -2071,6 +2090,12 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 					,rtc.rtc.note_time_year,rtc.rtc.note_time_month,rtc.rtc.note_time_day,rtc.rtc.note_time_hour,rtc.rtc.note_time_min);
 
 				mapRtc[m_nCurNoteNum].vecRtcInfo.push_back(rtc);
+			}else if( J7B == report.reserved || J7M == report.reserved)
+			{
+				ST_ELITE_HEADER_INFO info = {0};
+				memcpy(&info,report.payload,sizeof(ST_ELITE_HEADER_INFO));
+				memcpy(&m_nCurNoteNum,&info.note_number,sizeof(info.note_number));
+				strID.Format(_T("%d"),info.note_number);
 			}
 			else
 			{
@@ -2119,7 +2144,7 @@ void CUSBHelperDlg::parseRobotReport(const ROBOT_REPORT &report)
 			PEN_INFO penInfo = {0};
 			memcpy(&penInfo,report.payload,sizeof(PEN_INFO));
 
-			TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
+			//TRACE(_T("X:%d-Y:%d-Press:%d-Status:%d\n"),penInfo.nX,penInfo.nY,penInfo.nPress,penInfo.nStatus);
 
 			//T9A
 			mapSyncInfo[m_nCurNoteNum].vecPenInfo.push_back(penInfo);
@@ -2674,6 +2699,11 @@ void CUSBHelperDlg::parseDongleReport(const ROBOT_REPORT &report)
 			//TRACE("ROBOT_DATA_PACKET\n");
 		}
 		break;
+	case ROBOT_PAPER_TYPE:
+		{
+			TRACE("ROBOT_DATA_PACKET ===== >> %d\n", report.payload[0]);
+		}
+		break;
 	default:
 		break;
 	}
@@ -2852,12 +2882,15 @@ void CUSBHelperDlg::OnBnClickedButtonSyncOpen()
 {
 	// TODO: 在此添加控件通知处理程序代码
 
-	if (DEVICE_MOUSE == m_DeviceMode)
-		m_DeviceMode = DEVICE_HAND;
-	else
-		m_DeviceMode = DEVICE_MOUSE;
-	GetInstance()->SetDeviceMode(m_DeviceMode);
-	return;
+	//if (DEVICE_MOUSE == m_DeviceMode)
+	//	m_DeviceMode = DEVICE_HAND;
+	//else
+	//	m_DeviceMode = DEVICE_MOUSE;
+	//GetInstance()->SetDeviceMode(m_DeviceMode);
+	//return;
+	CRect dlgRect;
+	m_pWBDlg->GetWindowRect(dlgRect);
+	m_pWBDlg->MoveWindow(50, 100, dlgRect.Width(), dlgRect.Height());
 	m_pWBDlg->ShowWindow(SW_SHOW);
 }
 
